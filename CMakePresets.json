@@ -1,0 +1,75 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "macos_base",
+            "displayName": "XCode build",
+            "hidden": true,
+            "description": "将编译器用于 XCode",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            },
+            "generator": "Xcode",
+            "cacheVariables": {
+                "CMAKE_OSX_DEPLOYMENT_TARGET": "11.7",
+                "CMAKE_MACOSX_BUNDLE": "ON",
+                "ORCA_SDK_TAG": "master",
+                "CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED": "NO",
+                "CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY": ""
+            }
+        },
+        {
+            "name": "macos_base_arm64",
+            "inherits": "macos_base",
+            "hidden": true,
+            "displayName": "XCode build arm64",
+            "cacheVariables": {
+                "CMAKE_OSX_ARCHITECTURES": "arm64"
+            }
+        },
+        {
+            "name": "macos_base_x8664",
+            "inherits": "macos_base",
+            "hidden": true,
+            "displayName": "XCode build x86_64",
+            "cacheVariables": {
+                "CMAKE_OSX_ARCHITECTURES": "x86_64"
+            }
+        },
+        {
+            "name": "msvc_base",
+            "hidden": true,
+            "condition": {
+                "type": "equals",
+                "rhs": "Windows",
+                "lhs": "${hostSystemName}"
+            },
+            "description": "Visual Studio 16 2019 (x64 体系结构)",
+            "generator": "Visual Studio 16 2019",
+            "toolset": "host=x64",
+            "cacheVariables": {
+                "ORCA_SDK_TAG": "master",
+                "CMAKE_OSX_ARCHITECTURES": "x86_64"
+            }
+        },
+        {
+            "name": "linux_base",
+            "hidden": true,
+            "displayName": "Linux build",
+            "description": "将编译器用于 Linux",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            },
+            "generator": "Unix Makefiles",
+            "cacheVariables": {
+                "SLIC3R_STATIC": "ON",
+                "CMAKE_OSX_ARCHITECTURES": "x86_64",
+                "SLIC3R_GTK": "3"
+            }
+        }
+    ]
+}
