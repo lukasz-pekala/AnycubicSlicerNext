@@ -11,11 +11,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(_wx_toolkit "-DwxBUILD_TOOLKIT=gtk${_gtk_ver}")
 endif()
 
-if (MSVC)
-    set(_wx_edge "-DwxUSE_WEBVIEW_EDGE=ON")
-else ()
-    set(_wx_edge "-DwxUSE_WEBVIEW_EDGE=OFF")
-endif ()
+
 
 # Note: The flatpak build builds wxwidgets separately due to CI size constraints.
 # ANY CHANGES MADE IN HERE MUST ALSO BE REFLECTED IN `flatpak/io.github.SoftFever.OrcaSlicer.yml`.
@@ -24,7 +20,7 @@ endif ()
 
 orcaslicer_add_cmake_project(
     wxWidgets
-    GIT_REPOSITORY "https://github.com/SoftFever/Orca-deps-wxWidgets"
+    GIT_REPOSITORY "http://192.168.2.20/r/~liuchunlin/dep_orca_wxwidgets.git"
     GIT_SHALLOW ON
     DEPENDS ${PNG_PKG} ${ZLIB_PKG} ${EXPAT_PKG} ${TIFF_PKG} ${JPEG_PKG}
     CMAKE_ARGS
@@ -33,16 +29,14 @@ orcaslicer_add_cmake_project(
         "-DCMAKE_DEBUG_POSTFIX:STRING="
         -DwxBUILD_DEBUG_LEVEL=0
         -DwxBUILD_SAMPLES=OFF
-        -DwxBUILD_SHARED=OFF
+        -DwxBUILD_SHARED=ON
         -DwxUSE_MEDIACTRL=ON
         -DwxUSE_DETECT_SM=OFF
         -DwxUSE_UNICODE=ON
         ${_wx_private_font}
         -DwxUSE_OPENGL=ON
         -DwxUSE_WEBREQUEST=ON
-        -DwxUSE_WEBVIEW=ON
-        ${_wx_edge}
-        -DwxUSE_WEBVIEW_IE=OFF
+        -DwxUSE_WEBVIEW=OFF
         -DwxUSE_REGEX=builtin
         -DwxUSE_LIBXPM=builtin
         -DwxUSE_LIBSDL=OFF

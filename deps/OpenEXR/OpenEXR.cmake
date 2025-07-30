@@ -11,9 +11,11 @@ if (APPLE AND IS_CROSS_COMPILE)
         set(_openexr_arch ${CMAKE_OSX_ARCHITECTURES})
         set(_cmake_openexr_arch -DCMAKE_OSX_ARCHITECTURES:STRING=${_openexr_arch})
     endif()
+    set(URL https://github.com/AcademySoftwareFoundation/openexr/archive/refs/tags/v2.5.5.zip)
+    PROXY(new_URL URL)
     ExternalProject_Add(dep_OpenEXR
         EXCLUDE_FROM_ALL    ON
-        URL https://github.com/AcademySoftwareFoundation/openexr/archive/refs/tags/v2.5.5.zip
+        URL ${new_URL}
         URL_HASH SHA256=0307a3d7e1fa1e77e9d84d7e9a8694583fbbbfd50bdc6884e2c96b8ef6b902de
         INSTALL_DIR         ${DESTDIR}
         DOWNLOAD_DIR        ${DEP_DOWNLOAD_DIR}/OpenEXR

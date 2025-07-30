@@ -3,7 +3,7 @@
 set -e
 set -o pipefail
 
-while getopts ":dpa:snt:xbc:hu" opt; do
+while getopts ":dpa:snt:xbc:hug:" opt; do
   case "${opt}" in
     d )
         export BUILD_TARGET="deps"
@@ -40,6 +40,9 @@ while getopts ":dpa:snt:xbc:hu" opt; do
     u )
         export BUILD_UNIVERSAL="1"
         ;;
+    g )
+        export GHPROXY="$OPTARG"
+        ;;
     h ) echo "Usage: ./build_release_macos.sh [-d]"
         echo "   -d: Build deps only"
         echo "   -a: Set ARCHITECTURE (arm64 or x86_64)"
@@ -51,6 +54,7 @@ while getopts ":dpa:snt:xbc:hu" opt; do
         echo "   -c: Set CMake build configuration, default is Release"
         echo "   -u: Build universal binary (both arm64 and x86_64)"
         echo "   -1: Use single job for building"
+        echo "   -g: Set GitHub proxy. default is null"
         exit 0
         ;;
     * )
@@ -138,9 +142,12 @@ function build_deps() {
         mkdir -p "$DEPS"
         cd "$DEPS_BUILD_DIR"
         if [ "1." != "$BUILD_ONLY". ]; then
+            local ghproxy_arg=""
+            [ -n "$GHPROXY" ] && ghproxy_arg="-DGHPROXY=${GHPROXY}"
             cmake .. \
                 -G "${DEPS_CMAKE_GENERATOR}" \
                 -DDESTDIR="$DEPS" \
+                $ghproxy_arg \
                 -DOPENSSL_ARCH="darwin64-${ARCH}-cc" \
                 -DCMAKE_BUILD_TYPE="$BUILD_CONFIG" \
                 -DCMAKE_OSX_ARCHITECTURES:STRING="${ARCH}" \

@@ -101,8 +101,36 @@ if (NOT _is_multi AND NOT CMAKE_BUILD_TYPE)
     message(STATUS "Forcing CMAKE_BUILD_TYPE to Release as it was not specified.")
 endif ()
 
+macro(PROXY out_new_url url)
+    set(${out_new_url} "${${url}}") # 初始化原始URL
+    if(GHPROXY)
+        string(TOLOWER "${${url}}" lower_url)
+        if(lower_url MATCHES "github.com")
+            set(${out_new_url} "${GHPROXY}${${url}}")
+        endif()
+    endif()
+    message(STATUS "Processed URL: ${${out_new_url}}")
+endmacro(PROXY)
+
 function(orcaslicer_add_cmake_project projectname)
-    cmake_parse_arguments(P_ARGS "" "INSTALL_DIR;BUILD_COMMAND;INSTALL_COMMAND" "CMAKE_ARGS" ${ARGN})
+    cmake_parse_arguments(P_ARGS "" "INSTALL_DIR;BUILD_COMMAND;INSTALL_COMMAND;URL;GIT_REPOSITORY" "CMAKE_ARGS" ${ARGN})
+    message(STATUS "add project: ${projectname}")
+    unset(new_URL)
+    unset(new_GIT)
+    if(P_ARGS_URL)
+        PROXY(new_URL P_ARGS_URL)
+    elseif(P_ARGS_GIT_REPOSITORY)
+        PROXY(new_GIT P_ARGS_GIT_REPOSITORY)
+    endif()
+    
+    if(new_URL)
+        set(targetURL URL ${new_URL})
+    elseif(new_GIT)
+        set(targetURL GIT_REPOSITORY ${new_GIT})
+    else()
+        message(STATUS "No URL or GIT_REPOSITORY specified for ${projectname}")
+    endif()
+    message(STATUS "URL: ${targetURL}")
 
     set(_configs_line -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE})
     if (_is_multi OR MSVC)
@@ -127,6 +155,7 @@ if (NOT IS_CROSS_COMPILE OR NOT APPLE)
         INSTALL_DIR         ${DESTDIR}
         DOWNLOAD_DIR        ${DEP_DOWNLOAD_DIR}/${projectname}
         ${_gen}
+        ${targetURL}
         CMAKE_ARGS
             -DCMAKE_INSTALL_PREFIX:STRING=${DESTDIR}
             -DCMAKE_MODULE_PATH:STRING=${PROJECT_SOURCE_DIR}/../cmake/modules
@@ -156,6 +185,7 @@ elseif(FLATPAK)
         INSTALL_DIR         ${DESTDIR}
         DOWNLOAD_DIR        ${DEP_DOWNLOAD_DIR}/${projectname}
         ${_gen}
+        ${targetURL}
         CMAKE_ARGS
             -DCMAKE_INSTALL_PREFIX:STRING=${DESTDIR}
             -DCMAKE_MODULE_PATH:STRING=${PROJECT_SOURCE_DIR}/../cmake/modules
@@ -184,6 +214,7 @@ else()
         INSTALL_DIR         ${DESTDIR}
         DOWNLOAD_DIR        ${DEP_DOWNLOAD_DIR}/${projectname}
         ${_gen}
+        ${targetURL}
         CMAKE_ARGS
             -DCMAKE_INSTALL_PREFIX:STRING=${DESTDIR}
             -DCMAKE_PREFIX_PATH:STRING=${DESTDIR}
