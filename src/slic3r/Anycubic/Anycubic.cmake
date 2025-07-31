@@ -91,31 +91,27 @@ endfunction()
 
 
 function(anycubic_copy_to_build_tree target)
-    # get_target_property(des_directory ${target} RUNTIME_OUTPUT_DIRECTORY)
-    # message(des_directory ${des_directory})
-    # foreach(src ${ARGN})
-    #     file(TO_NATIVE_PATH "${src}" src)
-    #     if (EXISTS ${src})
-    #         list(APPEND files ${src})
-    #     elseif(EXISTS ${${src}})
-    #         list(APPEND files ${${src}})
-    #     else()
-    #         message(FATAL_ERROR "File ${src} not found")
-    #     endif()
-    # endforeach()
-    # if(NOT TARGET ${target})
-    #     message(FATAL_ERROR "Target ${target} not found")
-    # endif()
-    # if(CMAKE_HOST_WIN32)
-    #     list(FILTER files INCLUDE REGEX "\\.dll$")
-    # elseif(CMAKE_HOST_APPLE)
-    #     list(FILTER files INCLUDE REGEX "\\.dylib$")
-    # else()
-    #     list(FILTER files INCLUDE REGEX "\\.so$")
-    # endif()
-    # add_custom_command(TARGET ${target} POST_BUILD
-    #     COMMAND ${CMAKE_COMMAND} -E copy ${files} "${des_directory}"
-    #     VERBATIM)
+    get_target_property(des_directory ${target} RUNTIME_OUTPUT_DIRECTORY)
+    if(CMAKE_HOST_APPLE)
+        set(des_directory "${des_directory}${CMAKE_BUILD_TYPE}/${target}.app/Contents/Frameworks/")
+    endif()
+    if(NOT EXISTS ${des_directory})
+        file(MAKE_DIRECTORY ${des_directory})
+    endif()
+    if(CMAKE_HOST_WIN32)
+        list(FILTER OUT_SDK_DLLS INCLUDE REGEX "\\.dll$")
+    elseif(CMAKE_HOST_APPLE)
+        list(FILTER OUT_SDK_DLLS INCLUDE REGEX "\\.dylib$")
+    else()
+        list(FILTER OUT_SDK_DLLS INCLUDE REGEX "\\.so$")
+    endif()
+    add_custom_command(TARGET ${target} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy ${OUT_SDK_DLLS} "${des_directory}"
+        VERBATIM)
+    set_target_properties(${target} PROPERTIES 
+            MACOSX_BUNDLE TRUE
+            INSTALL_RPATH "@executable_path/../Frameworks"
+        )
 endfunction()
 
 
