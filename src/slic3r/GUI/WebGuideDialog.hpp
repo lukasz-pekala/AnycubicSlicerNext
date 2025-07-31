@@ -5,17 +5,8 @@
 #include "wx/cmdline.h"
 #include "wx/notifmsg.h"
 #include "wx/settings.h"
-#include "wx/webview.h"
+#include "webview/webview.h"
 
-#if wxUSE_WEBVIEW_IE
-#include "wx/msw/webview_ie.h"
-#endif
-#if wxUSE_WEBVIEW_EDGE
-#include "wx/msw/webview_edge.h"
-#endif
-
-#include "wx/webviewarchivehandler.h"
-#include "wx/webviewfshandler.h"
 #include "wx/numdlg.h"
 #include "wx/infobar.h"
 #include "wx/filesys.h"
@@ -118,7 +109,7 @@ private:
     json m_OrcaFilaList;
     std::string m_OrcaFilaLibPath;
 
-#if wxUSE_WEBVIEW_IE
+#if USE_WEBVIEW_IE
     wxMenuItem *m_script_object_el;
     wxMenuItem *m_script_date_el;
     wxMenuItem *m_script_array_el;

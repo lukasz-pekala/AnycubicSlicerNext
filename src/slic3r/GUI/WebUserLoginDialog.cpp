@@ -332,7 +332,7 @@ void ZUserLogin::RunScript(const wxString &javascript)
 
     WebView::RunScript(m_browser, javascript);
 }
-#if wxUSE_WEBVIEW_IE
+#if USE_WEBVIEW_IE
 void ZUserLogin::OnRunScriptObjectWithEmulationLevel(wxCommandEvent &WXUNUSED(evt))
 {
     wxWebViewIE::MSWSetModernEmulationLevel();

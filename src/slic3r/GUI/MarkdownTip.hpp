@@ -3,7 +3,7 @@
 
 #include <wx/popupwin.h>
 #include <wx/timer.h>
-#include <wx/webview.h>
+#include <webview/webview.h>
 
 
 namespace Slic3r { namespace GUI {

@@ -44,12 +44,12 @@ if (SLIC3R_GUI)
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         set (wxWidgets_CONFIG_OPTIONS "--toolkit=gtk${SLIC3R_GTK}")
         if (SLIC3R_WX_STABLE)
-            find_package(wxWidgets 3.0 REQUIRED COMPONENTS base core adv html gl aui net media webview)
+            find_package(wxWidgets 3.0 REQUIRED COMPONENTS base core adv html gl aui net media)
         else ()
-            find_package(wxWidgets 3.1 REQUIRED COMPONENTS base core adv html gl aui net media webview)
+            find_package(wxWidgets 3.1 REQUIRED COMPONENTS base core adv html gl aui net media)
         endif ()
     else ()
-        find_package(wxWidgets 3.1 REQUIRED COMPONENTS html adv gl core base webview aui net media)
+        find_package(wxWidgets 3.1 REQUIRED COMPONENTS html adv gl core base aui net media)
     endif ()
 
     if(UNIX)
@@ -235,10 +235,10 @@ else ()
             COMMAND ln -sf OrcaSlicer orca-slicer
             WORKING_DIRECTORY "$<TARGET_FILE_DIR:OrcaSlicer>"
             VERBATIM)
-    else ()
-        add_custom_command(TARGET OrcaSlicer POST_BUILD
-            WORKING_DIRECTORY "$<TARGET_FILE_DIR:OrcaSlicer>"
-            VERBATIM)
+    # else ()
+        # add_custom_command(TARGET OrcaSlicer POST_BUILD
+        #     WORKING_DIRECTORY "$<TARGET_FILE_DIR:OrcaSlicer>"
+        #     VERBATIM)
     endif ()
     if (XCODE)
         # Because of Debug/Release/etc. configurations (similar to MSVC) the slic3r binary is located in an extra level
@@ -286,3 +286,8 @@ if (WIN32)
 else ()
     install(TARGETS OrcaSlicer RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}" BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif ()
+
+anycubic_copy_to_build_tree(OrcaSlicer ${OUT_SDK_DLLS})
+if(CMAKE_HOST_APPLE)
+    target_link_libraries(OrcaSlicer "-framework Cocoa"  "-framework QuartzCore" "-framework WebKit")
+endif()

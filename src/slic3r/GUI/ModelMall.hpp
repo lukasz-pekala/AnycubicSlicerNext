@@ -16,16 +16,16 @@
 #include <wx/icon.h>
 #include <wx/dialog.h>
 
-#if wxUSE_WEBVIEW_IE
+#if USE_WEBVIEW_IE
 #include "wx/msw/webview_ie.h"
 #endif
-#if wxUSE_WEBVIEW_EDGE
+#if USE_WEBVIEW_EDGE
 #include "wx/msw/webview_edge.h"
 #endif
 
 #include "Widgets/WebView.hpp"
-#include "wx/webviewarchivehandler.h"
-#include "wx/webviewfshandler.h"
+#include "webview/webviewarchivehandler.h"
+#include "webview/webviewfshandler.h"
 
 #include <curl/curl.h>
 #include <wx/webrequest.h>

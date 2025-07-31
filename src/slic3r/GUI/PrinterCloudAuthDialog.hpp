@@ -7,12 +7,12 @@
 #include <wx/string.h>
 #include <wx/sizer.h>
 #include <wx/dialog.h>
-#include "wx/webview.h"
+#include "webview/webview.h"
 
-#if wxUSE_WEBVIEW_IE
+#if USE_WEBVIEW_IE
 #include "wx/msw/webview_ie.h"
 #endif
-#if wxUSE_WEBVIEW_EDGE
+#if USE_WEBVIEW_EDGE
 #include "wx/msw/webview_edge.h"
 #endif
 

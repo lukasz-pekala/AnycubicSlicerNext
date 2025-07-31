@@ -13,7 +13,7 @@
 #include <wx/textdlg.h>
 
 #include <slic3r/GUI/Widgets/WebView.hpp>
-#include <wx/webview.h>
+#include <webview/webview.h>
 
 namespace pt = boost::property_tree;
 

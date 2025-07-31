@@ -364,7 +364,7 @@ public:
     bool            init_opengl();
 
     void            init_download_path();
-#if wxUSE_WEBVIEW_EDGE
+#if USE_WEBVIEW_EDGE
     void            init_webview_runtime();
 #endif
     static unsigned get_colour_approx_luma(const wxColour& colour);

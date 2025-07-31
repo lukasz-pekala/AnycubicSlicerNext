@@ -36,7 +36,7 @@
 #include "Widgets/ComboBox.hpp"
 #include "Widgets/ScrolledWindow.hpp"
 #include <wx/hashmap.h>
-#include <wx/webview.h>
+#include <webview/webview.h>
 
 namespace Slic3r { namespace GUI {
 

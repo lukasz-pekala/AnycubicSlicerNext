@@ -4,16 +4,16 @@
 
 #include <boost/log/trivial.hpp>
 
-#include <wx/webviewarchivehandler.h>
-#include <wx/webviewfshandler.h>
-#if wxUSE_WEBVIEW_EDGE
-#include <wx/msw/webview_edge.h>
+#include <webview/webviewarchivehandler.h>
+#include <webview/webviewfshandler.h>
+#if USE_WEBVIEW_EDGE
+#include <webview/msw/webview_edge.h>
 #elif defined(__WXMAC__)
-#include <wx/osx/webview_webkit.h>
+#include <webview/osx/webview_webkit.h>
 #endif
 #include <wx/uri.h>
 #if defined(__WIN32__) || defined(__WXMAC__)
-#include "wx/private/jsscriptwrapper.h"
+#include "webview/private/jsscriptwrapper.h"
 #endif
 
 #ifdef __WIN32__
@@ -173,6 +173,9 @@ private:
 
 class WebViewWebKit : public wxWebViewWebKit
 {
+    WebViewWebKit(const wxWebViewConfiguration& config, WX_NSObject request = nullptr)
+        : wxWebViewWebKit(config,request) {}
+    
     ~WebViewWebKit() override
     {
         RemoveScriptMessageHandler("wx");
@@ -237,7 +240,7 @@ public:
 
 wxWebView* WebView::CreateWebView(wxWindow * parent, wxString const & url)
 {
-#if wxUSE_WEBVIEW_EDGE
+#if USE_WEBVIEW_EDGE
     // Check if a fixed version of edge is present in
     // $executable_path/edge_fixed and use it
     wxFileName edgeFixedDir(wxStandardPaths::Get().GetExecutablePath());
@@ -255,13 +258,10 @@ wxWebView* WebView::CreateWebView(wxWindow * parent, wxString const & url)
     if (!url2.empty()) { url2 = wxURI(url2).BuildURI(); }
     BOOST_LOG_TRIVIAL(trace) << __FUNCTION__ << ": " << url2.ToUTF8();
 
-#ifdef __WIN32__
-    wxWebView* webView = new WebViewEdge;
-#elif defined(__WXOSX__)
-    wxWebView *webView = new WebViewWebKit;
-#else
-    auto webView = wxWebView::New();
-#endif
+
+
+    wxWebView* webView = wxWebView::New();
+
     if (webView) {
         webView->SetBackgroundColour(StateColor::darkModeColorFor(*wxWHITE));
 #ifdef __WIN32__
@@ -319,7 +319,7 @@ wxWebView* WebView::CreateWebView(wxWindow * parent, wxString const & url)
     g_webviews.push_back(webView);
     return webView;
 }
-#if wxUSE_WEBVIEW_EDGE
+#if USE_WEBVIEW_EDGE
 bool WebView::CheckWebViewRuntime()
 {
     wxWebViewFactoryEdge factory;

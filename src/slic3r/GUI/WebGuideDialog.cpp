@@ -525,7 +525,7 @@ void GuideFrame::RunScript(const wxString &javascript)
     WebView::RunScript(m_browser, javascript);
 }
 
-#if wxUSE_WEBVIEW_IE
+#if USE_WEBVIEW_IE
 void GuideFrame::OnRunScriptObjectWithEmulationLevel(wxCommandEvent &WXUNUSED(evt))
 {
     wxWebViewIE::MSWSetModernEmulationLevel();

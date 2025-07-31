@@ -1,7 +1,38 @@
 cmake_minimum_required(VERSION 3.13)
 project(libslic3r_gui)
 
+if(NOT ORCA_SDK_REPOSITORY MATCHES "^https?://.*\\.git$")
+    set(ORCA_SDK_REPOSITORY "http://192.168.2.20/r/~xiantulian/OrcaSDK.git" CACHE STRING "download deps sdk binrary from git repository")
+endif()
+
+if(NOT ORCA_SDK_TAG OR NOT ${ORCA_SDK_TAG})
+    set(ORCA_SDK_TAG "master" CACHE STRING "Branch of the ORCA_SDK_REPOSITORY")
+endif()
+set(ORCA_SDK_SOURCE_DIR "${CMAKE_BINARY_DIR}/../build_sdkbinrary" CACHE STRING "Source directory of the ORCA_SDK_REPOSITORY")
+
+message("++ Using ORCA_SDK_REPOSITORY: ${ORCA_SDK_REPOSITORY}")
+message("++ Using ORCA_SDK_TAG:        ${ORCA_SDK_TAG}")
+if (EXISTS ${ORCA_SDK_REPOSITORY} AND IS_DIRECTORY ${ORCA_SDK_REPOSITORY})
+    list(APPEND CMAKE_PREFIX_PATH "${ORCA_SDK_REPOSITORY}")
+elseif(${ORCA_SDK_REPOSITORY} MATCHES "^https?://.*\\.git$")
+    message("++ Using ORCA_SDK_SOURCE_DIR: ${ORCA_SDK_SOURCE_DIR}")
+    include(FetchContent)
+    FetchContent_Declare(
+        sdkbinrary
+        GIT_REPOSITORY  ${ORCA_SDK_REPOSITORY}
+        GIT_TAG         ${ORCA_SDK_TAG}
+        GIT_PROGRESS    ON
+        SOURCE_DIR      ${ORCA_SDK_SOURCE_DIR}
+    )
+
+    FetchContent_MakeAvailable(sdkbinrary)
+    list(APPEND CMAKE_PREFIX_PATH ${ORCA_SDK_SOURCE_DIR})
+endif()
+
+
 include(PrecompiledHeader)
+
+include(Anycubic/Anycubic.cmake)
 
 set(SLIC3R_GUI_SOURCES
     pchheader.cpp
@@ -610,19 +641,17 @@ if (UNIX AND NOT APPLE)
     )
 endif ()
 
-add_library(libslic3r_gui STATIC ${SLIC3R_GUI_SOURCES})
+add_library(libslic3r_gui STATIC ${SLIC3R_GUI_SOURCES} ${ANYCUBIC_SUB_DIR_SOURCES})
 target_include_directories(libslic3r_gui PRIVATE Utils)
+anycubic_target_link(libslic3r_gui OUT_SDK_DLLS)
 
-if (WIN32)
-    target_include_directories(libslic3r_gui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../deps/WebView2/include)
-endif()
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SLIC3R_GUI_SOURCES})
 
 encoding_check(libslic3r_gui)
 
 find_package(libnoise REQUIRED)
-target_link_libraries(libslic3r_gui libslic3r cereal::cereal imgui imguizmo minilzo GLEW::GLEW OpenGL::GL hidapi ${wxWidgets_LIBRARIES} glfw libcurl OpenSSL::SSL OpenSSL::Crypto noise::noise)
+target_link_libraries(libslic3r_gui PUBLIC libslic3r cereal::cereal imgui imguizmo minilzo GLEW::GLEW OpenGL::GL hidapi ${wxWidgets_LIBRARIES} glfw libcurl OpenSSL::SSL OpenSSL::Crypto noise::noise)
 
 if (MSVC)
     target_link_libraries(libslic3r_gui Setupapi.lib)
@@ -640,7 +669,7 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         ${CURL_LIBRARIES}
     )
 elseif (APPLE)
-    target_link_libraries(libslic3r_gui ${DISKARBITRATION_LIBRARY})
+    target_link_libraries(libslic3r_gui PUBLIC ${DISKARBITRATION_LIBRARY})
 endif()
 
 if (SLIC3R_STATIC)

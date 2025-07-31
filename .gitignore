@@ -36,3 +36,4 @@ src/OrcaSlicer-doc/
 resources/profiles/user/default
 *.code-workspace
 /CMakeUserPresets.json
+/vscode-build-*/

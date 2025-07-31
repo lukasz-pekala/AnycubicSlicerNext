@@ -284,8 +284,12 @@ bool addObserver = false;
 
     wxDataViewColumn* const col((wxDataViewColumn *)[tableColumn getColumnPointer]);
     wxDataViewItem item2([static_cast<wxPointerObject *>(item) pointer]);
-
+#if 1
+    wxCocoaDataViewControl* impl = [(wxCocoaOutlineView*)self implementation];
+    wxDataViewCtrl* const dvc = impl->GetDataViewCtrl();
+#else
     wxDataViewCtrl* const dvc = implementation->GetDataViewCtrl();
+#endif
     // Before doing anything we send an event asking if editing of this item is really wanted.
     wxDataViewEvent event(wxEVT_DATAVIEW_ITEM_EDITING_STARTED, dvc, col, item2);
     dvc->GetEventHandler()->ProcessEvent( event );
@@ -297,7 +301,12 @@ bool addObserver = false;
 
 - (void)synchronizedViewContentBoundsDidChange:(NSNotification *)notification
 {
+#if 1
+    wxCocoaDataViewControl* impl = [(wxCocoaOutlineView*)self implementation];
+    wxDataViewCtrl* const dvc = impl->GetDataViewCtrl();
+#else
     wxDataViewCtrl* const dvc = implementation->GetDataViewCtrl();
+#endif
     wxDataViewCustomRenderer * r = dvc->GetCustomRendererPtr();
     if (r)
         r->FinishEditing();

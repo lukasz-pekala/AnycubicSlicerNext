@@ -6,15 +6,10 @@
 #include "wx/cmdline.h"
 #include "wx/notifmsg.h"
 #include "wx/settings.h"
-#include <wx/webview.h>
+#include <webview/webview.h>
 #include <wx/string.h>
 
-#if wxUSE_WEBVIEW_EDGE
-#include "wx/msw/webview_edge.h"
-#endif
 
-#include "wx/webviewarchivehandler.h"
-#include "wx/webviewfshandler.h"
 #include "wx/numdlg.h"
 #include "wx/infobar.h"
 #include "wx/filesys.h"
