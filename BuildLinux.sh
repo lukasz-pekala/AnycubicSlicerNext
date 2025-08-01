@@ -5,7 +5,7 @@ export ROOT=$(dirname $(readlink -f ${0}))
 set -e # exit on first error
 
 function check_available_memory_and_disk() {
-    FREE_MEM_GB=$(free -g -t | grep 'Mem' | rev | cut -d" " -f1 | rev)
+    FREE_MEM_GB=$(grep MemAvailable /proc/meminfo | awk '{print int($2 / 1024 / 1024)}')
     MIN_MEM_GB=10
 
     FREE_DISK_KB=$(df -k . | tail -1 | awk '{print $4}')
@@ -35,12 +35,13 @@ function usage() {
     echo "   -r: skip ram and disk checks (low ram compiling)"
     echo "   -s: build orca-slicer (optional)"
     echo "   -u: update and build dependencies (optional and need sudo)"
+    echo "   -g: Set GitHub proxy. default is null"
     echo "For a first use, you want to 'sudo ./BuildLinux.sh -u'"
     echo "   and then './BuildLinux.sh -dsi'"
 }
 
 unset name
-while getopts ":1bcdghirsu" opt; do
+while getopts ":1bcdg:hirsu" opt; do
   case ${opt} in
     1 )
         export CMAKE_BUILD_PARALLEL_LEVEL=1
@@ -68,6 +69,10 @@ while getopts ":1bcdghirsu" opt; do
         ;;
     u )
         UPDATE_LIB="1"
+        ;;
+    g )
+        GITHUB_PROXY=${OPTARG}
+        echo "GITHUB_PROXY=${GITHUB_PROXY}"
         ;;
   esac
 done
@@ -127,15 +132,11 @@ then
     then
         mkdir deps/build
     fi
+    if [[ -n "${GITHUB_PROXY}" ]]; then
+        BUILD_ARGS="${BUILD_ARGS} -DGHPROXY=${GITHUB_PROXY}"
+    fi
     if [[ -n "${BUILD_DEBUG}" ]]
     then
-        # have to build deps with debug & release or the cmake won't find everything it needs
-        if [ ! -d "deps/build/release" ]
-        then
-            mkdir deps/build/release
-        fi
-        cmake -S deps -B deps/build/release -G Ninja -DDESTDIR="${PWD}/deps/build/destdir" -DDEP_DOWNLOAD_DIR="${PWD}/deps/DL_CACHE" ${BUILD_ARGS}
-        cmake --build deps/build/release
         BUILD_ARGS="${BUILD_ARGS} -DCMAKE_BUILD_TYPE=Debug"
     fi
 
