@@ -108,6 +108,9 @@
 #include "ModelMall.hpp"
 #include "HintNotification.hpp"
 
+
+#include <slic3r/Anycubic/AnycubicContext.hpp>
+
 //#ifdef WIN32
 //#include "BaseException.h"
 //#endif
@@ -2128,6 +2131,8 @@ void GUI_App::init_single_instance_checker(const std::string &name, const std::s
 bool GUI_App::OnInit()
 {
     try {
+        m_anycubic_context = std::make_shared<AnycubicContext>();
+        m_anycubic_context->OnInitByApp();
         return on_init_inner();
     } catch (const std::exception& e) {
         BOOST_LOG_TRIVIAL(fatal) << "OnInit Got Fatal error: " << e.what();
@@ -2180,7 +2185,8 @@ int GUI_App::OnExit()
     } catch (...) {
         BOOST_LOG_TRIVIAL(error) << "Failed to clean up encrypt bbl network log file";
     }
-
+    m_anycubic_context->OnExitByApp();
+    m_anycubic_context = nullptr;
     return wxApp::OnExit();
 }
 
@@ -2549,18 +2555,9 @@ bool GUI_App::on_init_inner()
     Slic3r::I18N::set_translate_callback(libslic3r_translate_callback);
 
     BOOST_LOG_TRIVIAL(info) << "create the main window";
-    mainframe = new MainFrame();
-    // hide settings tabs after first Layout
-    if (is_editor()) {
-        mainframe->select_tab(size_t(0));
-    }
-
-    sidebar().obj_list()->init();
-    //sidebar().aux_list()->init_auxiliary();
+    renew_mainframe(MainFrame::tpHome);
     mainframe->m_project->init_auxiliary();
 
-//     update_mode(); // !!! do that later
-    SetTopWindow(mainframe);
 
     plater_->init_notification_manager();
 
@@ -2641,7 +2638,7 @@ bool GUI_App::on_init_inner()
 
         if (! plater_)
             return;
-
+        m_anycubic_context->OnFinishedByGui();
         // BBS
         //this->obj_manipul()->update_if_dirty();
 
@@ -3363,15 +3360,8 @@ void GUI_App::recreate_GUI(const wxString &msg_name)
     old_main_frame->SetClientObject(new ClientData);
 
     switch_window_pools();
-    mainframe = new MainFrame();
-    if (is_editor())
-        // hide settings tabs after first Layout
-        mainframe->select_tab(size_t(MainFrame::tp3DEditor));
-    // Propagate model objects to object list.
-    sidebar().obj_list()->init();
-    //sidebar().aux_list()->init_auxiliary();
-    //mainframe->m_auxiliary->init_auxiliary();
-    SetTopWindow(mainframe);
+
+    renew_mainframe(MainFrame::tp3DEditor);
 
     dlg.Update(30, _L("Rebuild") + dots);
     old_main_frame->Destroy();
@@ -6210,6 +6200,25 @@ int GUI_App::extruders_edited_cnt() const
            preset.config.option<ConfigOptionFloats>("nozzle_diameter")->values.size();
 }
 
+// anycubic
+void  GUI_App::renew_mainframe(size_t tab_index){
+    mainframe = new MainFrame();
+    
+    m_anycubic_context->OnInitByGui();
+
+    if(is_editor()){
+        mainframe->select_tab(tab_index);
+    }
+
+    sidebar().obj_list()->init();
+//     update_mode(); // !!! do that later
+    SetTopWindow(mainframe);
+}
+
+
+void GUI_App::exit_mainframe(void){
+    m_anycubic_context->OnExitByGui();
+}
 // BBS
 int GUI_App::filaments_cnt() const
 {

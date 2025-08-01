@@ -83,6 +83,7 @@ class ModelMallDialog;
 class PingCodeBindDialog;
 class NetworkErrorDialog;
 
+class AnycubicContext;
 
 enum FileType
 {
@@ -612,7 +613,9 @@ public:
     Notebook*       tab_panel() const ;
     int             extruders_cnt() const;
     int             extruders_edited_cnt() const;
-
+    // anycubic
+    void renew_mainframe(size_t tab_index);
+    void exit_mainframe(void);
     // BBS
     int             filaments_cnt() const;
     PrintSequence   global_print_sequence() const;
@@ -702,6 +705,8 @@ private:
     boost::optional<Semver> m_last_config_version;
     bool                    m_config_corrupted { false };
     std::string             m_open_method;
+
+    std::shared_ptr<AnycubicContext> m_anycubic_context;
 };
 
 DECLARE_APP(GUI_App)

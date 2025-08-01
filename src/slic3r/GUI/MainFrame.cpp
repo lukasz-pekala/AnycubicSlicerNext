@@ -880,6 +880,7 @@ void MainFrame::update_layout()
 // Called when closing the application and when switching the application language.
 void MainFrame::shutdown()
 {
+    wxGetApp().exit_mainframe();
     BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << "MainFrame::shutdown enter";
     // BBS: backup
     Slic3r::set_backup_callback(nullptr);
