@@ -54,6 +54,7 @@ endmacro()
 function(anycubic_create_link target src_directory des_directory)
     file(TO_NATIVE_PATH "${src_directory}" src)
     file(TO_NATIVE_PATH "${des_directory}" des)
+
     if(NOT TARGET ${target})
         message(FATAL_ERROR "Target ${target} not found")
     endif()
@@ -118,20 +119,20 @@ endfunction()
 
 
 
-macro(search_src directory)
+macro(anycubic_search_src directory)
     file(GLOB_RECURSE SRC_G "${directory}/*.h*" "${directory}/*.c" "${directory}/*.cpp")
     list(APPEND ANYCUBIC_SUB_DIR_SOURCES ${SRC_G})
     if(CMAKE_HOST_APPLE)
         file(GLOB_RECURSE MM_G "${directory}/*.mm")
         list(APPEND ANYCUBIC_SUB_DIR_SOURCES ${MM_G})
     endif()
-endmacro(search_src)
+endmacro()
 
 file(GLOB_RECURSE CMAKE_G "${CMAKE_CURRENT_LIST_DIR}/*.cmake")
 list(REMOVE_ITEM CMAKE_G "${CMAKE_CURRENT_LIST_DIR}/Anycubic.cmake")
 
 
-search_src(${CMAKE_CURRENT_LIST_DIR})
+anycubic_search_src(${CMAKE_CURRENT_LIST_DIR})
 
 foreach(cmake ${CMAKE_G})
     include(${cmake})

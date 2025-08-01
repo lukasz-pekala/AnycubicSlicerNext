@@ -287,7 +287,13 @@ else ()
     install(TARGETS OrcaSlicer RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}" BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif ()
 
-anycubic_copy_to_build_tree(OrcaSlicer ${OUT_SDK_DLLS})
 if(CMAKE_HOST_APPLE)
     target_link_libraries(OrcaSlicer "-framework Cocoa"  "-framework QuartzCore" "-framework WebKit")
 endif()
+
+
+if(CMAKE_HOST_APPLE)
+    set(RESOURCES_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/OrcaSlicer.app/Contents/Resources")
+endif()
+anycubic_create_link(OrcaSlicer "${SLIC3R_RESOURCES_DIR_WIN}" "${RESOURCES_DIR}")
+anycubic_copy_to_build_tree(OrcaSlicer ${OUT_SDK_DLLS})
