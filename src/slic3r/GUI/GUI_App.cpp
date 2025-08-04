@@ -1940,6 +1940,7 @@ void GUI_App::init_app_config()
 	// Windows : "C:\Users\username\AppData\Roaming\Slic3r" or "C:\Documents and Settings\username\Application Data\Slic3r"
 	// Mac : "~/Library/Application Support/Slic3r"
 
+    std::string log_path;
     if (data_dir().empty()) {
         // Orca: check if data_dir folder exists in application folder use it if it exists
         // Note:wxStandardPaths::Get().GetExecutablePath() return following paths
@@ -1978,7 +1979,8 @@ void GUI_App::init_app_config()
         }
 
         // Change current dirtory of application
-        chdir(encode_path((Slic3r::data_dir() + "/log").c_str()).c_str());
+        log_path = encode_path((Slic3r::data_dir() + "/log").c_str());
+        chdir(log_path.c_str());
     } else {
         m_datadir_redefined = true;
     }
@@ -2028,8 +2030,38 @@ void GUI_App::init_app_config()
         }
 #endif // _WIN32
     }
-    set_logging_level(Slic3r::level_string_to_boost(app_config->get("log_severity_level")));
-
+    std::string level = app_config->get("log_severity_level");
+    set_logging_level(Slic3r::level_string_to_boost(level));
+    // anycubic
+     std::function< anycubic::logger::level_enum(const std::string&lel)> get_logging_level = [](const std::string&lel) {
+            struct {
+                const char* name;
+                anycubic::logger::level_enum level;
+            } maps[] ={
+                {"trace",anycubic::logger::level_enum::trace},
+                {"debug",anycubic::logger::level_enum::debug},
+                {"info",anycubic::logger::level_enum::info},
+                {"warning",anycubic::logger::level_enum::warn},
+                {"error",anycubic::logger::level_enum::err},
+                {"fatal",anycubic::logger::level_enum::critical}
+            };
+            for(auto &[k,v]:maps){
+                if(strcmp(lel.c_str(), k) == 0){
+                    return v;
+                }
+            }
+            return anycubic::logger::level_enum::warn;
+        };
+    anycubic::logger::setup_log(
+        log_path.c_str(),
+        get_logging_level(level),
+        #ifdef NDEBUG
+                false
+        #else
+                true
+        #endif
+            );
+    REGISTER_LOGGER(false);
 }
 
 // returns true if found newer version and user agreed to use it

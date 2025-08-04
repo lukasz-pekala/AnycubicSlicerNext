@@ -1,4 +1,5 @@
 #pragma once
+#include <common/log/log.hpp>
 
 
 class wxString;
