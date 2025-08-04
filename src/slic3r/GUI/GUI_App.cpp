@@ -6217,7 +6217,13 @@ void  GUI_App::renew_mainframe(size_t tab_index){
 
 
 void GUI_App::exit_mainframe(void){
+    assert(m_anycubic_context!=nullptr);
     m_anycubic_context->OnExitByGui();
+}
+
+void GUI_App::add_anycubic_window(const wxString& position, wxWindow* window){
+    assert(m_anycubic_context!=nullptr);
+    m_anycubic_context->AddWindow(position, window);
 }
 // BBS
 int GUI_App::filaments_cnt() const

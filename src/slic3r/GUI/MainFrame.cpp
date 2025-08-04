@@ -1006,6 +1006,7 @@ void MainFrame::init_tabpanel() {
     wxBoxSizer *side_tools = create_side_tools();
     m_tabpanel = new Notebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, side_tools,
                               wxNB_TOP | wxTAB_TRAVERSAL | wxNB_NOPAGETHEME);
+    wxGetApp().add_anycubic_window(wxASCII_STR("tab"), m_tabpanel);
     m_tabpanel->SetBackgroundColour(*wxWHITE);
 
 #ifndef __WXOSX__ // Don't call SetFont under OSX to avoid name cutting in ObjectList

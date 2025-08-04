@@ -11,7 +11,12 @@ AnycubicContext::~AnycubicContext(){
     
 }
 
-void AnycubicContext::OnInitByApp(){}
+bool AnycubicContext::AddWindow(const wxString& position, wxWindow* window) {
+    assert(window!=nullptr);
+    return false;
+}
+
+void AnycubicContext::OnInitByApp() {}
 void AnycubicContext::OnInitByGui() {
    
 }

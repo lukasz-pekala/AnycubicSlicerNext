@@ -269,3 +269,45 @@ void Notebook::Init()
     SetBackgroundStyle(wxBG_STYLE_TRANSPARENT);
 #endif
 }
+
+
+
+bool  Notebook::Create(wxWindow * parent,
+            wxWindowID winid ,
+            const wxPoint & pos ,
+            const wxSize & size ,
+            // BBS
+            wxBoxSizer* side_tools ,
+            long style)
+{
+    if (!wxBookCtrlBase::Create(parent, winid, pos, size, style | wxBK_TOP))
+        return false;
+
+    m_bookctrl = new ButtonsListCtrl(this, side_tools);
+    Slic3r::GUI::wxGetApp().add_anycubic_window(wxASCII_STR("bookctrl"), m_bookctrl);
+
+    wxSizer* mainSizer = new wxBoxSizer(IsVertical() ? wxVERTICAL : wxHORIZONTAL);
+
+    if (style & wxBK_RIGHT || style & wxBK_BOTTOM)
+        mainSizer->Add(0, 0, 1, wxEXPAND, 0);
+
+    m_controlSizer = new wxBoxSizer(IsVertical() ? wxHORIZONTAL : wxVERTICAL);
+    m_controlSizer->Add(m_bookctrl, wxSizerFlags(1).Expand());
+    wxSizerFlags flags;
+    if (IsVertical())
+        flags.Expand();
+    else
+        flags.CentreVertical();
+    mainSizer->Add(m_controlSizer, flags.Border(wxALL, m_controlMargin));
+    SetSizer(mainSizer);
+
+    this->Bind(wxCUSTOMEVT_NOTEBOOK_SEL_CHANGED, [this](wxCommandEvent& evt)
+    {
+        if (int page_idx = evt.GetId(); page_idx >= 0)
+            SetSelection(page_idx);
+    });
+
+    this->Bind(wxEVT_NAVIGATION_KEY, &Notebook::OnNavigationKey, this);
+
+    return true;
+}

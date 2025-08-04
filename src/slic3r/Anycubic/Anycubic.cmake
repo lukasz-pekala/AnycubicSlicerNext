@@ -1,8 +1,9 @@
 ﻿macro(anycubic_target_link link_to_target OUT_SDK_DLLS)
     string(REPLACE "." "" VERSION_CODE ${SLIC3R_VERSION})
     target_compile_definitions(${link_to_target} PRIVATE VERSION_CODE=${VERSION_CODE} ENABLE_LOG_CHECK_ARGS=1 ENABLE_STRACE=1)
-    find_package(WebEngine CONFIG REQUIRED COMPONENTS ACWebView) 
-    list(APPEND SDK_LIBS_G WebEngine::ACWebView)
+    find_package(WebEngine CONFIG REQUIRED COMPONENTS ACWebView)
+    find_package(CloudConnect CONFIG REQUIRED COMPONENTS common_log)
+    list(APPEND SDK_LIBS_G WebEngine::ACWebView CloudConnect::common_log)
     target_link_libraries(${link_to_target} PUBLIC ${SDK_LIBS_G})
     target_compile_definitions(${link_to_target} PRIVATE MODULE_NAME="MainApp")
 

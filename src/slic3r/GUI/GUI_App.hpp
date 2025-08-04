@@ -616,6 +616,7 @@ public:
     // anycubic
     void renew_mainframe(size_t tab_index);
     void exit_mainframe(void);
+    void add_anycubic_window(const wxString& position, wxWindow* window);
     // BBS
     int             filaments_cnt() const;
     PrintSequence   global_print_sequence() const;
