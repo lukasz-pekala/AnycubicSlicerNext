@@ -7,6 +7,7 @@
 #include <common/utils/aes.hpp>
 
 #include <wx/base64.h>
+#include <wx/tokenzr.h>
 
 #include <libslic3r/AppConfig.hpp>
 #include <libslic3r/Utils.hpp>
@@ -58,16 +59,52 @@ private:
       return true;
     }
 
-    return false;
+    wxStringTokenizer tokenizer(key, ",. ");
+    switch (tokenizer.CountTokens()) {
+    case 2: {
+      auto section_name = tokenizer.GetNextToken();
+      auto config_name = tokenizer.GetNextToken();
+      auto val = app_config_->get(section_name.utf8_string(),
+                                  config_name.utf8_string());
+      value = wxString::FromUTF8(val);
+      break;
+    }
+    case 1: {
+      auto val = app_config_->get(key.utf8_string());
+      value = wxString::FromUTF8(val);
+      break;
+    }
+    default:
+      return false;
+      break;
+    }
+
+    return true;
   }
   bool SetValue(const class wxString &key, const class wxString &value,
                 bool persistent = true) override {
     if (persistent) {
-
+      wxStringTokenizer tokenizer(key, ",. ");
+      switch (tokenizer.CountTokens()) {
+      case 2: {
+        auto section_name = tokenizer.GetNextToken();
+        auto config_name = tokenizer.GetNextToken();
+        app_config_->set_str(section_name.utf8_string(),
+                             config_name.utf8_string(), value.utf8_string());
+        break;
+      }
+      case 1: {
+        app_config_->set(key.utf8_string(), value.utf8_string());
+        break;
+      }
+      default:
+        return false;
+        break;
+      }
     } else {
       config_[key] = value;
     }
-    return false;
+    return true;
   }
   bool GetEncryptValue(const class wxString &key,
                        class wxString &value) override {
@@ -104,7 +141,7 @@ private:
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-//////////             AnycubicContext  implement     /////////////////////////
+//////////             AnycubicContext  implement /////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 AnycubicContext::AnycubicContext(AppConfig *app_config)
