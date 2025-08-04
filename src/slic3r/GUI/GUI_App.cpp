@@ -2163,7 +2163,7 @@ void GUI_App::init_single_instance_checker(const std::string &name, const std::s
 bool GUI_App::OnInit()
 {
     try {
-        m_anycubic_context = std::make_shared<AnycubicContext>();
+        m_anycubic_context = std::make_shared<AnycubicContext>(app_config);
         m_anycubic_context->OnInitByApp();
         return on_init_inner();
     } catch (const std::exception& e) {
