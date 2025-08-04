@@ -11,9 +11,24 @@
 
 #include <libslic3r/AppConfig.hpp>
 #include <libslic3r/Utils.hpp>
+
+#include <set> // 添加这个头文件
+
 namespace Slic3r {
 
 namespace GUI {
+// 定义白名单
+const std::set<wxString> SECTION_NAME_WHITELIST = {
+    "anycubic_remote_printing", "anycubic_presets", "anycubic_cloud", "app"
+    // 可以根据需要添加更多允许的section_name
+};
+
+// 检查section_name是否在白名单中
+bool is_section_name_allowed(const wxString &section_name) {
+  return SECTION_NAME_WHITELIST.find(section_name) !=
+         SECTION_NAME_WHITELIST.end();
+}
+
 class AnycubicContextPrivate : public PMConfig {
 public:
   AnycubicContextPrivate(AppConfig *app_config) : app_config_(app_config) {
@@ -63,6 +78,10 @@ private:
     switch (tokenizer.CountTokens()) {
     case 2: {
       auto section_name = tokenizer.GetNextToken();
+      // 检查section_name是否在白名单中
+      if (!is_section_name_allowed(section_name)) {
+        return false; // 不在白名单中，丢弃处理
+      }
       auto config_name = tokenizer.GetNextToken();
       auto val = app_config_->get(section_name.utf8_string(),
                                   config_name.utf8_string());
@@ -88,6 +107,10 @@ private:
       switch (tokenizer.CountTokens()) {
       case 2: {
         auto section_name = tokenizer.GetNextToken();
+        // 检查section_name是否在白名单中
+        if (!is_section_name_allowed(section_name)) {
+          return false; // 不在白名单中，丢弃处理
+        }
         auto config_name = tokenizer.GetNextToken();
         app_config_->set_str(section_name.utf8_string(),
                              config_name.utf8_string(), value.utf8_string());
