@@ -4,6 +4,7 @@
 
 namespace Slic3r {
 wxString GetMD5HexString(char *buffer, size_t length);
-wxString GetPCID(void);
+wxString GetPCID(class AppConfig *app_config);
+wxString getSerialNumber(void);
 
 } // namespace Slic3r

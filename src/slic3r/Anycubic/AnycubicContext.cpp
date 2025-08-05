@@ -147,13 +147,14 @@ private:
   wxString Decrypt(const wxString &value) {
     wxMemoryBuffer decoded_data = wxBase64Decode(value);
     auto ret = aesDecrypt(
-        GetPCID().utf8_string(),
+        GetPCID(app_config_).utf8_string(),
         std::string((char *)decoded_data.GetData(), decoded_data.GetDataLen()));
     return wxString::FromUTF8(ret);
   }
 
   wxString Encrypt(const wxString &value) {
-    auto ret = aesEncrypt(GetPCID().utf8_string(), value.utf8_string());
+    auto ret =
+        aesEncrypt(GetPCID(app_config_).utf8_string(), value.utf8_string());
     return wxBase64Encode(static_cast<const void *>(ret.data()), ret.size());
   }
 

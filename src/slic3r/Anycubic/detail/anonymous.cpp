@@ -3,6 +3,11 @@
 #include <common/utils/bin2ascii.h>
 #include <common/utils/md5.h>
 
+#include <libslic3r/AppConfig.hpp>
+#include <slic3r/GUI/GUI_App.hpp>
+
+#include <chrono>
+#include <thread>
 #include <vector>
 
 #ifdef __WXMAC__
@@ -17,75 +22,101 @@
 #endif
 
 namespace Slic3r {
-wxString GetPCID(void) {
-  std::vector<unsigned char> unique;
 
-#ifdef _WIN32
-  // On Windows, get the MAC address of a network adaptor (preferably Ethernet
-  // or IEEE 802.11 wireless
-  DWORD dwBufLen = sizeof(IP_ADAPTER_INFO);
-  PIP_ADAPTER_INFO AdapterInfo = (PIP_ADAPTER_INFO)malloc(dwBufLen);
+class Snowflake {
+private:
+  static constexpr int64_t kEpoch =
+      1577836800000L; // 2020-01-01 00:00:00 UTC in milliseconds
+  static constexpr int64_t kWorkerIdBits = 5;
+  static constexpr int64_t kDatacenterIdBits = 5;
+  static constexpr int64_t kSequenceBits = 12;
+  static constexpr int64_t kMaxWorkerId = (1LL << kWorkerIdBits) - 1;
+  static constexpr int64_t kMaxDatacenterId = (1LL << kDatacenterIdBits) - 1;
+  static constexpr int64_t kMaxSequence = (1LL << kSequenceBits) - 1;
+  static constexpr int64_t kWorkerIdShift = kSequenceBits;
+  static constexpr int64_t kDatacenterIdShift = kSequenceBits + kWorkerIdBits;
+  static constexpr int64_t kTimestampLeftShift =
+      kSequenceBits + kWorkerIdBits + kDatacenterIdBits;
 
-  if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == ERROR_BUFFER_OVERFLOW) {
-    free(AdapterInfo);
-    AdapterInfo = (IP_ADAPTER_INFO *)malloc(dwBufLen);
+  int64_t worker_id_;
+  int64_t datacenter_id_;
+  int64_t sequence_ = 0;
+  int64_t last_timestamp_ = -1;
+
+  int64_t get_current_time_millis() {
+    auto now = std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::system_clock::now().time_since_epoch());
+    return now.count();
   }
-  if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == NO_ERROR) {
-    const IP_ADAPTER_INFO *pAdapterInfo = AdapterInfo;
-    std::vector<std::vector<unsigned char>> macs;
-    bool ethernet_seen = false;
-    while (pAdapterInfo) {
-      macs.emplace_back();
-      for (unsigned char i = 0; i < pAdapterInfo->AddressLength; ++i)
-        macs.back().emplace_back(pAdapterInfo->Address[i]);
-      // Prefer Ethernet and IEEE 802.11 wireless
-      if (!ethernet_seen) {
-        if ((pAdapterInfo->Type == MIB_IF_TYPE_ETHERNET &&
-             (ethernet_seen = true)) ||
-            pAdapterInfo->Type == IF_TYPE_IEEE80211)
-          std::swap(macs.front(), macs.back());
-      }
-      pAdapterInfo = pAdapterInfo->Next;
+
+  int64_t wait_next_millis(int64_t last_timestamp) {
+    int64_t timestamp = get_current_time_millis();
+    while (timestamp <= last_timestamp) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+      timestamp = get_current_time_millis();
     }
-    if (!macs.empty())
-      unique = macs.front();
+    return timestamp;
   }
-  free(AdapterInfo);
-#elif __APPLE__
-  constexpr int buf_size = 100;
-  char buf[buf_size] = "";
-  io_registry_entry_t ioRegistryRoot =
-      IORegistryEntryFromPath(kIOMasterPortDefault, "IOService:/");
-  if (ioRegistryRoot != MACH_PORT_NULL) {
-    CFStringRef uuidCf = (CFStringRef)IORegistryEntryCreateCFProperty(
-        ioRegistryRoot, CFSTR(kIOPlatformUUIDKey), kCFAllocatorDefault, 0);
-    IOObjectRelease(ioRegistryRoot);
-    CFStringGetCString(uuidCf, buf, buf_size, kCFStringEncodingMacRoman);
-    CFRelease(uuidCf);
-  }
-  unique.resize(strlen(buf));
-  memcpy(unique.data(), buf, strlen(buf));
-#else // Linux/BSD
-  constexpr size_t max_len = 100;
-  char cline[max_len] = "";
-  FILE *fp = popen("cat /etc/machine-id", "r");
-  if (fp != NULL) {
-    // Maybe the only way to silence -Wunused-result on gcc...
-    // cline is simply not modified on failure, who cares.
-    [[maybe_unused]] auto dummy = fgets(cline, max_len, fp);
-    pclose(fp);
-  }
-  // Now convert the string to std::vector<unsigned char>.
-  for (char *c = cline; *c != 0; ++c)
-    unique.emplace_back((unsigned char)(*c));
-#endif
 
-  // In case that we did not manage to get the unique info, just return an empty
-  // string, so it is easily detectable and not masked by the hashing.
-  if (unique.empty())
-    return "";
-  return GetMD5HexString(reinterpret_cast<char *>(unique.data()),
-                         unique.size());
+public:
+  Snowflake(int64_t worker_id, int64_t datacenter_id)
+      : worker_id_(worker_id), datacenter_id_(datacenter_id) {
+    if (worker_id > kMaxWorkerId || worker_id < 0) {
+      throw std::invalid_argument(
+          "worker Id can't be greater than 31 or less than 0");
+    }
+    if (datacenter_id > kMaxDatacenterId || datacenter_id < 0) {
+      throw std::invalid_argument(
+          "datacenter Id can't be greater than 31 or less than 0");
+    }
+  }
+
+  int64_t next_id() {
+    int64_t timestamp = get_current_time_millis();
+
+    if (timestamp < last_timestamp_) {
+      throw std::runtime_error("Clock moved backwards");
+    }
+
+    if (last_timestamp_ == timestamp) {
+      sequence_ = (sequence_ + 1) & kMaxSequence;
+      if (sequence_ == 0) {
+        timestamp = wait_next_millis(last_timestamp_);
+      }
+    } else {
+      sequence_ = 0;
+    }
+
+    last_timestamp_ = timestamp;
+
+    return ((timestamp - kEpoch) << kTimestampLeftShift) |
+           (datacenter_id_ << kDatacenterIdShift) |
+           (worker_id_ << kWorkerIdShift) | sequence_;
+  }
+};
+
+wxString GetPCID(class AppConfig *app_config) {
+
+  if (app_config == nullptr) {
+    app_config = GUI::wxGetApp().app_config;
+  }
+
+  auto pcid = app_config->get("pcid");
+  if (!pcid.empty()) {
+    return pcid;
+  }
+  auto serialNumber = getSerialNumber();
+  if (serialNumber.IsEmpty()) {
+    // 使用雪花算法生成ID作为备用方案
+    static Snowflake snowflake(1, 1); // 使用默认的worker_id和datacenter_id
+    int64_t id = snowflake.next_id();
+    serialNumber = wxString::Format("%lld", id);
+  }
+  auto unique = serialNumber.utf8_string();
+  auto tmp =
+      GetMD5HexString(reinterpret_cast<char *>(unique.data()), unique.size());
+  app_config->set("pcid", tmp.utf8_string());
+  return tmp;
 }
 wxString GetMD5HexString(char *data, size_t length) {
   if (data == nullptr || length == 0)
