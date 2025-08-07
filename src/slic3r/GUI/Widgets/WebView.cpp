@@ -238,37 +238,29 @@ public:
     wxWebView *m_webView;
 };
 
-wxWebView* WebView::CreateWebView(wxWindow * parent, wxString const & url)
+wxWebView* WebView::CreateWebView(wxWindow * parent, wxString const & url,wxWebViewConfiguration*conf,const std::function<void(wxWebView*)>& visitor)
 {
-#if USE_WEBVIEW_EDGE
-    // Check if a fixed version of edge is present in
-    // $executable_path/edge_fixed and use it
     wxFileName edgeFixedDir(wxStandardPaths::Get().GetExecutablePath());
     edgeFixedDir.SetFullName("");
     edgeFixedDir.AppendDir("edge_fixed");
-    if (edgeFixedDir.DirExists()) {
-        wxWebViewEdge::MSWSetBrowserExecutableDir(edgeFixedDir.GetFullPath());
+    if (conf && edgeFixedDir.DirExists()) {
+        conf->SetDataPath(edgeFixedDir.GetFullPath()); 
         wxLogMessage("Using fixed edge version");
     }
-#endif
-    auto url2  = url;
-#ifdef __WIN32__
-    url2.Replace("\\", "/");
-#endif
-    if (!url2.empty()) { url2 = wxURI(url2).BuildURI(); }
-    BOOST_LOG_TRIVIAL(trace) << __FUNCTION__ << ": " << url2.ToUTF8();
 
+    wxWebView* webView = conf==nullptr?wxWebView::New():wxWebView::New(*conf);
 
-
-    wxWebView* webView = wxWebView::New();
 
     if (webView) {
+        if(visitor){
+            visitor(webView);
+        }
         webView->SetBackgroundColour(StateColor::darkModeColorFor(*wxWHITE));
 #ifdef __WIN32__
         webView->SetUserAgent(wxString::Format("BBL-Slicer/v%s (%s) Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
             "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.52", SLIC3R_VERSION, 
             Slic3r::GUI::wxGetApp().dark_mode() ? "dark" : "light"));
-        webView->Create(parent, wxID_ANY, url2, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+        webView->Create(parent, wxID_ANY, url, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
         // We register the wxfs:// protocol for testing purposes
         webView->RegisterHandler(wxSharedPtr<wxWebViewHandler>(new wxWebViewArchiveHandler("bbl")));
         // And the memory: file system
@@ -278,7 +270,7 @@ wxWebView* WebView::CreateWebView(wxWindow * parent, wxString const & url)
         webView->RegisterHandler(wxSharedPtr<wxWebViewHandler>(new wxWebViewArchiveHandler("wxfs")));
         // And the memory: file system
         webView->RegisterHandler(wxSharedPtr<wxWebViewHandler>(new wxWebViewFSHandler("memory")));
-        webView->Create(parent, wxID_ANY, url2, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+        webView->Create(parent, wxID_ANY, url, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
         webView->SetUserAgent(wxString::Format("BBL-Slicer/v%s (%s) Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)", SLIC3R_VERSION,
                                                Slic3r::GUI::wxGetApp().dark_mode() ? "dark" : "light"));
 #endif

@@ -1,12 +1,16 @@
 #ifndef slic3r_GUI_WebView_hpp_
 #define slic3r_GUI_WebView_hpp_
-
+#ifdef PLUGINS
+#include "webview.h"
+#else
 #include <webview/webview.h>
+#endif 
 
+#include <functional>
 class WebView
 {
 public:
-    static wxWebView *CreateWebView(wxWindow *parent, wxString const &url);
+    static wxWebView *CreateWebView(wxWindow *parent, wxString const &url, wxWebViewConfiguration*conf=nullptr,const std::function<void(wxWebView*)>& visitor=nullptr);
 #if USE_WEBVIEW_EDGE
     static bool CheckWebViewRuntime();
     static bool DownloadAndInstallWebViewRuntime();
