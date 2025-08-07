@@ -14,6 +14,10 @@
     #include <wx/rawbmp.h>
 #endif /* __WXGTK2__ */
 
+#if wxUSE_FILESYSTEM
+#include <wx/filesys.h>
+#endif
+
 #define NANOSVG_IMPLEMENTATION
 #include "nanosvg/nanosvg.h"
 #define NANOSVGRAST_IMPLEMENTATION
@@ -249,7 +253,7 @@ wxBitmap* BitmapCache::load_png(const std::string &bitmap_name, unsigned width, 
     wxScopedPtr<wxFSFile> file(fsys.OpenFile(filename));
     if (file)
     {
-        if (! image.LoadFile(file->GetStream(), wxBITMAP_TYPE_PNG) ||
+        if (! image.LoadFile(*(file->GetStream()), wxBITMAP_TYPE_PNG) ||
             image.GetWidth() == 0 || image.GetHeight() == 0){
             return nullptr;
         }
