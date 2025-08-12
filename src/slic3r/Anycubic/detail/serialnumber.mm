@@ -1,4 +1,4 @@
-#include <common/log/log.hpp>
+#include <easy_log/log.hxx>
 
 #include <wx/string.h>
 #include <wx/osx/core/cfstring.h>

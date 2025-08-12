@@ -1,5 +1,5 @@
 #pragma once
-#include <common/log/log.hpp>
+#include <easy_log/log.hxx>
 
 class wxString;
 class wxWindow;

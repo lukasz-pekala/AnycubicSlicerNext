@@ -4,7 +4,10 @@
 
 #include <plugins_manager/plugins_manager.hxx>
 
-#include <common/utils/aes.hpp>
+#include <utility/encrypt/aes.hxx>
+
+
+#include <slic3r/GUI/Widgets/WebView.hpp>
 
 #include <wx/base64.h>
 #include <wx/tokenzr.h>
@@ -12,7 +15,10 @@
 #include <libslic3r/AppConfig.hpp>
 #include <libslic3r/Utils.hpp>
 
-#include <set> // 添加这个头文件
+#include <set>
+
+
+
 
 namespace Slic3r {
 
@@ -196,14 +202,14 @@ void AnycubicContext::OnInitByApp() {
     LOG_ERROR("GetPluginsPackageInfo failed");
   }
 
-  auto pm = SetupPM(package.c_str(), current_dir.c_str());
+  auto pm = SetupPM(package.c_str(),WebView::CreateWebView, current_dir.c_str());
   if (pm != nullptr) {
     impl_->SetPM(pm);
   } else {
     LOG_ERROR("SetupPM failed");
   }
-  std::vector<CreatePlugin> plugins{};
-  (*impl_)->AppendPlugins(plugins.data(), plugins.size());
+  // std::vector<CreatePlugin> plugins{};
+  // (*impl_)->AppendPlugins(plugins.data(), plugins.size());
   // 这行只能最后一行
   (*impl_)->EmitEvent(EventType::kEventInitByApp);
 }

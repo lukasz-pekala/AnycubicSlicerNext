@@ -1,7 +1,7 @@
 #include "anonymous.hpp"
 
-#include <common/utils/bin2ascii.h>
-#include <common/utils/md5.h>
+#include <utility/codec/bin2ascii.hxx>
+#include <utility/codec/md5.hxx>
 
 #include <libslic3r/AppConfig.hpp>
 #include <slic3r/GUI/GUI_App.hpp>
