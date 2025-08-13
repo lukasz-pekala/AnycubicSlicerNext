@@ -1,8 +1,8 @@
 
 #include "AnycubicContext.hpp"
 #include "detail/anonymous.hpp"
+#include "plugins/plugins_list.hpp"
 
-#include <plugins_manager/plugins_manager.hxx>
 
 #include <utility/encrypt/aes.hxx>
 
@@ -208,8 +208,8 @@ void AnycubicContext::OnInitByApp() {
   } else {
     LOG_ERROR("SetupPM failed");
   }
-  // std::vector<CreatePlugin> plugins{};
-  // (*impl_)->AppendPlugins(plugins.data(), plugins.size());
+  std::vector<create_library_t> &plugins = Anycubic::Plugins::GetPluginsList();
+  (*impl_)->AddStaticPlugins(plugins.data(), plugins.size());
   // 这行只能最后一行
   (*impl_)->EmitEvent(EventType::kEventInitByApp);
 }

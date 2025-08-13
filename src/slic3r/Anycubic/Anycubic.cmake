@@ -3,13 +3,13 @@ macro(anycubic_target_link link_to_target OUT_SDK_DLLS)
     string(REPLACE "." "" VERSION_CODE ${SLIC3R_VERSION})
     
     target_compile_definitions(${link_to_target} PRIVATE VERSION_CODE=${VERSION_CODE} ENABLE_LOG_CHECK_ARGS=1 ENABLE_STRACE=1)
-    find_package(OpenPlugins CONFIG REQUIRED COMPONENTS ACWebView plugins_manager easy_log utility)
+    find_package(OpenPlugins CONFIG REQUIRED COMPONENTS ACWebView plugins_manager plugins_base easy_log utility)
     find_package(Boost REQUIRED CONFIG COMPONENTS json)
-    list(APPEND SDK_LIBS_G OpenPlugins::ACWebView OpenPlugins::plugins_manager OpenPlugins::easy_log OpenPlugins::utility)
+    list(APPEND SDK_LIBS_G OpenPlugins::ACWebView OpenPlugins::plugins_manager OpenPlugins::plugins_base OpenPlugins::easy_log OpenPlugins::utility)
 
     target_link_libraries(${link_to_target} PUBLIC ${SDK_LIBS_G} Boost::json ${wxWidgets_LIBRARIES})
     target_compile_definitions(${link_to_target} PRIVATE MODULE_NAME="MainApp")
-    
+    target_include_directories(${link_to_target} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 
     if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
@@ -138,12 +138,14 @@ list(REMOVE_ITEM CMAKE_G "${CMAKE_CURRENT_LIST_DIR}/Anycubic.cmake")
 
 
 anycubic_search_src(${CMAKE_CURRENT_LIST_DIR})
-
+set(PLUGINS_LIST "")
 foreach(cmake ${CMAKE_G})
     include(${cmake})
 endforeach()
 
 
+
+anycubic_plugins_generate_header(${PLUGINS_LIST})
 
 
 
