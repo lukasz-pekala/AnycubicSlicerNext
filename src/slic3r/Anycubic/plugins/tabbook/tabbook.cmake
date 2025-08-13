@@ -1,1 +1,4 @@
-﻿anycubic_search_src(${CMAKE_CURRENT_LIST_DIR})
+﻿list(APPEND PLUGINS_LIST tabbook)
+set(PLUGINS_LIST ${PLUGINS_LIST} PARENT_SCOPE)
+anycubic_search_src(${CMAKE_CURRENT_LIST_DIR})
+

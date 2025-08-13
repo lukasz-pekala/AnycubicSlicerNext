@@ -2,7 +2,7 @@
 
 #include <boost/preprocessor/stringize.hpp>
 
-PLUGIN_EXPORT_GETINFO(, tabbok) {
+PLUGIN_EXPORT_GETINFO(, tabbook) {
   static PluginInfo info{
       .plugin_api = 1,
       .plugin_type = 0xe,
