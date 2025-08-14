@@ -1,41 +1,39 @@
-
-include(ProcessorCount)
-ProcessorCount(NPROC)
-
-if(DEFINED OPENSSL_ARCH)
-    set(_cross_arch ${OPENSSL_ARCH})
-else()
-    if(WIN32)
-        set(_cross_arch "VC-WIN64A")
-    elseif(APPLE)
-        set(_cross_arch "darwin64-arm64-cc")
-	endif()
-endif()
-
-if(WIN32)
-    set(_conf_cmd perl Configure )
-    set(_cross_comp_prefix_line "")
-    set(_make_cmd nmake)
-    set(_install_cmd nmake install_sw )
-else()
-    if(APPLE)
-        set(_conf_cmd export MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET} && ./Configure -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET})
-    else()
-        set(_conf_cmd "./config")
+set(NOSHARED no-shared)
+if(CMAKE_HOST_WIN32)
+    set(build_type "VC-WIN64A-masm")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(build_type "debug-VC-WIN64A-masm")
     endif()
-    set(_cross_comp_prefix_line "")
-    set(_make_cmd make -j${NPROC})
-    set(_install_cmd make -j${NPROC} install_sw)
-    if (CMAKE_CROSSCOMPILING)
-        set(_cross_comp_prefix_line "--cross-compile-prefix=${TOOLCHAIN_PREFIX}-")
-
-        if (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64" OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64")
-            set(_cross_arch "linux-aarch64")
-        elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armhf") # For raspbian
-            # TODO: verify
-            set(_cross_arch "linux-armv4")
-        endif ()
-    endif ()
+    set(configure_cmd perl Configure)
+    set(build_cmd set CL=/MP && nmake)
+    set(install_cmd nmake install_sw)
+    set(copy_cmd  COMMAND ${CMAKE_COMMAND} -E copy ms/applink.c ${DESTDIR}/usr/local/include/openssl/applink.c)
+elseif(CMAKE_HOST_APPLE)
+ 
+    if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
+        set(build_type "darwin64-arm64-cc")
+    else()
+        set(build_type "darwin64-x86_64-cc")
+    endif()
+    
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(build_type "debug-${build_type}")
+    endif()
+    set(osxmin -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET})
+    set(configure_cmd perl Configure)
+    set(build_cmd make "-j${NPROC}")
+    set(install_cmd make install_sw)
+    set(copy_cmd  COMMAND ${CMAKE_COMMAND} -E echo "non winodws")
+else()
+    set(build_type "linux-x86_64")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(build_type "debug-${build_type}")
+    endif()
+    
+    set(configure_cmd ./Configure)
+    set(build_cmd make "-j${NPROC}")
+    set(install_cmd make install_sw)
+    set(copy_cmd  COMMAND ${CMAKE_COMMAND} -E echo "non winodws")
 endif()
 set(URL "https://github.com/openssl/openssl/archive/OpenSSL_1_1_1w.tar.gz")
 PROXY(new_URL URL)
@@ -46,17 +44,16 @@ ExternalProject_Add(dep_OpenSSL
     # URL "https://github.com/openssl/openssl/archive/refs/tags/openssl-3.1.2.tar.gz"
     # URL_HASH SHA256=8c776993154652d0bb393f506d850b811517c8bd8d24b1008aef57fbe55d3f31
     DOWNLOAD_DIR ${DEP_DOWNLOAD_DIR}/OpenSSL
-	CONFIGURE_COMMAND ${_conf_cmd} ${_cross_arch}
+    LOG_BUILD OFF
+    LOG_TEST OFF
+    DOWNLOAD_EXTRACT_TIMESTAMP true
+	CONFIGURE_COMMAND  ${configure_cmd} ${build_type} ${NOSHARED} 
         "--openssldir=${DESTDIR}"
         "--prefix=${DESTDIR}"
-        ${_cross_comp_prefix_line}
-        no-shared
-        no-asm
-        no-ssl3-method
-        no-dynamic-engine
+        no-dynamic-engine ${osxmin}
     BUILD_IN_SOURCE ON
-    BUILD_COMMAND ${_make_cmd}
-    INSTALL_COMMAND ${_install_cmd}
+    BUILD_COMMAND ${build_cmd}
+    INSTALL_COMMAND ${install_cmd}
 )
 
 ExternalProject_Add_Step(dep_OpenSSL install_cmake_files
