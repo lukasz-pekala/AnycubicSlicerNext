@@ -144,7 +144,7 @@ GuideFrame::GuideFrame(GUI_App *pGUI, long style)
     // wxLogMessage("User Agent: %s", m_browser->GetUserAgent());
 
     // Set a more sensible size for web browsing
-    wxSize pSize = FromDIP(wxSize(820, 660));
+    wxSize pSize = FromDIP(wxSize(1820, 960));
     SetSize(pSize);
 
     int screenheight = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y, NULL);

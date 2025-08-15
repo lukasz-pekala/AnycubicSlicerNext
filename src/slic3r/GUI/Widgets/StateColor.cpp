@@ -6,20 +6,42 @@ static bool gDarkMode = false;
 static bool operator<(wxColour const &l, wxColour const &r) { return l.GetRGBA() < r.GetRGBA(); }
 
 static std::map<wxColour, wxColour> gDarkColors{
-    {"#009688", "#00675b"}, // rgb(0, 150, 136)    ORCA color
+    {"#F4F8FE", "#2B2B31"},
+    {"#FEFEDF", "#FEFEDF"},
+    {"#F4F5F4", "#3A3A3A"},
+    {"#3D3D3D", "#B6B6B6"},
+    {"#FAFAFA", "#484850"},
+    {"#BDD6FC", "#BDD6FC"},
+
+    {"#FEFEFF", "#FEFEFF"},
+    {"#141C28", "#141C28"},
+    {"#FF3A34", "#FF3A34"},
+	{"#438DFF", "#223C3C"},
+    {"#7E7E7E", "#7E7E7E"},
+    {"#909090", "#909090"},
+    {"#448DFF", "#448DFF"},
+    {"#3A22FF", "#3A22FF"},
+    {"#254030", "#254030"},
+    {"#CDCECE", "#CDCECE"},
+    {"#EDEEEE", "#EDEEEE"},
+	
+    {"#437DFF", "#3985FF"},
+    {"#EFF5FF", "#4068BE"},
+    {"#3986FF", "#3986FF"},
+    {"#3986FF", "#00675b"}, // rgb(57, 134, 255)    ORCA color
     {"#1F8EEA", "#2778D2"}, // rgb(31, 142, 234)   ???
     {"#FF6F00", "#D15B00"}, // rgb(255, 111, 0)    Secondary color
     {"#D01B1B", "#BB2A3A"}, // rgb(208, 27, 27)    ???
     {"#262E30", "#EFEFF0"}, // rgb(38, 46, 48)     Button text color | Input Text Color
     {"#2C2C2E", "#B3B3B4"}, // rgb(44, 44, 46)     ???
     {"#6B6B6B", "#818183"}, // rgb(107, 107, 107)  Disabled Text
-    {"#ACACAC", "#65656A"}, // rgb(172, 172, 172)  Disabled Text on boxes | Dimmed Elements
+    {"#ACACAC", "#54545A"}, // rgb(172, 172, 172)  Disabled Text on boxes | Dimmed Elements
     {"#EEEEEE", "#4C4C55"}, // rgb(238, 238, 238)  Separator Line | Title Line Color
     {"#E8E8E8", "#3E3E45"}, // rgb(232, 232, 232)  ???
     {"#323A3D", "#E5E5E4"}, // rgb(50, 58, 61)     Softer text color
     {"#FFFFFF", "#2D2D31"}, // rgb(255, 255, 255)  Window background
     {"#F8F8F8", "#36363C"}, // rgb(248, 248, 248)  Sidebar > Titlebar > Gradient Top | BBL monitor page titlebar bg
-    {"#F1F1F1", "#36363B"}, // rgb(241, 241, 241)  Sidebar > Titlebar > Gradient Bottom
+    {"#F5F5F5", "#36363B"}, // rgb(241, 241, 241)  Sidebar > Titlebar > Gradient Bottom
     {"#3B4446", "#2D2D30"}, // rgb(59, 68, 78)     Top Bar / Main tab bar bg color
     {"#CECECE", "#54545B"}, // rgb(206, 206, 206)  Sidebar wxPanel bg | 
     {"#DBFDD5", "#3B3B40"}, // rgb(219, 253, 213)  Not Used anymore // Was used for BBS combo boxes etc
@@ -33,7 +55,7 @@ static std::map<wxColour, wxColour> gDarkColors{
     {"#FEFFFF", "#242428"}, // rgb(254, 255, 255)  Side Tabbar bg | 
     {"#A6A9AA", "#2D2D29"}, // rgb(166, 169, 170)  Seperator color
     {"#363636", "#B2B3B5"}, // rgb(54, 54, 54)     Sidebar > Parameter Label/Title color | Sidebar tab text | Create Filament window text
-    {"#F0F0F1", "#333337"}, // rgb(240, 240, 241)  Disabled element background // ORCA Used better background color for dark mode
+    {"#F0F0F1", "#404040"}, // rgb(240, 240, 241)  Disabled element background // ORCA Used better background color for dark mode
     {"#9E9E9E", "#53545A"}, // rgb(158, 158, 158)  ???
     {"#D7E8DE", "#1F2B27"}, // rgb(215, 232, 222)  Not Used anymore // Leftover from BBS
     {"#2B3436", "#808080"}, // rgb(43, 52, 54)     Not Used anymore // Leftover from BBS. Was used as main fill color of icons

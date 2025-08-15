@@ -142,26 +142,26 @@ CaliPageButton::CaliPageButton(wxWindow* parent, CaliPageActionType type, wxStri
     Button(parent, text)
 {
     StateColor btn_bg_green(std::pair<wxColour, int>(wxColour(206, 206, 206), StateColor::Disabled),
-        std::pair<wxColour, int>(wxColour(0, 137, 123), StateColor::Pressed),
-        std::pair<wxColour, int>(wxColour(38, 166, 154), StateColor::Hovered),
-        std::pair<wxColour, int>(wxColour(0, 150, 136), StateColor::Normal));
+                                std::pair<wxColour, int>(wxColour(204, 224, 254), StateColor::Pressed),
+                                std::pair<wxColour, int>(wxColour(105, 164, 255), StateColor::Hovered),
+                                std::pair<wxColour, int>(wxColour(57, 134, 255), StateColor::Normal));
 
-    StateColor btn_bg_white(std::pair<wxColour, int>(wxColour(206, 206, 206), StateColor::Disabled),
-        std::pair<wxColour, int>(wxColour(206, 206, 206), StateColor::Pressed),
-        std::pair<wxColour, int>(wxColour(238, 238, 238), StateColor::Hovered),
-        std::pair<wxColour, int>(wxColour(255, 255, 255), StateColor::Normal));
+        StateColor btn_bg_white(std::pair<wxColour, int>(wxColour(206, 206, 206), StateColor::Disabled),
+            std::pair<wxColour, int>(wxColour(206, 206, 206), StateColor::Pressed),
+            std::pair<wxColour, int>(wxColour(238, 238, 238), StateColor::Hovered),
+            std::pair<wxColour, int>(wxColour(255, 255, 255), StateColor::Normal));
 
-    StateColor btn_bd_green(std::pair<wxColour, int>(wxColour(255, 255, 254), StateColor::Disabled),
-        std::pair<wxColour, int>(wxColour(0, 150, 136), StateColor::Enabled));
+        StateColor btn_bd_green(std::pair<wxColour, int>(wxColour(255, 255, 254), StateColor::Disabled),
+                                std::pair<wxColour, int>(wxColour(57, 134, 255), StateColor::Enabled));
 
-    StateColor btn_bd_white(std::pair<wxColour, int>(wxColour(255, 255, 254), StateColor::Disabled),
-        std::pair<wxColour, int>(wxColour(38, 46, 48), StateColor::Enabled));
+        StateColor btn_bd_white(std::pair<wxColour, int>(wxColour(255, 255, 254), StateColor::Disabled),
+            std::pair<wxColour, int>(wxColour(38, 46, 48), StateColor::Enabled));
 
-    StateColor btn_text_green(std::pair<wxColour, int>(wxColour(255, 255, 254), StateColor::Disabled),
-        std::pair<wxColour, int>(wxColour(255, 255, 254), StateColor::Enabled));
+        StateColor btn_text_green(std::pair<wxColour, int>(wxColour(255, 255, 254), StateColor::Disabled),
+            std::pair<wxColour, int>(wxColour(255, 255, 254), StateColor::Enabled));
 
-    StateColor btn_text_white(std::pair<wxColour, int>(wxColour(255, 255, 254), StateColor::Disabled),
-        std::pair<wxColour, int>(wxColour(38, 46, 48), StateColor::Enabled));
+        StateColor btn_text_white(std::pair<wxColour, int>(wxColour(255, 255, 254), StateColor::Disabled),
+            std::pair<wxColour, int>(wxColour(38, 46, 48), StateColor::Enabled));
 
     switch (m_action_type)
     {

@@ -446,48 +446,45 @@ wxBoxSizer* EditGCodeDialog::create_btn_sizer(long flags)
     auto btn_sizer = new wxBoxSizer(wxHORIZONTAL);
     btn_sizer->AddStretchSpacer();
 
-    StateColor ok_btn_bg(
-        std::pair<wxColour, int>(wxColour(0, 137, 123), StateColor::Pressed),
-        std::pair<wxColour, int>(wxColour(38, 166, 154), StateColor::Hovered),
-        std::pair<wxColour, int>(wxColour(0, 150, 136), StateColor::Normal)
-    );
+    StateColor ok_btn_bg(std::pair<wxColour, int>(wxColour(204, 224, 254), StateColor::Pressed),
+                             std::pair<wxColour, int>(wxColour(105, 164, 255), StateColor::Hovered),
+                             std::pair<wxColour, int>(wxColour(57, 134, 255), StateColor::Normal)
+        );
 
-    StateColor ok_btn_bd(
-        std::pair<wxColour, int>(wxColour(0, 150, 136), StateColor::Normal)
-    );
+        StateColor ok_btn_bd(std::pair<wxColour, int>(wxColour(57, 134, 255), StateColor::Normal)
+        );
 
-    StateColor ok_btn_text(
-        std::pair<wxColour, int>(wxColour(255, 255, 254), StateColor::Normal)
-    );
+        StateColor ok_btn_text(
+            std::pair<wxColour, int>(wxColour(255, 255, 254), StateColor::Normal)
+        );
 
-    StateColor cancel_btn_bg(
-        std::pair<wxColour, int>(wxColour(206, 206, 206), StateColor::Pressed),
-        std::pair<wxColour, int>(wxColour(238, 238, 238), StateColor::Hovered),
-        std::pair<wxColour, int>(wxColour(255, 255, 255), StateColor::Normal)
-    );
+        StateColor cancel_btn_bg(
+            std::pair<wxColour, int>(wxColour(206, 206, 206), StateColor::Pressed),
+            std::pair<wxColour, int>(wxColour(238, 238, 238), StateColor::Hovered),
+            std::pair<wxColour, int>(wxColour(255, 255, 255), StateColor::Normal)
+        );
 
-    StateColor cancel_btn_bd_(
-        std::pair<wxColour, int>(wxColour(38, 46, 48), StateColor::Normal)
-    );
+        StateColor cancel_btn_bd_(
+            std::pair<wxColour, int>(wxColour(38, 46, 48), StateColor::Normal)
+        );
 
-    StateColor cancel_btn_text(
-        std::pair<wxColour, int>(wxColour(38, 46, 48), StateColor::Normal)
-    );
+        StateColor cancel_btn_text(
+            std::pair<wxColour, int>(wxColour(38, 46, 48), StateColor::Normal)
+        );
 
 
-    StateColor calc_btn_bg(
-        std::pair<wxColour, int>(wxColour(0, 137, 123), StateColor::Pressed),
-        std::pair<wxColour, int>(wxColour(38, 166, 154), StateColor::Hovered),
-        std::pair<wxColour, int>(wxColour(0, 150, 136), StateColor::Normal)
-    );
+        StateColor calc_btn_bg(std::pair<wxColour, int>(wxColour(204, 224, 254), StateColor::Pressed),
+                               std::pair<wxColour, int>(wxColour(105, 164, 255), StateColor::Hovered),
+            std::pair<wxColour, int>(wxColour(57, 134, 255), StateColor::Normal)
+        );
 
-    StateColor calc_btn_bd(
-        std::pair<wxColour, int>(wxColour(0, 150, 136), StateColor::Normal)
-    );
+        StateColor calc_btn_bd(
+            std::pair<wxColour, int>(wxColour(57, 134, 255), StateColor::Normal)
+        );
 
-    StateColor calc_btn_text(
-        std::pair<wxColour, int>(wxColour(255, 255, 254), StateColor::Normal)
-    );
+        StateColor calc_btn_text(
+            std::pair<wxColour, int>(wxColour(255, 255, 254), StateColor::Normal)
+        );
 
     if (flags & wxOK) {
         Button* ok_btn = new Button(this, _L("OK"));
@@ -534,7 +531,7 @@ static void make_bold(wxString& str)
 static void highlight(wxString& str)
 {
 #if defined(SUPPORTS_MARKUP) && !defined(__APPLE__)
-    str = format_wxstr("<span bgcolor=\"#009688\">%1%</span>", str);
+    str = format_wxstr("<span bgcolor=\"#3986FF\">%1%</span>", str);
 #endif
 }
 

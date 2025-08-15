@@ -906,8 +906,8 @@ Sidebar::Sidebar(Plater *parent)
                             std::pair<wxColour, int>(wxColour(107, 107, 106), StateColor::Hovered),
                             std::pair<wxColour, int>(wxColour(107, 107, 106), StateColor::Normal));
 
-    StateColor flush_bd_col(std::pair<wxColour, int>(wxColour(0, 150, 136), StateColor::Pressed),
-                            std::pair<wxColour, int>(wxColour(0, 150, 136), StateColor::Hovered),
+    StateColor flush_bd_col(std::pair<wxColour, int>(wxColour(57, 134, 255), StateColor::Pressed),
+                            std::pair<wxColour, int>(wxColour(57, 134, 255), StateColor::Hovered),
                             std::pair<wxColour, int>(wxColour(172, 172, 172), StateColor::Normal));
 
     p->m_flushing_volume_btn->SetBackgroundColor(flush_bg_col);
@@ -3369,22 +3369,22 @@ wxColour Plater::get_next_color_for_filament()
     // refs to https://www.ebaomonthly.com/window/photo/lesson/colorList.htm
     wxColour colors[FILAMENT_SYSTEM_COLORS_NUM] = {
         // ORCA updated all color palette
-        wxColour("#00C1AE"),
-        wxColour("#F4E2C1"),
-        wxColour("#ED1C24"),
-        wxColour("#00FF7F"),
-        wxColour("#F26722"),
-        wxColour("#FFEB31"),
-        wxColour("#7841CE"),
-        wxColour("#115877"),
-        wxColour("#ED1E79"),
-        wxColour("#2EBDEF"),
-        wxColour("#345B2F"),
-        wxColour("#800080"),
-        wxColour("#FA8173"),
-        wxColour("#800000"),
-        wxColour("#F7B763"),
-        wxColour("#A4C41E"),
+        *wxYELLOW,
+        * wxRED,
+        *wxBLUE,
+        *wxCYAN,
+        *wxLIGHT_GREY,
+        *wxWHITE,
+        *wxBLACK,
+        wxColour(0,127,255),
+        wxColour(139,0,255),
+        wxColour(102,255,0),
+        wxColour(255,215,0),
+        wxColour(0,35,100),
+        wxColour(255,0,255),
+        wxColour(8,37,103),
+        wxColour(127,255,212),
+        wxColour(255,191,0)
     };
     return colors[curr_color_filamenet++ % FILAMENT_SYSTEM_COLORS_NUM];
 }
@@ -7495,7 +7495,7 @@ void Plater::priv::on_change_color_mode(SimpleEvent& evt) {
 void Plater::priv::apply_color_mode()
 {
     const bool is_dark         = wxGetApp().dark_mode();
-    wxColour   orca_color      = wxColour(59, 68, 70);//wxColour(ColorRGBA::ORCA().r_uchar(), ColorRGBA::ORCA().g_uchar(), ColorRGBA::ORCA().b_uchar());
+    wxColour   orca_color      = wxColour(67, 67, 67);//wxColour(ColorRGBA::ORCA().r_uchar(), ColorRGBA::ORCA().g_uchar(), ColorRGBA::ORCA().b_uchar());
     orca_color                 = is_dark ? StateColor::darkModeColorFor(orca_color) : StateColor::lightModeColorFor(orca_color);
     wxColour sash_color = is_dark ? wxColour(38, 46, 48) : wxColour(206, 206, 206);
     m_aui_mgr.GetArtProvider()->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, sash_color);
@@ -10683,11 +10683,11 @@ ProjectDropDialog::ProjectDropDialog(const std::string &filename)
     wxBoxSizer *m_sizer_right  = new wxBoxSizer(wxHORIZONTAL);
 
     m_confirm = new Button(this, _L("OK"));
-    StateColor btn_bg_green(std::pair<wxColour, int>(wxColour(0, 137, 123), StateColor::Pressed), std::pair<wxColour, int>(wxColour(38, 166, 154), StateColor::Hovered),
-                            std::pair<wxColour, int>(wxColour(0, 150, 136), StateColor::Normal));
+    StateColor btn_bg_green(std::pair<wxColour, int>(wxColour(204, 224, 254), StateColor::Pressed), std::pair<wxColour, int>(wxColour(105, 164, 255), StateColor::Hovered),
+                            std::pair<wxColour, int>(wxColour(57, 134, 255), StateColor::Normal));
 
     m_confirm->SetBackgroundColor(btn_bg_green);
-    m_confirm->SetBorderColor(wxColour(0, 150, 136));
+    m_confirm->SetBorderColor(wxColour(57, 134, 255));
     m_confirm->SetTextColor(wxColour("#FFFFFE"));
     m_confirm->SetSize(PROJECT_DROP_DIALOG_BUTTON_SIZE);
     m_confirm->SetMinSize(PROJECT_DROP_DIALOG_BUTTON_SIZE);
