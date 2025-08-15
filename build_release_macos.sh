@@ -242,12 +242,9 @@ function build_universal() {
 
         # Create universal binary using lipo
         for BINARY_PATH in "Contents/MacOS/AnycubicSlicerNext" \
-            "Contents/Frameworks/libusb-1.0.0.dylib" \
-            "Contents/Frameworks/libftdi1.2.dylib" \
-            "Contents/Frameworks/libhidapi.0.dylib" \
-            "Contents/Frameworks/libusb-1.0.0.dylib" \
-            "Contents/Frameworks/libftdi1.2.dylib" \
-            "Contents/Frameworks/libhidapi.0.dylib" ; do
+            "Contents/Frameworks/libACWebViewd.dylib" \
+            "Contents/Frameworks/libeasy_logd.dylib" \
+            "Contents/Frameworks/libplugins_based.dylib"; do
             lipo -create \
                     "$UNIVERSAL_BUILD_DIR/AnycubicSlicerNext_x86_64.app/$BINARY_PATH" \
                     "$UNIVERSAL_BUILD_DIR/AnycubicSlicerNext_arm64.app/$BINARY_PATH" \
