@@ -3,9 +3,7 @@
 #include "detail/anonymous.hpp"
 #include "plugins/plugins_list.hpp"
 
-
 #include <utility/encrypt/aes.hxx>
-
 
 #include <slic3r/GUI/Widgets/WebView.hpp>
 
@@ -17,11 +15,7 @@
 
 #include <set>
 
-
-
-
 namespace Slic3r {
-
 namespace GUI {
 // 定义白名单
 const std::set<wxString> SECTION_NAME_WHITELIST = {
@@ -51,6 +45,7 @@ public:
     pm_ = pm;
     pm_->SetConfig(this);
   }
+  bool PluginsIsLoaded() { return pm_ != nullptr; }
 
 public:
   static bool append_env(const std::string &env_name, const std::string &path) {
@@ -183,6 +178,8 @@ bool AnycubicContext::AddWindow(const wxString &position, wxWindow *window) {
   return (*impl_)->AddWidget(position, window);
 }
 
+bool AnycubicContext::PluginsIsLoaded() { return impl_->PluginsIsLoaded(); }
+
 void AnycubicContext::OnInitByApp() {
   assert(impl_ != nullptr);
 
@@ -197,16 +194,23 @@ void AnycubicContext::OnInitByApp() {
   LOG_INFO("LD_LIBRARY_PATH after append: {}", getenv("LD_LIBRARY_PATH"));
 #endif
   auto package = Slic3r::data_dir() + "/cache/plugins.zip";
+  if (wxFileExists(wxString::FromUTF8(package))) {
+    LOG_WARN("Plugins package exists, will be unzipped");
+    return;
+  }
   PluginsPackageInfo info = {0};
   if (!GetPluginsPackageInfo(package.c_str(), &info)) {
     LOG_ERROR("GetPluginsPackageInfo failed");
+    return;
   }
 
-  auto pm = SetupPM(package.c_str(),WebView::CreateWebView, current_dir.c_str());
+  auto pm =
+      SetupPM(package.c_str(), WebView::CreateWebView, current_dir.c_str());
   if (pm != nullptr) {
     impl_->SetPM(pm);
   } else {
     LOG_ERROR("SetupPM failed");
+    return;
   }
   std::vector<create_library_t> &plugins = Anycubic::Plugins::GetPluginsList();
   (*impl_)->AddStaticPlugins(plugins.data(), plugins.size());
@@ -214,16 +218,24 @@ void AnycubicContext::OnInitByApp() {
   (*impl_)->EmitEvent(EventType::kEventInitByApp);
 }
 void AnycubicContext::OnInitByGui() {
-  (*impl_)->EmitEvent(EventType::kEventInitByGUI);
+  if (PluginsIsLoaded()) {
+    (*impl_)->EmitEvent(EventType::kEventInitByGUI);
+  }
 }
 void AnycubicContext::OnFinishedByGui() {
-  (*impl_)->EmitEvent(EventType::kEventFinishedByGUI);
+  if (PluginsIsLoaded()) {
+    (*impl_)->EmitEvent(EventType::kEventFinishedByGUI);
+  }
 }
 void AnycubicContext::OnExitByGui() {
-  (*impl_)->EmitEvent(EventType::kEventExitByGUI);
+  if (PluginsIsLoaded()) {
+    (*impl_)->EmitEvent(EventType::kEventExitByGUI);
+  }
 }
 void AnycubicContext::OnExitByApp() {
-  (*impl_)->EmitEvent(EventType::kEventExitByApp);
+  if (PluginsIsLoaded()) {
+    (*impl_)->EmitEvent(EventType::kEventExitByApp);
+  }
 }
 } // namespace GUI
 } // namespace Slic3r
