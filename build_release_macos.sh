@@ -123,10 +123,9 @@ echo
 # fi
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_BUILD_DIR="$PROJECT_DIR/build_$ARCH"
+# PROJECT_BUILD_DIR="$PROJECT_DIR/build_$ARCH"
 DEPS_DIR="$PROJECT_DIR/deps"
-DEPS_BUILD_DIR="$DEPS_DIR/build_$ARCH"
-DEPS="$DEPS_BUILD_DIR/OrcaSlicer_dep_$ARCH"
+
 
 # Fix for Multi-config generators
 if [ "$SLICER_CMAKE_GENERATOR" == "Xcode" ]; then
@@ -136,24 +135,32 @@ else
 fi
 
 function build_deps() {
+    local DEPS="$1"
+    local DEPS_BUILD_DIR="$2"
+    local ARCH="$3"
+
+    if [ -f "$DEPS/.finished" ]; then
+        echo "Deps already built, skip building"
+        return 0
+    fi
     echo "Building deps..."
     (
         set -x
         mkdir -p "$DEPS"
-        cd "$DEPS_BUILD_DIR"
+        mkdir -p "$DEPS_BUILD_DIR"
         if [ "1." != "$BUILD_ONLY". ]; then
             local ghproxy_arg=""
             [ -n "$GHPROXY" ] && ghproxy_arg="-DGHPROXY=${GHPROXY}"
-            cmake .. \
+            cmake -S "${DEPS_DIR}" -B "${DEPS_BUILD_DIR}" \
                 -G "${DEPS_CMAKE_GENERATOR}" \
-                -DDESTDIR="$DEPS" \
+                -DDESTDIR="$DEPS" -DDEP_DOWNLOAD_DIR="${DEPS_DIR}/DL_CACHE" \
                 $ghproxy_arg \
                 -DOPENSSL_ARCH="darwin64-${ARCH}-cc" \
                 -DCMAKE_BUILD_TYPE="$BUILD_CONFIG" \
                 -DCMAKE_OSX_ARCHITECTURES:STRING="${ARCH}" \
                 -DCMAKE_OSX_DEPLOYMENT_TARGET="${OSX_DEPLOYMENT_TARGET}"
         fi
-        cmake --build . --config "$BUILD_CONFIG" --target deps
+        cmake --build "${DEPS_BUILD_DIR}" --config "$BUILD_CONFIG" && touch $DEPS/.finished
     )
 }
 
@@ -161,24 +168,25 @@ function pack_deps() {
     echo "Packing deps..."
     (
         set -x
-        mkdir -p "$DEPS"
-        cd "$DEPS_BUILD_DIR"
-        tar -zcvf "OrcaSlicer_dep_mac_${ARCH}_$(date +"%Y%m%d").tar.gz" "OrcaSlicer_dep_$ARCH"
+        cd "$DEPS"
+        tar -zcvf "AnycubicSlicerNext_dep_mac_${BUILD_CONFIG}_${ARCH}_$(date +"%Y%m%d").tar.gz" .
+        cd -
     )
 }
 
 function build_slicer() {
+    local DEPS="$1"
+    local PROJECT_BUILD_DIR="$2"
+    local ARCH="$3"
     echo "Building slicer..."
     (
         set -x
-        mkdir -p "$PROJECT_BUILD_DIR"
-        cd "$PROJECT_BUILD_DIR"
         if [ "1." != "$BUILD_ONLY". ]; then
-            cmake .. \
+            cmake -S "${PROJECT_DIR}"  -B ${PROJECT_BUILD_DIR}\
                 -G "${SLICER_CMAKE_GENERATOR}" \
                 -DBBL_RELEASE_TO_PUBLIC=1 \
                 -DCMAKE_PREFIX_PATH="$DEPS/usr/local" \
-                -DCMAKE_INSTALL_PREFIX="$PWD/OrcaSlicer" \
+                -DCMAKE_INSTALL_PREFIX="$PWD/AnycubicSlicerNext" \
                 -DCMAKE_BUILD_TYPE="$BUILD_CONFIG" \
                 -DCMAKE_MACOSX_RPATH=ON \
                 -DCMAKE_INSTALL_RPATH="${DEPS}/usr/local" \
@@ -186,31 +194,16 @@ function build_slicer() {
                 -DCMAKE_OSX_ARCHITECTURES="${ARCH}" \
                 -DCMAKE_OSX_DEPLOYMENT_TARGET="${OSX_DEPLOYMENT_TARGET}"
         fi
-        cmake --build . --config "$BUILD_CONFIG" --target "$SLICER_BUILD_TARGET"
+        cmake --build "${PROJECT_BUILD_DIR}" --config "$BUILD_CONFIG" --target "$SLICER_BUILD_TARGET"
     )
 
     echo "Verify localization with gettext..."
     (
         cd "$PROJECT_DIR"
-        ./run_gettext.sh
+        sh "$PROJECT_DIR/run_gettext.sh"
     )
 
-    echo "Fix macOS app package..."
-    (
-        cd "$PROJECT_BUILD_DIR"
-        mkdir -p OrcaSlicer
-        cd OrcaSlicer
-        # remove previously built app
-        rm -rf ./OrcaSlicer.app
-        # fully copy newly built app
-        cp -pR "../src$BUILD_DIR_CONFIG_SUBDIR/OrcaSlicer.app" ./OrcaSlicer.app
-        # fix resources
-        resources_path=$(readlink ./OrcaSlicer.app/Contents/Resources)
-        rm ./OrcaSlicer.app/Contents/Resources
-        cp -R "$resources_path" ./OrcaSlicer.app/Contents/Resources
-        # delete .DS_Store file
-        find ./OrcaSlicer.app/ -name '.DS_Store' -delete
-    )
+
 
     # extract version
     # export ver=$(grep '^#define SoftFever_VERSION' ../src/libslic3r/libslic3r_version.h | cut -d ' ' -f3)
@@ -226,49 +219,43 @@ function build_slicer() {
 
 function build_universal() {
     echo "Building universal binary..."
-    # Save current ARCH
-    ORIGINAL_ARCH="$ARCH"
-    
-    # Build x86_64
-    ARCH="x86_64"
-    PROJECT_BUILD_DIR="$PROJECT_DIR/build_$ARCH"
-    DEPS_BUILD_DIR="$DEPS_DIR/build_$ARCH"
-    DEPS="$DEPS_BUILD_DIR/OrcaSlicer_dep_$ARCH"
-    build_deps
-    build_slicer
-    
-    # Build arm64
-    ARCH="arm64"
-    PROJECT_BUILD_DIR="$PROJECT_DIR/build_$ARCH"
-    DEPS_BUILD_DIR="$DEPS_DIR/build_$ARCH"
-    DEPS="$DEPS_BUILD_DIR/OrcaSlicer_dep_$ARCH"
-    build_deps
-    build_slicer
-    
-    # Restore original ARCH
-    ARCH="$ORIGINAL_ARCH"
-    PROJECT_BUILD_DIR="$PROJECT_DIR/build_$ARCH"
-    DEPS_BUILD_DIR="$DEPS_DIR/build_$ARCH"
-    DEPS="$DEPS_BUILD_DIR/OrcaSlicer_dep_$ARCH"
+    local UNIVERSAL_BUILD_DIR="$PROJECT_DIR/universal"
+    for ARCH in "x86_64" "arm64"; do
+        echo "Building for $ARCH"
+        local DEPS_BUILD_DIR="$DEPS_DIR/build_${BUILD_CONFIG}_$ARCH"
+        local DEPS="$PROJECT_DIR/build/${BUILD_CONFIG}_$ARCH"
+        local PROJECT_BUILD_DIR="$PROJECT_DIR/build_${BUILD_CONFIG}_$ARCH"
+        build_deps "$DEPS" "$DEPS_BUILD_DIR" "$ARCH"
+        build_slicer "$DEPS" "$PROJECT_BUILD_DIR" "$ARCH"
+        cp -R "$PROJECT_BUILD_DIR/${BUILD_CONFIG}/AnycubicSlicerNext.app" "$UNIVERSAL_BUILD_DIR/AnycubicSlicerNext_$ARCH.app"
+    done
+
     
     # Create universal binary
     echo "Creating universal binary..."
-    PROJECT_BUILD_DIR="$PROJECT_DIR/build_Universal"
-    mkdir -p "$PROJECT_BUILD_DIR/OrcaSlicer"
-    UNIVERSAL_APP="$PROJECT_BUILD_DIR/OrcaSlicer/Universal_OrcaSlicer.app"
-    rm -rf "$UNIVERSAL_APP"
-    cp -R "$PROJECT_DIR/build_x86_64/OrcaSlicer/OrcaSlicer.app" "$UNIVERSAL_APP"
-    
-    # Get the binary path inside the .app bundle
-    BINARY_PATH="Contents/MacOS/OrcaSlicer"
-    
-    # Create universal binary using lipo
-    lipo -create \
-        "$PROJECT_DIR/build_x86_64/OrcaSlicer/OrcaSlicer.app/$BINARY_PATH" \
-        "$PROJECT_DIR/build_arm64/OrcaSlicer/OrcaSlicer.app/$BINARY_PATH" \
-        -output "$UNIVERSAL_APP/$BINARY_PATH"
+    (
+        set -x
+
+        ls "$UNIVERSAL_BUILD_DIR" 2>&1  > /dev/null || mkdir -p "$UNIVERSAL_BUILD_DIR"
+        UNIVERSAL_APP="$UNIVERSAL_BUILD_DIR/AnycubicSlicerNext.app"
+        ls "$UNIVERSAL_APP" 2>&1  > /dev/null  && rm -rf "$UNIVERSAL_APP"
+
+        # Create universal binary using lipo
+        for BINARY_PATH in "Contents/MacOS/AnycubicSlicerNext" \
+            "Contents/Frameworks/libusb-1.0.0.dylib" \
+            "Contents/Frameworks/libftdi1.2.dylib" \
+            "Contents/Frameworks/libhidapi.0.dylib" \
+            "Contents/Frameworks/libusb-1.0.0.dylib" \
+            "Contents/Frameworks/libftdi1.2.dylib" \
+            "Contents/Frameworks/libhidapi.0.dylib" ; do
+            lipo -create \
+                    "$UNIVERSAL_BUILD_DIR/AnycubicSlicerNext_x86_64.app/$BINARY_PATH" \
+                    "$UNIVERSAL_BUILD_DIR/AnycubicSlicerNext_arm64.app/$BINARY_PATH" \
+                    -output "$UNIVERSAL_APP/$BINARY_PATH"
+        done
         
-    echo "Universal binary created at $UNIVERSAL_APP"
+        echo "Universal binary created at $UNIVERSAL_APP"
+    )
 }
 
 case "${BUILD_TARGET}" in
@@ -276,18 +263,23 @@ case "${BUILD_TARGET}" in
         if [ "1." == "$BUILD_UNIVERSAL". ]; then
             build_universal
         else
-            build_deps
-            build_slicer
+            local DEPS_BUILD_DIR="$DEPS_DIR/build_${BUILD_CONFIG}_$ARCH"
+            local DEPS="$PROJECT_DIR/build/${BUILD_CONFIG}_$ARCH"
+            build_deps "$DEPS" "$DEPS_BUILD_DIR" "$ARCH"
+            build_slicer "$DEPS" "$PROJECT_BUILD_DIR" "$ARCH"
         fi
         ;;
     deps)
-        build_deps
+        local DEPS_BUILD_DIR="$DEPS_DIR/build_${BUILD_CONFIG}_$ARCH"
+        local DEPS="$PROJECT_DIR/build/${BUILD_CONFIG}_$ARCH"
+        build_deps "$DEPS" "$DEPS_BUILD_DIR" "$ARCH"
         ;;
     slicer)
         if [ "1." == "$BUILD_UNIVERSAL". ]; then
             build_universal
         else
-            build_slicer
+            local DEPS="$PROJECT_DIR/build/${BUILD_CONFIG}_$ARCH"
+            build_slicer "$DEPS" "$PROJECT_BUILD_DIR" "$ARCH"
         fi
         ;;
     *)
