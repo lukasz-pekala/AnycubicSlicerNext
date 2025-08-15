@@ -1,1 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><line x1="2.5" y1="12.5" x2="12.5" y2="12.5" style="fill:none;stroke:#009688;stroke-linecap:square;stroke-linejoin:round"/><line x1="2.5" y1="4.5" x2="5.5" y2="4.5" style="fill:none;stroke:#009688;stroke-linecap:square;stroke-linejoin:round"/><line x1="9.5" y1="4.5" x2="12.5" y2="4.5" style="fill:none;stroke:#009688;stroke-linecap:square;stroke-linejoin:round"/><rect x="5.5" y="2.5" width="4" height="5" rx="0.5" style="fill:none;stroke:#009688;stroke-linecap:round;stroke-linejoin:round"/><rect x="0.5" y="0.5" width="14" height="14" rx="1" style="fill:none;stroke:#949494;stroke-linecap:round;stroke-linejoin:round"/><polyline points="8.5 7.5 7.5 9.5 6.5 7.5" style="fill:none;stroke:#009688;stroke-linecap:round;stroke-linejoin:round"/><rect x="7" y="5" width="1" height="1" style="fill:#009688"/></svg>
+<svg width="19" height="18" viewBox="0 0 19 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="printer">
+<path id="Vector 186" d="M4.86914 12.4877V2.61328H14.5043V10.7855" stroke="#7E7E7E" stroke-linejoin="round"/>
+<path id="Vector 187" d="M2.64453 8.11719L16.7263 8.11719" stroke="#7E7E7E" stroke-linejoin="round"/>
+<path id="Rectangle 1359" d="M14.1029 11.8555H17.2409L12.1033 15.8248H1.82812L3.11252 14.8324L4.43619 13.8603" stroke="#7E7E7E" stroke-linejoin="round"/>
+<path id="Rectangle 1360" d="M7.42732 10.4961H14.1704H15.8562L11.6417 13.7522H3.21289L5.3201 12.1241L7.42732 10.4961Z" stroke="#3986FF" stroke-linejoin="round"/>
+<path id="Vector 188" d="M9.68555 6.56641L9.68555 11.8559" stroke="#7E7E7E" stroke-linejoin="round"/>
+</g>
+</svg>
