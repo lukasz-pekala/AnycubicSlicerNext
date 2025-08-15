@@ -260,22 +260,22 @@ case "${BUILD_TARGET}" in
         if [ "1." == "$BUILD_UNIVERSAL". ]; then
             build_universal
         else
-            local DEPS_BUILD_DIR="$DEPS_DIR/build_${BUILD_CONFIG}_$ARCH"
-            local DEPS="$PROJECT_DIR/build/${BUILD_CONFIG}_$ARCH"
+            DEPS_BUILD_DIR="$DEPS_DIR/build_${BUILD_CONFIG}_$ARCH"
+            DEPS="$PROJECT_DIR/build/${BUILD_CONFIG}_$ARCH"
             build_deps "$DEPS" "$DEPS_BUILD_DIR" "$ARCH"
             build_slicer "$DEPS" "$PROJECT_BUILD_DIR" "$ARCH"
         fi
         ;;
     deps)
-        local DEPS_BUILD_DIR="$DEPS_DIR/build_${BUILD_CONFIG}_$ARCH"
-        local DEPS="$PROJECT_DIR/build/${BUILD_CONFIG}_$ARCH"
+        DEPS_BUILD_DIR="$DEPS_DIR/build_${BUILD_CONFIG}_$ARCH"
+        DEPS="$PROJECT_DIR/build/${BUILD_CONFIG}_$ARCH"
         build_deps "$DEPS" "$DEPS_BUILD_DIR" "$ARCH"
         ;;
     slicer)
         if [ "1." == "$BUILD_UNIVERSAL". ]; then
             build_universal
         else
-            local DEPS="$PROJECT_DIR/build/${BUILD_CONFIG}_$ARCH"
+            DEPS="$PROJECT_DIR/build/${BUILD_CONFIG}_$ARCH"
             build_slicer "$DEPS" "$PROJECT_BUILD_DIR" "$ARCH"
         fi
         ;;
