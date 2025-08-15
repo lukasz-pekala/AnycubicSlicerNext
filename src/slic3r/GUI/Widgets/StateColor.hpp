@@ -61,7 +61,7 @@ public:
     void clear();
 
 public:
-    int count() const { return statesList_.size(); }
+    int count() const { return static_cast<int>(statesList_.size()); }
 
     int states() const;
 
