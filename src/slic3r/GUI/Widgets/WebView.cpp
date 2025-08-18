@@ -267,7 +267,6 @@ wxWebView* WebView::CreateWebView(wxWindow * parent, wxString const & url,wxWebV
             visitor(webView);
         }
         webView->SetBackgroundColour(StateColor::darkModeColorFor(*wxWHITE));
-        webView->SetUserAgent(CustomUserAgent());
 #ifdef __WIN32__
         webView->Create(parent, wxID_ANY, url, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
         // We register the wxfs:// protocol for testing purposes
@@ -281,6 +280,7 @@ wxWebView* WebView::CreateWebView(wxWindow * parent, wxString const & url,wxWebV
         webView->RegisterHandler(wxSharedPtr<wxWebViewHandler>(new wxWebViewFSHandler("memory")));
         webView->Create(parent, wxID_ANY, url, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 #endif
+        webView->SetUserAgent(CustomUserAgent());
 #ifdef __WXMAC__
         WKWebView * wkWebView = (WKWebView *) webView->GetNativeBackend();
         Slic3r::GUI::WKWebView_setTransparentBackground(wkWebView);

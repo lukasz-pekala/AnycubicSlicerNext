@@ -278,7 +278,7 @@ function build_universal() {
         -output "$UNIVERSAL_APP/$BINARY_PATH"
         
         echo "Universal binary created at $UNIVERSAL_APP"
-    )
+    
 }
 
 case "${BUILD_TARGET}" in
