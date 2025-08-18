@@ -88,7 +88,7 @@ public:
     //BBS: get vendor's current version
     Semver get_vendor_profile_version(std::string vendor_name);
 
-    // Orca: get vendor type
+    // Anycubic: get vendor type
     VendorType get_current_vendor_type();
     // Vendor related handy functions
     bool is_bbl_vendor() { return get_current_vendor_type() == VendorType::Marlin_BBL; }
@@ -119,7 +119,7 @@ public:
     //BBS: check whether this is the only edited filament
     bool is_the_only_edited_filament(unsigned int filament_index);
 
-    // Orca: update selected filament and print
+    // Anycubic: update selected filament and print
     void           update_selections(AppConfig &config);
     void set_calibrate_printer(std::string name);
 
@@ -162,7 +162,7 @@ public:
     // and the system profiles will point to the VendorProfile instances owned by PresetBundle::vendors.
     VendorMap                   vendors;
 
-    // Orca: for OrcaFilamentLibrary
+    // Anycubic: for OrcaFilamentLibrary
     std::map<std::string, DynamicPrintConfig> m_config_maps;
     std::map<std::string, std::string> m_filament_id_maps;
 
@@ -219,7 +219,7 @@ public:
     // Don't do any config substitutions when loading a system profile, perform and report substitutions otherwise.
     /*std::pair<PresetsConfigSubstitutions, size_t> load_configbundle(
         const std::string &path, LoadConfigBundleAttributes flags, ForwardCompatibilitySubstitutionRule compatibility_rule);*/
-    //Orca: load config bundle from json, pass the base bundle to support cross vendor inheritance
+    //Anycubic: load config bundle from json, pass the base bundle to support cross vendor inheritance
     std::pair<PresetsConfigSubstitutions, size_t> load_vendor_configs_from_json(
         const std::string &path, const std::string &vendor_name, LoadConfigBundleAttributes flags, ForwardCompatibilitySubstitutionRule compatibility_rule, const PresetBundle* base_bundle = nullptr);
 
@@ -268,7 +268,7 @@ public:
     std::pair<PresetsConfigSubstitutions, std::string> load_system_filaments_json(ForwardCompatibilitySubstitutionRule compatibility_rule);
     VendorProfile                                      get_custom_vendor_models() const;
 
-    //orca: add 'custom' as default
+    //Anycubic: add 'custom' as default
     static const char *ORCA_DEFAULT_BUNDLE;
 	static const char *ORCA_DEFAULT_PRINTER_MODEL;
 	static const char *ORCA_DEFAULT_PRINTER_VARIANT;
@@ -282,7 +282,7 @@ public:
         return      { Preset::TYPE_PRINTER, Preset::TYPE_SLA_PRINT, Preset::TYPE_SLA_MATERIAL };
     }
 
-    // Orca: for validation only
+    // Anycubic: for validation only
     bool has_errors() const;
 
 private:
@@ -309,7 +309,7 @@ private:
     DynamicPrintConfig          full_fff_config() const;
     DynamicPrintConfig          full_sla_config() const;
 
-    // Orca: used for validation only
+    // Anycubic: used for validation only
     bool validation_mode = false;
     std::string vendor_to_validate = ""; 
     int m_errors = 0;

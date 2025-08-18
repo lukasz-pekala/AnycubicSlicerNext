@@ -216,8 +216,8 @@ extern bool is_shapes_dir(const std::string& dir);
 //BBS: add json support
 extern bool is_json_file(const std::string& path);
 
-// Orca: custom protocal support utils
-inline bool is_orca_open(const std::string& url) { return boost::starts_with(url, "orcaslicer://open"); }
+// Anycubic: custom protocal support utils
+inline bool is_orca_open(const std::string& url) { return boost::starts_with(url, "AnycubicSlicer://open"); }
 inline bool is_prusaslicer_open(const std::string& url) { return boost::starts_with(url, "prusaslicer://open"); }
 inline bool is_bambustudio_open(const std::string& url) { return boost::starts_with(url, "bambustudio://open") || boost::starts_with(url, "bambustudioopen://"); }
 inline bool is_cura_open(const std::string& url) { return boost::starts_with(url, "cura://open"); }
@@ -677,7 +677,7 @@ inline std::string filter_characters(const std::string& str, const std::string& 
 
 void copy_directory_recursively(const boost::filesystem::path &source, const boost::filesystem::path &target, std::function<bool(const std::string)> filter = nullptr);
 
-// Orca: Since 1.7.9 Boost deprecated save_string_file and load_string_file, copy and modified from boost 1.7.8
+// Anycubic: Since 1.7.9 Boost deprecated save_string_file and load_string_file, copy and modified from boost 1.7.8
 void save_string_file(const boost::filesystem::path& p, const std::string& str);
 void load_string_file(const boost::filesystem::path& p, std::string& str);
 

@@ -125,7 +125,8 @@ echo
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # PROJECT_BUILD_DIR="$PROJECT_DIR/build_$ARCH"
 DEPS_DIR="$PROJECT_DIR/deps"
-
+DEPS_BUILD_DIR="$DEPS_DIR/build_$ARCH"
+DEPS="$DEPS_BUILD_DIR/AnycubicSlicer_dep_$ARCH"
 
 # Fix for Multi-config generators
 if [ "$SLICER_CMAKE_GENERATOR" == "Xcode" ]; then
@@ -203,7 +204,22 @@ function build_slicer() {
         sh "$PROJECT_DIR/run_gettext.sh"
     )
 
-
+    echo "Fix macOS app package..."
+    (
+        cd "$PROJECT_BUILD_DIR"
+        mkdir -p AnycubicSlicer
+        cd AnycubicSlicer
+        # remove previously built app
+        rm -rf ./AnycubicSlicer.app
+        # fully copy newly built app
+        cp -pR "../src$BUILD_DIR_CONFIG_SUBDIR/AnycubicSlicer.app" ./AnycubicSlicer.app
+        # fix resources
+        resources_path=$(readlink ./AnycubicSlicer.app/Contents/Resources)
+        rm ./AnycubicSlicer.app/Contents/Resources
+        cp -R "$resources_path" ./AnycubicSlicer.app/Contents/Resources
+        # delete .DS_Store file
+        find ./AnycubicSlicer.app/ -name '.DS_Store' -delete
+    )
 
     # extract version
     # export ver=$(grep '^#define SoftFever_VERSION' ../src/libslic3r/libslic3r_version.h | cut -d ' ' -f3)
@@ -214,42 +230,52 @@ function build_slicer() {
     #     ver=${ver}_dev
     # fi
 
-    # zip -FSr OrcaSlicer${ver}_Mac_${ARCH}.zip OrcaSlicer.app
+    # zip -FSr AnycubicSlicer${ver}_Mac_${ARCH}.zip AnycubicSlicer.app
 }
 
 function build_universal() {
     echo "Building universal binary..."
-    local UNIVERSAL_BUILD_DIR="$PROJECT_DIR/universal"
-    for ARCH in "x86_64" "arm64"; do
-        echo "Building for $ARCH"
-        local DEPS_BUILD_DIR="$DEPS_DIR/build_${BUILD_CONFIG}_$ARCH"
-        local DEPS="$PROJECT_DIR/build/${BUILD_CONFIG}_$ARCH"
-        local PROJECT_BUILD_DIR="$PROJECT_DIR/build_${BUILD_CONFIG}_$ARCH"
-        build_deps "$DEPS" "$DEPS_BUILD_DIR" "$ARCH"
-        build_slicer "$DEPS" "$PROJECT_BUILD_DIR" "$ARCH"
-        cp -R "$PROJECT_BUILD_DIR/${BUILD_CONFIG}/AnycubicSlicerNext.app" "$UNIVERSAL_BUILD_DIR/AnycubicSlicerNext_$ARCH.app"
-    done
-
+    # Save current ARCH
+    ORIGINAL_ARCH="$ARCH"
+    
+    # Build x86_64
+    ARCH="x86_64"
+    PROJECT_BUILD_DIR="$PROJECT_DIR/build_$ARCH"
+    DEPS_BUILD_DIR="$DEPS_DIR/build_$ARCH"
+    DEPS="$DEPS_BUILD_DIR/AnycubicSlicer_dep_$ARCH"
+    build_deps
+    build_slicer
+    
+    # Build arm64
+    ARCH="arm64"
+    PROJECT_BUILD_DIR="$PROJECT_DIR/build_$ARCH"
+    DEPS_BUILD_DIR="$DEPS_DIR/build_$ARCH"
+    DEPS="$DEPS_BUILD_DIR/AnycubicSlicer_dep_$ARCH"
+    build_deps
+    build_slicer
+    
+    # Restore original ARCH
+    ARCH="$ORIGINAL_ARCH"
+    PROJECT_BUILD_DIR="$PROJECT_DIR/build_$ARCH"
+    DEPS_BUILD_DIR="$DEPS_DIR/build_$ARCH"
+    DEPS="$DEPS_BUILD_DIR/AnycubicSlicer_dep_$ARCH"
     
     # Create universal binary
     echo "Creating universal binary..."
-    (
-        set -x
-
-        ls "$UNIVERSAL_BUILD_DIR" 2>&1  > /dev/null || mkdir -p "$UNIVERSAL_BUILD_DIR"
-        UNIVERSAL_APP="$UNIVERSAL_BUILD_DIR/AnycubicSlicerNext.app"
-        ls "$UNIVERSAL_APP" 2>&1  > /dev/null  && rm -rf "$UNIVERSAL_APP"
-
-        # Create universal binary using lipo
-        for BINARY_PATH in "Contents/MacOS/AnycubicSlicerNext" \
-            "Contents/Frameworks/libACWebViewd.dylib" \
-            "Contents/Frameworks/libeasy_logd.dylib" \
-            "Contents/Frameworks/libplugins_based.dylib"; do
-            lipo -create \
-                    "$UNIVERSAL_BUILD_DIR/AnycubicSlicerNext_x86_64.app/$BINARY_PATH" \
-                    "$UNIVERSAL_BUILD_DIR/AnycubicSlicerNext_arm64.app/$BINARY_PATH" \
-                    -output "$UNIVERSAL_APP/$BINARY_PATH"
-        done
+    PROJECT_BUILD_DIR="$PROJECT_DIR/build_Universal"
+    mkdir -p "$PROJECT_BUILD_DIR/AnycubicSlicer"
+    UNIVERSAL_APP="$PROJECT_BUILD_DIR/AnycubicSlicer/Universal_AnycubicSlicer.app"
+    rm -rf "$UNIVERSAL_APP"
+    cp -R "$PROJECT_DIR/build_x86_64/AnycubicSlicer/AnycubicSlicer.app" "$UNIVERSAL_APP"
+    
+    # Get the binary path inside the .app bundle
+    BINARY_PATH="Contents/MacOS/AnycubicSlicer"
+    
+    # Create universal binary using lipo
+    lipo -create \
+        "$PROJECT_DIR/build_x86_64/AnycubicSlicer/AnycubicSlicer.app/$BINARY_PATH" \
+        "$PROJECT_DIR/build_arm64/AnycubicSlicer/AnycubicSlicer.app/$BINARY_PATH" \
+        -output "$UNIVERSAL_APP/$BINARY_PATH"
         
         echo "Universal binary created at $UNIVERSAL_APP"
     )

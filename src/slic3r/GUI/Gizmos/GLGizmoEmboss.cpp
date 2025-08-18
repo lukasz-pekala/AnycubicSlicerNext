@@ -852,7 +852,7 @@ void GLGizmoEmboss::on_render_input_window(float x, float y, float bottom_limit)
 
     double screen_scale = wxDisplay(wxGetApp().plater()).GetScaleFactor();
 
-    // Orca
+    // Anycubic
     ImGuiWrapper::push_toolbar_style(m_parent.get_scale());
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0, 5.0) * screen_scale);
     ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 4.0f * screen_scale);
@@ -922,7 +922,7 @@ void GLGizmoEmboss::on_render_input_window(float x, float y, float bottom_limit)
 
     GizmoImguiEnd();
 
-    // Orca
+    // Anycubic
     ImGui::PopStyleVar(2);
     ImGuiWrapper::pop_toolbar_style();
 }
@@ -3159,7 +3159,7 @@ void GLGizmoEmboss::init_icons()
         "make_unbold.svg",   
         "search.svg",
         "open.svg", 
-        "obj_warning.svg",  // ORCA: use obj_warning instead exclamation. exclamation is not compatible with low res
+        "obj_warning.svg",  // Anycubic: use obj_warning instead exclamation. exclamation is not compatible with low res
         "lock_closed.svg",  // lock,
         "lock_closed_f.svg",// lock_bold,
         "lock_open.svg",    // unlock,

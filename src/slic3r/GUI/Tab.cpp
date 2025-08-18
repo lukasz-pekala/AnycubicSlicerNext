@@ -273,7 +273,7 @@ void Tab::create_preset_tab()
     //search input
     m_search_item = new StaticBox(m_top_panel);
     StateColor box_colour(std::pair<wxColour, int>(*wxWHITE, StateColor::Normal));
-    StateColor box_border_colour(std::pair<wxColour, int>(wxColour("#DBDBDB"), StateColor::Normal)); // ORCA match border color with other input/combo boxes
+    StateColor box_border_colour(std::pair<wxColour, int>(wxColour("#DBDBDB"), StateColor::Normal)); // Anycubic match border color with other input/combo boxes
 
     m_search_item->SetBackgroundColor(box_colour);
     m_search_item->SetBorderColor(box_border_colour);
@@ -302,8 +302,8 @@ void Tab::create_preset_tab()
         if (m_presets_choice) m_presets_choice->Show();
 
         m_btn_save_preset->Show();
-        m_btn_delete_preset->Show(); // ORCA: fixes delete preset button visible while search box focused
-        m_undo_btn->Show();          // ORCA: fixes revert preset button visible while search box focused
+        m_btn_delete_preset->Show(); // Anycubic: fixes delete preset button visible while search box focused
+        m_undo_btn->Show();          // Anycubic: fixes revert preset button visible while search box focused
         m_btn_search->Show();
         m_search_item->Hide();
 
@@ -332,8 +332,8 @@ void Tab::create_preset_tab()
              m_presets_choice->Hide();
 
          m_btn_save_preset->Hide();
-         m_btn_delete_preset->Hide(); // ORCA: fixes delete preset button visible while search box focused
-         m_undo_btn->Hide();          // ORCA: fixes revert preset button visible while search box focused
+         m_btn_delete_preset->Hide(); // Anycubic: fixes delete preset button visible while search box focused
+         m_undo_btn->Hide();          // Anycubic: fixes revert preset button visible while search box focused
          m_btn_search->Hide();
          m_search_item->Show();
 
@@ -1493,7 +1493,7 @@ void Tab::on_value_change(const std::string& opt_key, const boost::any& value)
     }
 
     // BBS set support style to default when support type changes
-    // Orca: do this only in simple mode
+    // Anycubic: do this only in simple mode
     if (opt_key == "support_type" && m_mode == comSimple) {
         DynamicPrintConfig new_conf = *m_config;
         new_conf.set_key_value("support_style", new ConfigOptionEnum<SupportMaterialStyle>(smsDefault));
@@ -1616,7 +1616,7 @@ void Tab::on_value_change(const std::string& opt_key, const boost::any& value)
     }
 
 
-    //Orca: sync filament num if it's a multi tool printer
+    //Anycubic: sync filament num if it's a multi tool printer
     if (opt_key == "extruders_count" && !m_config->opt_bool("single_extruder_multi_material")){
         auto num_extruder = boost::any_cast<size_t>(value);
         int         old_filament_size = wxGetApp().preset_bundle->filament_presets.size();
@@ -1632,7 +1632,7 @@ void Tab::on_value_change(const std::string& opt_key, const boost::any& value)
         wxGetApp().preset_bundle->export_selections(*wxGetApp().app_config);
     }
 
-    //Orca: disable purge_in_prime_tower if single_extruder_multi_material is disabled
+    //Anycubic: disable purge_in_prime_tower if single_extruder_multi_material is disabled
     if (opt_key == "single_extruder_multi_material" && m_config->opt_bool("single_extruder_multi_material") == false){
         DynamicPrintConfig new_conf = *m_config;
         new_conf.set_key_value("purge_in_prime_tower", new ConfigOptionBool(false));
@@ -1666,7 +1666,7 @@ void Tab::show_timelapse_warning_dialog() {
 void Tab::update_wiping_button_visibility() {
     if (m_preset_bundle->printers.get_selected_preset().printer_technology() == ptSLA)
         return; // ys_FIXME
-    // Orca: it's not used
+    // Anycubic: it's not used
     //
     // bool wipe_tower_enabled = dynamic_cast<ConfigOptionBool*>(  (m_preset_bundle->prints.get_edited_preset().config  ).option("enable_prime_tower"))->value;
     // bool multiple_extruders = dynamic_cast<ConfigOptionFloats*>((m_preset_bundle->printers.get_edited_preset().config).option("nozzle_diameter"))->values.size() > 1;
@@ -1985,7 +1985,7 @@ void TabPrint::build()
         m_presets = &m_preset_bundle->prints;
     load_initial_data();
 
-    auto page = add_options_page(L("Quality"), "custom-gcode_quality"); // ORCA: icon only visible on placeholders
+    auto page = add_options_page(L("Quality"), "custom-gcode_quality"); // Anycubic: icon only visible on placeholders
         auto optgroup = page->new_optgroup(L("Layer height"), L"param_layer_height");
         optgroup->append_single_option_line("layer_height","quality_settings_layer_height");
         optgroup->append_single_option_line("initial_layer_print_height","quality_settings_layer_height");
@@ -2096,7 +2096,7 @@ void TabPrint::build()
         optgroup->append_single_option_line("overhang_reverse_internal_only");
         optgroup->append_single_option_line("overhang_reverse_threshold");
 
-    page = add_options_page(L("Strength"), "custom-gcode_strength"); // ORCA: icon only visible on placeholders
+    page = add_options_page(L("Strength"), "custom-gcode_strength"); // Anycubic: icon only visible on placeholders
         optgroup = page->new_optgroup(L("Walls"), L"param_wall");
         optgroup->append_single_option_line("wall_loops");
         optgroup->append_single_option_line("alternate_extra_wall");
@@ -2128,14 +2128,14 @@ void TabPrint::build()
         optgroup->append_single_option_line("solid_infill_direction");
         optgroup->append_single_option_line("rotate_solid_infill_direction");
         optgroup->append_single_option_line("bridge_angle");
-        optgroup->append_single_option_line("internal_bridge_angle"); // ORCA: Internal bridge angle override
+        optgroup->append_single_option_line("internal_bridge_angle"); // Anycubic: Internal bridge angle override
         optgroup->append_single_option_line("minimum_sparse_infill_area");
         optgroup->append_single_option_line("infill_combination");
         optgroup->append_single_option_line("infill_combination_max_layer_height");
         optgroup->append_single_option_line("detect_narrow_internal_solid_infill");
         optgroup->append_single_option_line("ensure_vertical_shell_thickness");
 
-    page = add_options_page(L("Speed"), "custom-gcode_speed"); // ORCA: icon only visible on placeholders
+    page = add_options_page(L("Speed"), "custom-gcode_speed"); // Anycubic: icon only visible on placeholders
         optgroup = page->new_optgroup(L("Initial layer speed"), L"param_speed_first", 15);
         optgroup->append_single_option_line("initial_layer_speed");
         optgroup->append_single_option_line("initial_layer_infill_speed");
@@ -2154,7 +2154,7 @@ void TabPrint::build()
         optgroup->append_single_option_line("support_interface_speed");
         optgroup = page->new_optgroup(L("Overhang speed"), L"param_overhang_speed", 15);
         optgroup->append_single_option_line("enable_overhang_speed", "slow-down-for-overhang");
-        // Orca: DEPRECATED
+        // Anycubic: DEPRECATED
         // optgroup->append_single_option_line("overhang_speed_classic", "slow-down-for-overhang");
         optgroup->append_single_option_line("slowdown_for_curled_perimeters");
         Line line = { L("Overhang speed"), L("This is the speed for various overhang degrees. Overhang degrees are expressed as a percentage of line width. 0 speed means no slowing down for the overhang degree range and wall speed is used") };
@@ -2200,7 +2200,7 @@ void TabPrint::build()
         optgroup->append_single_option_line("max_volumetric_extrusion_rate_slope_segment_length", "extrusion-rate-smoothing");
         optgroup->append_single_option_line("extrusion_rate_smoothing_external_perimeter_only", "extrusion-rate-smoothing");
 
-    page = add_options_page(L("Support"), "custom-gcode_support"); // ORCA: icon only visible on placeholders
+    page = add_options_page(L("Support"), "custom-gcode_support"); // Anycubic: icon only visible on placeholders
         optgroup = page->new_optgroup(L("Support"), L"param_support");
     optgroup->append_single_option_line("enable_support", "support");
         optgroup->append_single_option_line("support_type", "support#support-types");
@@ -2262,7 +2262,7 @@ void TabPrint::build()
         optgroup->append_single_option_line("tree_support_auto_brim");
         optgroup->append_single_option_line("tree_support_brim_width");
         
-    page = add_options_page(L("Multimaterial"), "custom-gcode_multi_material"); // ORCA: icon only visible on placeholders
+    page = add_options_page(L("Multimaterial"), "custom-gcode_multi_material"); // Anycubic: icon only visible on placeholders
         optgroup = page->new_optgroup(L("Prime tower"), L"param_tower");
         optgroup->append_single_option_line("enable_prime_tower");
         optgroup->append_single_option_line("prime_tower_width");
@@ -2304,7 +2304,7 @@ void TabPrint::build()
         optgroup->append_single_option_line("interlocking_depth");
         optgroup->append_single_option_line("interlocking_boundary_avoidance");
 
-page = add_options_page(L("Others"), "custom-gcode_other"); // ORCA: icon only visible on placeholders
+page = add_options_page(L("Others"), "custom-gcode_other"); // Anycubic: icon only visible on placeholders
         optgroup = page->new_optgroup(L("Skirt"), L"param_skirt");
         optgroup->append_single_option_line("skirt_loops");
         optgroup->append_single_option_line("skirt_type");
@@ -2370,7 +2370,7 @@ page = add_options_page(L("Others"), "custom-gcode_other"); // ORCA: icon only v
         option.opt.height = 25;//250;
         optgroup->append_single_option_line(option);
 
-    // Orca: hide the dependencies tab for process for now. The UI is not ready yet.
+    // Anycubic: hide the dependencies tab for process for now. The UI is not ready yet.
     // page = add_options_page(L("Dependencies"), "custom-gcode_advanced");
     //     optgroup = page->new_optgroup(L("Profile dependencies"));
 
@@ -3105,7 +3105,7 @@ void TabFilament::set_custom_gcode(const t_config_option_key& opt_key, const std
 void TabFilament::add_filament_overrides_page()
 {
     //BBS
-    PageShp page = add_options_page(L("Setting Overrides"), "custom-gcode_setting_override"); // ORCA: icon only visible on placeholders
+    PageShp page = add_options_page(L("Setting Overrides"), "custom-gcode_setting_override"); // Anycubic: icon only visible on placeholders
     ConfigOptionsGroupShp optgroup = page->new_optgroup(L("Retraction"), L"param_retraction");
 
     auto append_single_option_line = [optgroup, this](const std::string& opt_key, int opt_index)
@@ -3256,7 +3256,7 @@ void TabFilament::build()
     m_presets = &m_preset_bundle->filaments;
     load_initial_data();
 
-    auto page = add_options_page(L("Filament"), "custom-gcode_filament"); // ORCA: icon only visible on placeholders
+    auto page = add_options_page(L("Filament"), "custom-gcode_filament"); // Anycubic: icon only visible on placeholders
         //BBS
         auto optgroup = page->new_optgroup(L("Basic information"), L"param_information");
         // Set size as all another fields for a better alignment
@@ -3294,7 +3294,7 @@ void TabFilament::build()
             on_value_change(opt_key, value);
         };
 
-        // Orca: New section to focus on flow rate and PA to declutter general section
+        // Anycubic: New section to focus on flow rate and PA to declutter general section
         optgroup = page->new_optgroup(L("Flow ratio and Pressure Advance"), L"param_information");
         optgroup->append_single_option_line("pellet_flow_coefficient", "pellet-flow-coefficient");
         optgroup->append_single_option_line("filament_flow_ratio");
@@ -3302,7 +3302,7 @@ void TabFilament::build()
         optgroup->append_single_option_line("enable_pressure_advance");
         optgroup->append_single_option_line("pressure_advance");
 
-        // Orca: adaptive pressure advance and calibration model
+        // Anycubic: adaptive pressure advance and calibration model
         optgroup->append_single_option_line("adaptive_pressure_advance");
         optgroup->append_single_option_line("adaptive_pressure_advance_overhangs");
         optgroup->append_single_option_line("adaptive_pressure_advance_bridges");
@@ -3399,7 +3399,7 @@ void TabFilament::build()
         //};
         //optgroup->append_line(line);
 
-    page = add_options_page(L("Cooling"), "custom-gcode_cooling_fan"); // ORCA: icon only visible on placeholders
+    page = add_options_page(L("Cooling"), "custom-gcode_cooling_fan"); // Anycubic: icon only visible on placeholders
 
         //line = { "", "" };
         //line.full_width = 1;
@@ -3430,7 +3430,7 @@ void TabFilament::build()
         optgroup->append_single_option_line("enable_overhang_bridge_fan", "auto-cooling");
         optgroup->append_single_option_line("overhang_fan_threshold", "auto-cooling");
         optgroup->append_single_option_line("overhang_fan_speed", "auto-cooling");
-        optgroup->append_single_option_line("internal_bridge_fan_speed"); // ORCA: Add support for separate internal bridge fan speed control
+        optgroup->append_single_option_line("internal_bridge_fan_speed"); // Anycubic: Add support for separate internal bridge fan speed control
         optgroup->append_single_option_line("support_material_interface_fan_speed");
 
         optgroup = page->new_optgroup(L("Auxiliary part cooling fan"), L"param_cooling_aux_fan");
@@ -3455,7 +3455,7 @@ void TabFilament::build()
 
         auto edit_custom_gcode_fn = [this](const t_config_option_key& opt_key) { edit_custom_gcode(opt_key); };
 
-    page = add_options_page(L("Advanced"), "custom-gcode_advanced"); // ORCA: icon only visible on placeholders
+    page = add_options_page(L("Advanced"), "custom-gcode_advanced"); // Anycubic: icon only visible on placeholders
         optgroup = page->new_optgroup(L("Filament start G-code"), L"param_gcode", 0);
         optgroup->m_on_change = [this, &optgroup_title = optgroup->title](const t_config_option_key& opt_key, const boost::any& value) {
             validate_custom_gcode_cb(this, optgroup_title, opt_key, value);
@@ -3478,7 +3478,7 @@ void TabFilament::build()
         option.opt.height = gcode_field_height;// 150;
         optgroup->append_single_option_line(option);
 
-    page = add_options_page(L("Multimaterial"), "custom-gcode_multi_material"); // ORCA: icon only visible on placeholders
+    page = add_options_page(L("Multimaterial"), "custom-gcode_multi_material"); // Anycubic: icon only visible on placeholders
         optgroup = page->new_optgroup(L("Wipe tower parameters"), "param_tower");
         optgroup->append_single_option_line("filament_minimal_purge_on_wipe_tower");
 
@@ -3534,7 +3534,7 @@ void TabFilament::build()
         option.opt.full_width = true;
         optgroup->append_single_option_line(option);
 
-    page = add_options_page(L("Notes"), "custom-gcode_note"); // ORCA: icon only visible on placeholders
+    page = add_options_page(L("Notes"), "custom-gcode_note"); // Anycubic: icon only visible on placeholders
         optgroup = page->new_optgroup(L("Notes"),"note", 0);
         optgroup->label_width = 0;
         option = optgroup->get_option("filament_notes");
@@ -3591,12 +3591,12 @@ void TabFilament::toggle_options()
     auto cfg = m_preset_bundle->printers.get_edited_preset().config;
     if (m_active_page->title() == L("Cooling")) {
       bool has_enable_overhang_bridge_fan = m_config->opt_bool("enable_overhang_bridge_fan", 0);
-      for (auto el : {"overhang_fan_speed", "overhang_fan_threshold", "internal_bridge_fan_speed"}) // ORCA: Add support for separate internal bridge fan speed control
+      for (auto el : {"overhang_fan_speed", "overhang_fan_threshold", "internal_bridge_fan_speed"}) // Anycubic: Add support for separate internal bridge fan speed control
             toggle_option(el, has_enable_overhang_bridge_fan);
 
       toggle_option("additional_cooling_fan_speed", cfg.opt_bool("auxiliary_fan"));
         
-      // Orca: toggle dont slow down for external perimeters if
+      // Anycubic: toggle dont slow down for external perimeters if
       bool has_slow_down_for_layer_cooling = m_config->opt_bool("slow_down_for_layer_cooling", 0);
       toggle_option("dont_slow_down_outer_wall", has_slow_down_for_layer_cooling);
     }
@@ -3605,7 +3605,7 @@ void TabFilament::toggle_options()
         bool pa = m_config->opt_bool("enable_pressure_advance", 0);
         toggle_option("pressure_advance", pa);
 
-        //Orca: Enable the plates that should be visible when multi bed support is enabled or a BBL printer is selected; otherwise, enable only the plate visible for the selected bed type.
+        //Anycubic: Enable the plates that should be visible when multi bed support is enabled or a BBL printer is selected; otherwise, enable only the plate visible for the selected bed type.
         DynamicConfig& proj_cfg               = m_preset_bundle->project_config;
         std::string    bed_temp_1st_layer_key = "";
         if (proj_cfg.has("curr_bed_type")) 
@@ -3628,7 +3628,7 @@ void TabFilament::toggle_options()
 
      
         
-        // Orca: adaptive pressure advance and calibration model
+        // Anycubic: adaptive pressure advance and calibration model
         // If PA is not enabled, disable adaptive pressure advance and hide the model section
         // If adaptive PA is not enabled, hide the adaptive PA model section
         toggle_option("adaptive_pressure_advance", pa);
@@ -3649,7 +3649,7 @@ void TabFilament::toggle_options()
         update_filament_overrides_page(&cfg);
 
     if (m_active_page->title() == L("Multimaterial")) {
-        // Orca: hide specific settings for BBL printers
+        // Anycubic: hide specific settings for BBL printers
         for (auto el : {"filament_minimal_purge_on_wipe_tower", "filament_loading_speed_start", "filament_loading_speed",
                         "filament_unloading_speed_start", "filament_unloading_speed", "filament_toolchange_delay", "filament_cooling_moves",
                         "filament_cooling_initial_speed", "filament_cooling_final_speed"})
@@ -3743,7 +3743,7 @@ void TabPrinter::build_fff()
     m_sys_extruders_count = parent_preset == nullptr ? 0 :
             static_cast<const ConfigOptionFloats*>(parent_preset->config.option("nozzle_diameter"))->values.size();
 
-    auto page = add_options_page(L("Basic information"), "custom-gcode_object-info"); // ORCA: icon only visible on placeholders
+    auto page = add_options_page(L("Basic information"), "custom-gcode_object-info"); // Anycubic: icon only visible on placeholders
     auto optgroup = page->new_optgroup(L("Printable space"), "param_printable_space");
 
         create_line_with_widget(optgroup.get(), "printable_area", "custom-svg-and-png-bed-textures_124612", [this](wxWindow* parent) {
@@ -3841,7 +3841,7 @@ void TabPrinter::build_fff()
 
     const int gcode_field_height = 15; // 150
     const int notes_field_height = 25; // 250
-    page = add_options_page(L("Machine gcode"), "custom-gcode_gcode"); // ORCA: icon only visible on placeholders
+    page = add_options_page(L("Machine gcode"), "custom-gcode_gcode"); // Anycubic: icon only visible on placeholders
         optgroup = page->new_optgroup(L("Machine start G-code"), L"param_gcode", 0);
         optgroup->m_on_change = [this, &optgroup_title = optgroup->title](const t_config_option_key& opt_key, const boost::any& value) {
             validate_custom_gcode_cb(this, optgroup_title, opt_key, value);
@@ -3951,7 +3951,7 @@ void TabPrinter::build_fff()
         option.opt.height = gcode_field_height;//150;
         optgroup->append_single_option_line(option);
 
-    page = add_options_page(L("Notes"), "custom-gcode_note"); // ORCA: icon only visible on placeholders
+    page = add_options_page(L("Notes"), "custom-gcode_note"); // Anycubic: icon only visible on placeholders
         optgroup = page->new_optgroup(L("Notes"), "note", 0);
         option = optgroup->get_option("printer_notes");
         option.opt.full_width = true;
@@ -4034,7 +4034,7 @@ void TabPrinter::extruders_count_changed(size_t extruders_count)
         m_preset_bundle->update_multi_material_filament_presets();
         is_count_changed = true;
     }
-    // Orca: support multi tool
+    // Anycubic: support multi tool
     else if (m_extruders_count == 1 &&
              m_preset_bundle->project_config.option<ConfigOptionFloats>("flush_volumes_matrix")->values.size()>1)
         m_preset_bundle->update_multi_material_filament_presets();
@@ -4065,7 +4065,7 @@ void TabPrinter::append_option_line(ConfigOptionsGroupShp optgroup, const std::s
 
 PageShp TabPrinter::build_kinematics_page()
 {
-    auto page = add_options_page(L("Motion ability"), "custom-gcode_motion", true); // ORCA: icon only visible on placeholders
+    auto page = add_options_page(L("Motion ability"), "custom-gcode_motion", true); // Anycubic: icon only visible on placeholders
 
     if (m_use_silent_mode) {
         // Legend for OptionsGroups
@@ -4168,7 +4168,7 @@ if (is_marlin_flavor)
 
     if (from_initial_build) {
         // create a page, but pretend it's an extruder page, so we can add it to m_pages ourselves
-        auto page     = add_options_page(L("Multimaterial"), "custom-gcode_multi_material", true); // ORCA: icon only visible on placeholders
+        auto page     = add_options_page(L("Multimaterial"), "custom-gcode_multi_material", true); // Anycubic: icon only visible on placeholders
         auto optgroup = page->new_optgroup(L("Single extruder multi-material setup"), "param_multi_material");
         optgroup->append_single_option_line("single_extruder_multi_material", "semm");
         ConfigOptionDef def;
@@ -4181,7 +4181,7 @@ if (is_marlin_flavor)
         Option option(def, "extruders_count");
         optgroup->append_single_option_line(option);
 
-        // Orca: rebuild missed extruder pages
+        // Anycubic: rebuild missed extruder pages
         optgroup->m_on_change = [this, optgroup_wk = ConfigOptionsGroupWkp(optgroup)](t_config_option_key opt_key, boost::any value) {
             auto optgroup_sh = optgroup_wk.lock();
             if (!optgroup_sh)
@@ -4204,7 +4204,7 @@ if (is_marlin_flavor)
                         if (boost::any_cast<bool>(value) && m_extruders_count > 1) {
                             SuppressBackgroundProcessingUpdate sbpu;
 
-// Orca: we use a different logic here. If SEMM is enabled, we set extruder count to 1.
+// Anycubic: we use a different logic here. If SEMM is enabled, we set extruder count to 1.
 #if 1
                             extruders_count_changed(1);
 #else
@@ -4274,7 +4274,7 @@ if (is_marlin_flavor)
         m_pages.insert(m_pages.end() - n_after_single_extruder_MM, page);
     }
 
-    // Orca: build missed extruder pages
+    // Anycubic: build missed extruder pages
     for (auto extruder_idx = m_extruders_count_old; extruder_idx < m_extruders_count; ++extruder_idx) {
         // auto extruder_idx = 0;
         const wxString& page_name = wxString::Format("Extruder %d", int(extruder_idx + 1));
@@ -4290,7 +4290,7 @@ if (is_marlin_flavor)
         {
             //# build page
             //const wxString& page_name = wxString::Format("Extruder %d", int(extruder_idx + 1));
-            auto page = add_options_page(page_name, "custom-gcode_extruder", true); // ORCA: icon only visible on placeholders
+            auto page = add_options_page(page_name, "custom-gcode_extruder", true); // Anycubic: icon only visible on placeholders
             m_pages.insert(m_pages.begin() + n_before_extruders + extruder_idx, page);
 
                 auto optgroup = page->new_optgroup(L("Size"), L"param_extruder_size");
@@ -4427,7 +4427,7 @@ if (is_marlin_flavor)
 // this gets executed after preset is loaded and before GUI fields are updated
 void TabPrinter::on_preset_loaded()
 {
-    // Orca
+    // Anycubic
     // update the extruders count field
     auto   *nozzle_diameter = dynamic_cast<const ConfigOptionFloats*>(m_config->option("nozzle_diameter"));
     size_t extruders_count = nozzle_diameter->values.size();
@@ -5124,7 +5124,7 @@ bool Tab::select_preset(std::string preset_name, bool delete_current /*=false*/,
         // check if there is something in the cache to move to the new selected preset
         apply_config_from_cache();
 
-        // Orca: update presets for the selected printer
+        // Anycubic: update presets for the selected printer
         if (m_type == Preset::TYPE_PRINTER && wxGetApp().app_config->get_bool("remember_printer_config")) {
             m_preset_bundle->update_selections(*wxGetApp().app_config);
             wxGetApp().plater()->sidebar().on_filaments_change(m_preset_bundle->filament_presets.size());
@@ -6220,7 +6220,7 @@ bool Page::set_value(const t_config_option_key &opt_key, const boost::any &value
 ConfigOptionsGroupShp Page::new_optgroup(const wxString &title, const wxString &icon, int noncommon_label_width /*= -1*/, bool is_extruder_og /* false */)
 {
     //! config_ have to be "right"
-    ConfigOptionsGroupShp optgroup  = is_extruder_og ? std::make_shared<ExtruderOptionsGroup>(m_parent, title, icon, m_config, true) // ORCA: add support for icons
+    ConfigOptionsGroupShp optgroup  = is_extruder_og ? std::make_shared<ExtruderOptionsGroup>(m_parent, title, icon, m_config, true) // Anycubic: add support for icons
         : std::make_shared<ConfigOptionsGroup>(m_parent, title, icon, m_config, true);
     optgroup->split_multi_line     = this->m_split_multi_line;
     optgroup->option_label_at_right = this->m_option_label_at_right;

@@ -56,7 +56,7 @@ else()
   set(_curl_static ON)
 endif()
 
-orcaslicer_add_cmake_project(CURL
+AnycubicSlicer_add_cmake_project(CURL
   # GIT_REPOSITORY      https://github.com/curl/curl.git
   # GIT_TAG             curl-7_75_0
   URL                 https://github.com/curl/curl/releases/download/curl-8_4_0/curl-8.4.0.zip

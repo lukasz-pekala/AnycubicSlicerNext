@@ -123,8 +123,8 @@ BundleMap BundleMap::load()
     const auto vendor_dir = (boost::filesystem::path(Slic3r::data_dir()) / PRESET_SYSTEM_DIR).make_preferred();
     const auto rsrc_vendor_dir = (boost::filesystem::path(resources_dir()) / "profiles").make_preferred();
 
-    //Orca: add custom as default
-    //Orca: add json logic for vendor bundle
+    //Anycubic: add custom as default
+    //Anycubic: add json logic for vendor bundle
     auto orca_bundle_path = (vendor_dir / PresetBundle::ORCA_DEFAULT_BUNDLE).replace_extension(".json");
     auto orca_bundle_rsrc = false;
     if (!boost::filesystem::exists(orca_bundle_path)) {
@@ -163,7 +163,7 @@ BundleMap BundleMap::load()
 
 Bundle& BundleMap::bbl_bundle()
 {
-    //Orca: add custom as default
+    //Anycubic: add custom as default
     auto it = find(PresetBundle::ORCA_DEFAULT_BUNDLE);
     if (it == end()) {
         throw Slic3r::RuntimeError("ConfigWizard: Internal error in BundleMap: ORCA_DEFAULT_BUNDLE not loaded");
@@ -625,7 +625,7 @@ std::set<std::string> PagePrinters::get_selected_models()
 
 void PagePrinters::set_run_reason(ConfigWizard::RunReason run_reason)
 {
-    //Orca: add custom as default
+    //Anycubic: add custom as default
     if (is_primary_printer_page
         && (run_reason == ConfigWizard::RR_DATA_EMPTY || run_reason == ConfigWizard::RR_DATA_LEGACY)
         && printer_pickers.size() > 0 
@@ -1487,7 +1487,7 @@ void PageTemperatures::apply_custom_config(DynamicPrintConfig& config)
 
 ConfigWizardIndex::ConfigWizardIndex(wxWindow *parent)
     : wxPanel(parent)
-    , bg(ScalableBitmap(parent, "OrcaSlicer_192px_transparent.png", 192))
+    , bg(ScalableBitmap(parent, "AnycubicSlicer_192px_transparent.png", 192))
     , bullet_black(ScalableBitmap(parent, "bullet_black.png"))
     , bullet_blue(ScalableBitmap(parent, "bullet_blue.png"))
     , bullet_white(ScalableBitmap(parent, "bullet_white.png"))
@@ -1940,7 +1940,7 @@ void ConfigWizard::priv::create_3rdparty_pages()
 {
     for (const auto &pair : bundles) {
         const VendorProfile *vendor = pair.second.vendor_profile;
-        //Orca: add custom as default
+        //Anycubic: add custom as default
         if (vendor->id == PresetBundle::ORCA_DEFAULT_BUNDLE) { continue; }
 
         bool is_fff_technology = false;

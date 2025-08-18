@@ -38,9 +38,9 @@ using namespace nlohmann;
 
 namespace Slic3r {
 
-static const std::string VERSION_CHECK_URL_STABLE = "https://api.github.com/repos/softfever/OrcaSlicer/releases/latest";
-static const std::string VERSION_CHECK_URL = "https://api.github.com/repos/softfever/OrcaSlicer/releases";
-static const std::string PROFILE_UPDATE_URL = "https://api.github.com/repos/OrcaSlicer/orcaslicer-profiles/releases/tags";
+static const std::string VERSION_CHECK_URL_STABLE = "https://api.github.com/repos/softfever/AnycubicSlicer/releases/latest";
+static const std::string VERSION_CHECK_URL = "https://api.github.com/repos/softfever/AnycubicSlicer/releases";
+static const std::string PROFILE_UPDATE_URL = "https://api.github.com/repos/AnycubicSlicer/orcaslicer-profiles/releases/tags";
 static const std::string MODELS_STR = "models";
 
 const std::string AppConfig::SECTION_FILAMENTS = "filaments";
@@ -248,7 +248,7 @@ void AppConfig::set_defaults()
         set("slicer_uuid", to_string(uuid));
     }
 
-    // Orca
+    // Anycubic
     if (get("stealth_mode").empty()) {
         set_bool("stealth_mode", false);
     }
@@ -257,7 +257,7 @@ void AppConfig::set_defaults()
         set_bool("check_stable_update_only", false);
     }
 
-    // Orca
+    // Anycubic
     if(get("show_splash_screen").empty()) {
         set_bool("show_splash_screen", true);
     }

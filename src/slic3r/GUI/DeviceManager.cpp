@@ -5945,7 +5945,7 @@ std::map<std::string ,MachineObject*> DeviceManager::get_local_machine_list()
 void DeviceManager::load_last_machine()
 {
     if (userMachineList.empty()) {
-        // Orca: connect LAN printers instead
+        // Anycubic: connect LAN printers instead
         const auto local_machine = std::find_if(localMachineList.begin(), localMachineList.end(), [](const std::pair<std::string, MachineObject*>& it) -> bool { return it.second->has_access_right();});
         if (local_machine != localMachineList.end()) {
             this->set_selected_machine(local_machine->second->dev_id);

@@ -1540,7 +1540,7 @@ void TriangleSelectorPatch::render(int triangle_indices_idx, bool show_wireframe
         glsafe(::glEnableVertexAttribArray((GLint)position_id));
     }
     GLint barycentric_id = -1;
-    // Orca: This is required even if wireframe is not displayed, otherwise on AMD Vega GPUs the painter gizmo won't render properly
+    // Anycubic: This is required even if wireframe is not displayed, otherwise on AMD Vega GPUs the painter gizmo won't render properly
     /*if (show_wireframe)*/ {
         barycentric_id = shader->get_attrib_location("v_barycentric");
         if (barycentric_id != -1) {

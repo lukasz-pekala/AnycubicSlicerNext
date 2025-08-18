@@ -44,7 +44,7 @@ static std::vector<std::string> s_project_options {
     "flush_multiplier",
 };
 
-//Orca: add custom as default
+//Anycubic: add custom as default
 const char *PresetBundle::ORCA_DEFAULT_BUNDLE = "Custom";
 const char *PresetBundle::ORCA_DEFAULT_PRINTER_MODEL = "MyKlipper 0.4 nozzle";
 const char *PresetBundle::ORCA_DEFAULT_PRINTER_VARIANT = "0.4";
@@ -1592,7 +1592,7 @@ void PresetBundle::load_installed_sla_materials(AppConfig &config)
 void PresetBundle::update_selections(AppConfig &config)
 {
     std::string initial_printer_profile_name    = printers.get_selected_preset_name();
-    // Orca: load from orca_presets
+    // Anycubic: load from orca_presets
     std::string initial_print_profile_name        = config.get_printer_setting(initial_printer_profile_name, PRESET_PRINT_NAME);
     std::string initial_filament_profile_name     = config.get_printer_setting(initial_printer_profile_name, PRESET_FILAMENT_NAME);
 
@@ -1684,7 +1684,7 @@ void PresetBundle::load_selections(AppConfig &config, const PresetPreferences& p
     printers.select_preset_by_name(preferred_printer ? preferred_printer->name : initial_printer_profile_name, true);
     CNumericLocalesSetter locales_setter;
 
-    // Orca: load from orca_presets
+    // Anycubic: load from orca_presets
     // const auto os_presets = config.get_machine_settings(initial_printer_profile_name);
     std::string initial_print_profile_name        = config.get_printer_setting(initial_printer_profile_name, PRESET_PRINT_NAME);
     std::string initial_filament_profile_name     = config.get_printer_setting(initial_printer_profile_name, PRESET_FILAMENT_NAME);
@@ -3429,11 +3429,11 @@ bool PresetBundle::has_errors() const
         return true;
 
     bool has_errors = false;
-    // Orca: check if all filament presets have compatible_printers setting
+    // Anycubic: check if all filament presets have compatible_printers setting
     for (auto& preset : filaments) {
         if (!preset.is_system)
             continue;
-        // It's per design that the Orca Filament Library can have the empty compatible_printers.
+        // It's per design that the Anycubic Filament Library can have the empty compatible_printers.
         if(preset.vendor->name == PresetBundle::ORCA_FILAMENT_LIBRARY)
             continue;
         auto* compatible_printers = dynamic_cast<const ConfigOptionStrings*>(preset.config.option("compatible_printers"));

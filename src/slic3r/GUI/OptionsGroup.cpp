@@ -483,7 +483,7 @@ bool OptionsGroup::activate(std::function<void()> throw_if_canceled/* = [](){}*/
 			// BBS: new layout
 			::StaticLine* stl = new ::StaticLine(m_parent, false, _(title), icon);
             stl->SetFont(Label::Head_14);
-            stl->SetForegroundColour("#363636"); // ORCA Match Parameters title color with tab title color 
+            stl->SetForegroundColour("#363636"); // Anycubic Match Parameters title color with tab title color 
             sizer = new wxBoxSizer(wxVERTICAL);
             if (title.IsEmpty()) {
                 stl->Hide();
@@ -1283,8 +1283,8 @@ wxString OptionsGroup::get_url(const std::string& path_end)
         anchor.Replace(L" ", "-");
         str = str.Left(pos) + anchor;
     }
-    // Orca: point to sf wiki for seam parameters
-    return wxString::Format(L"https://github.com/SoftFever/OrcaSlicer/wiki/%s", from_u8(path_end));
+    // Anycubic: point to sf wiki for seam parameters
+    return wxString::Format(L"https://github.com/SoftFever/AnycubicSlicer/wiki/%s", from_u8(path_end));
 
 }
 

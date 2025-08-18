@@ -12,13 +12,13 @@ function check_available_memory_and_disk() {
     MIN_DISK_KB=$((10 * 1024 * 1024))
 
     if [ ${FREE_MEM_GB} -le ${MIN_MEM_GB} ]; then
-        echo -e "\nERROR: Orca Slicer Builder requires at least ${MIN_MEM_GB}G of 'available' mem (systen has only ${FREE_MEM_GB}G available)"
+        echo -e "\nERROR: AnycubicSlicer Slicer Builder requires at least ${MIN_MEM_GB}G of 'available' mem (systen has only ${FREE_MEM_GB}G available)"
         echo && free -h && echo
         exit 2
     fi
 
     if [[ ${FREE_DISK_KB} -le ${MIN_DISK_KB} ]]; then
-        echo -e "\nERROR: Orca Slicer Builder requires at least $(echo ${MIN_DISK_KB} |awk '{ printf "%.1fG\n", $1/1024/1024; }') (systen has only $(echo ${FREE_DISK_KB} | awk '{ printf "%.1fG\n", $1/1024/1024; }') disk free)"
+        echo -e "\nERROR: AnycubicSlicer Slicer Builder requires at least $(echo ${MIN_DISK_KB} |awk '{ printf "%.1fG\n", $1/1024/1024; }') (systen has only $(echo ${FREE_DISK_KB} | awk '{ printf "%.1fG\n", $1/1024/1024; }') disk free)"
         echo && df -h . && echo
         exit 1
     fi
@@ -33,7 +33,7 @@ function usage() {
     echo "   -h: this help output"
     echo "   -i: Generate appimage (optional)"
     echo "   -r: skip ram and disk checks (low ram compiling)"
-    echo "   -s: build orca-slicer (optional)"
+    echo "   -s: build anycubic-slicer (optional)"
     echo "   -u: update and build dependencies (optional and need sudo)"
     echo "   -g: Set GitHub proxy. default is null"
     echo "For a first use, you want to 'sudo ./BuildLinux.sh -u'"
@@ -65,7 +65,7 @@ while getopts ":1bcdg:hirsu" opt; do
 	    SKIP_RAM_CHECK="1"
 	;;
     s )
-        BUILD_ORCA="1"
+        BUILD_Anycubic="1"
         ;;
     u )
         UPDATE_LIB="1"
@@ -146,9 +146,9 @@ then
 fi
 
 
-if [[ -n "${BUILD_ORCA}" ]]
+if [[ -n "${BUILD_Anycubic}" ]]
 then
-    echo "Configuring OrcaSlicer..."
+    echo "Configuring AnycubicSlicer..."
     if [[ -n "${CLEAN_BUILD}" ]]
     then
         rm -fr build
@@ -168,13 +168,13 @@ then
     cmake -S . -B build -G Ninja \
         -DCMAKE_PREFIX_PATH="${PWD}/deps/build/destdir/usr/local" \
         -DSLIC3R_STATIC=1 \
-        -DORCA_TOOLS=ON \
+        -DAnycubicTOOLS=ON \
         ${BUILD_ARGS}
     echo "done"
-    echo "Building OrcaSlicer ..."
-    cmake --build build --target OrcaSlicer
-    echo "Building OrcaSlicer_profile_validator .."
-    cmake --build build --target OrcaSlicer_profile_validator
+    echo "Building AnycubicSlicer ..."
+    cmake --build build --target AnycubicSlicer
+    echo "Building AnycubicSlicer_profile_validator .."
+    cmake --build build --target AnycubicSlicer_profile_validator
     ./run_gettext.sh
     echo "done"
 fi

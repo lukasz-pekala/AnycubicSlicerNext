@@ -565,7 +565,7 @@ void ConfigManipulation::toggle_print_fff_options(DynamicPrintConfig *config, co
     
     bool have_skirt = config->opt_int("skirt_loops") > 0;
     toggle_field("skirt_height", have_skirt && config->opt_enum<DraftShield>("draft_shield") != dsEnabled);
-    toggle_line("single_loop_draft_shield", have_skirt && config->opt_enum<DraftShield>("draft_shield") == dsEnabled); // ORCA: Display one wall draft shield if draft shield is enabled and skirt enabled
+    toggle_line("single_loop_draft_shield", have_skirt && config->opt_enum<DraftShield>("draft_shield") == dsEnabled); // Anycubic: Display one wall draft shield if draft shield is enabled and skirt enabled
     for (auto el : {"skirt_type","min_skirt_length", "skirt_distance", "skirt_start_angle","skirt_height","skirt_speed", "draft_shield", "single_loop_draft_shield"})
         toggle_field(el, have_skirt);   
     
@@ -609,7 +609,7 @@ void ConfigManipulation::toggle_print_fff_options(DynamicPrintConfig *config, co
     
     bool support_is_tree = config->opt_bool("enable_support") && is_tree(support_type);
     bool support_is_normal_tree = support_is_tree && support_style != smsTreeOrganic &&
-    // Orca: use organic as default
+    // Anycubic: use organic as default
     support_style != smsDefault;
     bool support_is_organic = support_is_tree && !support_is_normal_tree;
     // settings shared by normal and organic trees
@@ -647,7 +647,7 @@ void ConfigManipulation::toggle_print_fff_options(DynamicPrintConfig *config, co
     
     toggle_line("raft_contact_distance", have_raft && !have_support_soluble);
     
-    // Orca: Raft, grid, snug and organic supports use these two parameters to control the size & density of the "brim"/flange
+    // Anycubic: Raft, grid, snug and organic supports use these two parameters to control the size & density of the "brim"/flange
     for (auto el : { "raft_first_layer_expansion", "raft_first_layer_density"})
         toggle_field(el, have_support_material && !(support_is_normal_tree && !have_raft));
     
@@ -727,7 +727,7 @@ void ConfigManipulation::toggle_print_fff_options(DynamicPrintConfig *config, co
         toggle_line(el, have_arachne);
     toggle_field("detect_thin_wall", !have_arachne);
     
-    // Orca
+    // Anycubic
     auto is_role_based_wipe_speed = config->opt_bool("role_based_wipe_speed");
     toggle_field("wipe_speed",!is_role_based_wipe_speed);
     

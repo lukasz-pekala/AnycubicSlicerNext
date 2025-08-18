@@ -210,7 +210,7 @@ namespace ImGui
     const wchar_t ExpandArrowIcon          = 0x0843;
     const wchar_t CompleteIcon             = 0x0844;
 
-    // Orca
+    // Anycubic
     const wchar_t PlayButton           = 0x0850;
     const wchar_t PlayDarkButton       = 0x0851;
     const wchar_t PlayHoverButton      = 0x0852;

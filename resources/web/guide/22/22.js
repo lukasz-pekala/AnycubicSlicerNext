@@ -2,7 +2,7 @@
 var m_ProfileItem;
 
 var FilamentPriority=new Array( "pla","abs","pet","tpu","pc");
-var VendorPriority=new Array("Orca Built-in","bambu lab","bambulab","bbl","kexcelled","polymaker","esun","Generic");
+var VendorPriority=new Array("Anycubic Built-in","bambu lab","bambulab","bbl","kexcelled","polymaker","esun","Generic");
   
 function OnInit()
 {
@@ -138,7 +138,7 @@ function SortUI()
 		//let bCheck=$("#MachineList input:first").prop("checked");
 		if( fModel=='')
 		{
-			// Orca: hide
+			// Anycubic: hide
 			bFind=true;
 		}
 		else

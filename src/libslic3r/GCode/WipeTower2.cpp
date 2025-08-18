@@ -1,4 +1,4 @@
-// Orca: WipeTower2 for all non bbl printers, support all MMU device and toolchanger.
+// Anycubic: WipeTower2 for all non bbl printers, support all MMU device and toolchanger.
 #include "WipeTower2.hpp"
 
 #include <cassert>
@@ -52,7 +52,7 @@ public:
     m_gcode_flavor(flavor),
     m_filpar(filament_parameters)
     {
-            // ORCA: This class is only used by non BBL printers, so set the parameter appropriately.
+            // Anycubic: This class is only used by non BBL printers, so set the parameter appropriately.
             // This fixes an issue where the wipe tower was using BBL tags resulting in statistics for purging in the purge tower not being displayed.
             GCodeProcessor::s_IsBBLPrinter = false;
             // adds tag for analyzer:
@@ -893,7 +893,7 @@ void WipeTower2::toolchange_Unload(
 	float remaining = xr - xl ;							// keeps track of distance to the next turnaround
 	float e_done = 0;									// measures E move done from each segment   
 
-    // Orca: Do ramming when SEMM and ramming is enabled or when multi tool head when ramming is enabled on the multi tool.
+    // Anycubic: Do ramming when SEMM and ramming is enabled or when multi tool head when ramming is enabled on the multi tool.
     const bool do_ramming = (m_semm && m_enable_filament_ramming) || m_filpar[m_current_tool].multitool_ramming;
     const bool cold_ramming = m_is_mk4mmu3;
 
@@ -1545,7 +1545,7 @@ void WipeTower2::plan_toolchange(float z_par, float layer_height_par, unsigned i
 	float length_to_extrude = volume_to_length(0.25f * std::accumulate(m_filpar[old_tool].ramming_speed.begin(), m_filpar[old_tool].ramming_speed.end(), 0.f),
 										m_perimeter_width * m_filpar[old_tool].ramming_line_width_multiplicator,
 										layer_height_par);
-    // Orca: Set ramming depth to 0 if ramming is disabled.
+    // Anycubic: Set ramming depth to 0 if ramming is disabled.
     float ramming_depth = m_enable_filament_ramming ? ((int(length_to_extrude / width) + 1) * (m_perimeter_width * m_filpar[old_tool].ramming_line_width_multiplicator * m_filpar[old_tool].ramming_step_multiplicator) * m_extra_spacing_ramming) : 0;
     float first_wipe_line = - (width*((length_to_extrude / width)-int(length_to_extrude / width)) - width);
 
@@ -1601,7 +1601,7 @@ void WipeTower2::save_on_last_wipe()
             auto& toolchange = m_layer_info->tool_changes[i];
             tool_change(toolchange.new_tool);
 
-            // Orca: allow calculation of the required depth and wipe volume for soluable toolchanges as well
+            // Anycubic: allow calculation of the required depth and wipe volume for soluable toolchanges as well
             // NOTE: it's not clear if this is the right way, technically we should disable wipe tower if soluble filament is used as it
             // will will make the wipe tower unstable. Need to revist this in the future.
 

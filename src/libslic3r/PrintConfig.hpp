@@ -90,7 +90,7 @@ enum class WallSequence {
     Count,
 };
 
-// Orca
+// Anycubic
 enum class WallDirection
 {
     Auto,
@@ -167,14 +167,14 @@ enum SeamPosition {
     spNearest, spAligned, spRear, spRandom
 };
 
-// Orca
+// Anycubic
 enum class SeamScarfType {
     None,
     External,
     All,
 };
 
-// Orca
+// Anycubic
 enum EnsureVerticalShellThickness {
     evstNone,
     evstCriticalOnly,
@@ -182,17 +182,17 @@ enum EnsureVerticalShellThickness {
     evstAll,
 };
 
-//Orca
+//Anycubic
 enum InternalBridgeFilter {
     ibfDisabled, ibfLimited, ibfNofilter
 };
 
-//Orca
+//Anycubic
 enum EnableExtraBridgeLayer {
     eblDisabled, eblExternalBridgeOnly, eblInternalBridgeOnly, eblApplyToAll
 };
 
-//Orca
+//Anycubic
 enum GapFillTarget {
      gftEverywhere, gftTopBottom, gftNowhere
  };
@@ -225,7 +225,7 @@ enum SLAPillarConnectionMode {
 
 enum BrimType {
     btAutoBrim,  // BBS
-    btEar, // Orca
+    btEar, // Anycubic
     btPainted,  // BBS
     btOuterOnly,
     btInnerOnly,
@@ -829,11 +829,11 @@ PRINT_CONFIG_CLASS_DEFINE(
     ((ConfigOptionEnum<SupportMaterialStyle>, support_style))
     // BBS
     //((ConfigOptionBool,                independent_support_layer_height))
-    // Orca internal thick bridge
+    // Anycubic internal thick bridge
     ((ConfigOptionBool,                thick_bridges))
     ((ConfigOptionBool,                thick_internal_bridges))
     ((ConfigOptionEnum<InternalBridgeFilter>,  dont_filter_internal_bridges))
-    // Orca
+    // Anycubic
     ((ConfigOptionEnum<EnableExtraBridgeLayer>,  enable_extra_bridge_layer))
     ((ConfigOptionPercent,              internal_bridge_density))
     // Overhang angle threshold.
@@ -870,7 +870,7 @@ PRINT_CONFIG_CLASS_DEFINE(
     ((ConfigOptionPercent,            initial_layer_min_bead_width))
     ((ConfigOptionPercent,            min_bead_width))
 
-    // Orca
+    // Anycubic
     ((ConfigOptionFloat,              make_overhang_printable_angle))
     ((ConfigOptionFloat,              make_overhang_printable_hole_size))
     ((ConfigOptionFloat,              tree_support_branch_distance_organic))
@@ -916,7 +916,7 @@ PRINT_CONFIG_CLASS_DEFINE(
     ((ConfigOptionInt,                  bottom_shell_layers))
     ((ConfigOptionFloat,                bottom_shell_thickness))
     ((ConfigOptionFloat,                bridge_angle))
-    ((ConfigOptionFloat,                internal_bridge_angle)) // ORCA: Internal bridge angle override
+    ((ConfigOptionFloat,                internal_bridge_angle)) // Anycubic: Internal bridge angle override
     ((ConfigOptionFloat,                bridge_flow))
     ((ConfigOptionFloat,                internal_bridge_flow))
     ((ConfigOptionFloat,                bridge_speed))
@@ -950,7 +950,7 @@ PRINT_CONFIG_CLASS_DEFINE(
     ((ConfigOptionFloat,                sparse_infill_speed))
     //BBS
     ((ConfigOptionBool, infill_combination))
-    // Orca:
+    // Anycubic:
     ((ConfigOptionFloatOrPercent,                infill_combination_max_layer_height))
     // Ironing options
     ((ConfigOptionEnum<IroningType>, ironing_type))
@@ -1008,7 +1008,7 @@ PRINT_CONFIG_CLASS_DEFINE(
     ((ConfigOptionFloatOrPercent,       infill_anchor))
     ((ConfigOptionFloatOrPercent,       infill_anchor_max))
 
-    // Orca
+    // Anycubic
     ((ConfigOptionBool,                 make_overhang_printable))
     ((ConfigOptionBool,                 extra_perimeters_on_overhangs))
     ((ConfigOptionBool,                 slowdown_for_curled_perimeters))
@@ -1024,7 +1024,7 @@ PRINT_CONFIG_CLASS_DEFINE(
     ((ConfigOptionBool,                small_area_infill_flow_compensation))
     ((ConfigOptionEnum<WallDirection>,  wall_direction))
 
-    // Orca: seam slopes
+    // Anycubic: seam slopes
     ((ConfigOptionEnum<SeamScarfType>,  seam_slope_type))
     ((ConfigOptionBool,                 seam_slope_conditional))
     ((ConfigOptionInt,                  scarf_angle_threshold))
@@ -1043,7 +1043,7 @@ PRINT_CONFIG_CLASS_DEFINE(
 PRINT_CONFIG_CLASS_DEFINE(
     MachineEnvelopeConfig,
 
-    // Orca: whether emit machine limits into the beginning of the G-code.
+    // Anycubic: whether emit machine limits into the beginning of the G-code.
     ((ConfigOptionBool,                 emit_machine_limits_to_gcode))
     // M201 X... Y... Z... E... [mm/sec^2]
     ((ConfigOptionFloats,               machine_max_acceleration_x))
@@ -1086,7 +1086,7 @@ PRINT_CONFIG_CLASS_DEFINE(
     ((ConfigOptionFloats,              filament_flow_ratio))
     ((ConfigOptionBools,               enable_pressure_advance))
     ((ConfigOptionFloats,              pressure_advance))
-    // Orca: adaptive pressure advance and calibration model
+    // Anycubic: adaptive pressure advance and calibration model
     ((ConfigOptionBools,                adaptive_pressure_advance))
     ((ConfigOptionBools,                adaptive_pressure_advance_overhangs))
     ((ConfigOptionStrings,             adaptive_pressure_advance_model))
@@ -1169,7 +1169,7 @@ PRINT_CONFIG_CLASS_DEFINE(
     ((ConfigOptionBool,                bbl_calib_mark_logo))
     ((ConfigOptionBool,                disable_m73))
 
-    // Orca: mmu
+    // Anycubic: mmu
     ((ConfigOptionFloat,               cooling_tube_retraction))
     ((ConfigOptionFloat,               cooling_tube_length))
     ((ConfigOptionBool,                high_current_on_filament_swap))
@@ -1316,7 +1316,7 @@ PRINT_CONFIG_CLASS_DERIVED_DEFINE(
     ((ConfigOptionFloats,             flush_volumes_matrix))
     ((ConfigOptionFloats,             flush_volumes_vector))
 
-    // Orca: mmu support
+    // Anycubic: mmu support
     ((ConfigOptionFloat,              wipe_tower_cone_angle))
     ((ConfigOptionPercent,            wipe_tower_extra_spacing))
     ((ConfigOptionFloat,              wipe_tower_max_purge_speed))
@@ -1346,8 +1346,8 @@ PRINT_CONFIG_CLASS_DERIVED_DEFINE(
     ((ConfigOptionBool,                gcode_comments))
     ((ConfigOptionInt,                 slow_down_layers))
     ((ConfigOptionInts,                support_material_interface_fan_speed))
-    ((ConfigOptionInts,                internal_bridge_fan_speed)) // ORCA: Add support for separate internal bridge fan speed control
-    // Orca: notes for profiles from PrusaSlicer
+    ((ConfigOptionInts,                internal_bridge_fan_speed)) // Anycubic: Add support for separate internal bridge fan speed control
+    // Anycubic: notes for profiles from PrusaSlicer
     ((ConfigOptionStrings,             filament_notes))
     ((ConfigOptionString,              notes))
     ((ConfigOptionString,              printer_notes))
@@ -1355,7 +1355,7 @@ PRINT_CONFIG_CLASS_DERIVED_DEFINE(
     ((ConfigOptionBools,               activate_chamber_temp_control))
     ((ConfigOptionInts ,               chamber_temperature))
     
-    // Orca: support adaptive bed mesh
+    // Anycubic: support adaptive bed mesh
     ((ConfigOptionFloat,               preferred_orientation))
     ((ConfigOptionPoint,               bed_mesh_min))
     ((ConfigOptionPoint,               bed_mesh_max))

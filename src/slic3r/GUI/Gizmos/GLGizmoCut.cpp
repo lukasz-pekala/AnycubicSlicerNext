@@ -680,7 +680,7 @@ bool GLGizmoCut3D::render_reset_button(const std::string& label_id, const std::s
 static double get_grabber_mean_size(const BoundingBoxf3& bb)
 {
 #if ENABLE_FIXED_GRABBER
-    // Orca: make grabber larger
+    // Anycubic: make grabber larger
     return 32. * GLGizmoBase::INV_ZOOM;
 #else
     return (bb.size().x() + bb.size().y() + bb.size().z()) / 30.;
@@ -2909,7 +2909,7 @@ void GLGizmoCut3D::on_render_input_window(float x, float y, float bottom_limit)
 
     GizmoImguiEnd();
 
-    // Orca
+    // Anycubic
     ImGuiWrapper::pop_toolbar_style();
 
     if (!m_connectors_editing) // connectors mode
@@ -2931,9 +2931,9 @@ void GLGizmoCut3D::show_tooltip_information(float x, float y)
     caption_max += m_imgui->calc_text_size(std::string_view{": "}).x + 35.f;
 
     float  scale       = m_parent.get_scale();
-    ImVec2 button_size = ImVec2(25 * scale, 25 * scale); // ORCA: Use exact resolution will prevent blur on icon
+    ImVec2 button_size = ImVec2(25 * scale, 25 * scale); // Anycubic: Use exact resolution will prevent blur on icon
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {0, 0}); // ORCA: Dont add padding
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {0, 0}); // Anycubic: Dont add padding
     ImGui::ImageButton3(normal_id, hover_id, button_size);
 
     if (ImGui::IsItemHovered()) {

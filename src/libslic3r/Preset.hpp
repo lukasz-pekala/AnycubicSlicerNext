@@ -64,7 +64,7 @@
 #define BBL_JSON_KEY_DEFAULT_MATERIALS          "default_materials"
 #define BBL_JSON_KEY_MODEL_ID                   "model_id"
 
-// Orca extension
+// Anycubic extension
 #define ORCA_JSON_KEY_RENAMED_FROM              "renamed_from"
 
 
@@ -234,12 +234,12 @@ public:
     // and to match the "inherits" field of user profiles with updated system profiles.
     std::vector<std::string> renamed_from;
 
-    // Orca: maintain a list of printer models that are excluded from this preset, designed for filaments without compatible_printer defined
-    // (hence they are visible to all printer models by default) in Orca Filament Library. However, we might have speciliazed filament for
+    // Anycubic: maintain a list of printer models that are excluded from this preset, designed for filaments without compatible_printer defined
+    // (hence they are visible to all printer models by default) in Anycubic Filament Library. However, we might have speciliazed filament for
     // certain printer models defined in the vendor profile as well, in this case we want to hide this generic preset for these printer models.
     std::set<std::string> m_excluded_from;
 
-    // Orca: flag to indicate if this preset is from Orca Filament Library
+    // Anycubic: flag to indicate if this preset is from Anycubic Filament Library
     bool m_from_orca_filament_lib = false;
 
     //BBS
@@ -609,7 +609,7 @@ public:
     {
         return const_cast<PresetCollection*>(this)->find_preset(name, first_visible_if_not_found);
     }
-    // Orca: find preset, if not found, keep searching in the renamed history. This is function should only be used when find
+    // Anycubic: find preset, if not found, keep searching in the renamed history. This is function should only be used when find
     // system(parent) presets for custom preset.
     Preset* find_preset2(const std::string& name, bool auto_match = true);
     const Preset* find_preset2(const std::string& name, bool auto_match = true) const
@@ -737,7 +737,7 @@ protected:
     // Update m_map_system_profile_renamed from loaded system profiles.
     void 			update_map_system_profile_renamed();
 
-    // Orca: update m_excluded_from loaded system profiles.
+    // Anycubic: update m_excluded_from loaded system profiles.
     void 			update_library_profile_excluded_from();
 
 
@@ -810,7 +810,7 @@ private:
     //BBS: mutex
     std::mutex          m_mutex;
 
-    // Orca: used for validation only
+    // Anycubic: used for validation only
     int m_errors = 0;
 };
 

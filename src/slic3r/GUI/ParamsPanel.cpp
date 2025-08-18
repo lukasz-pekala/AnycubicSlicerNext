@@ -28,7 +28,7 @@ TipsDialog::TipsDialog(wxWindow *parent, const wxString &title, const wxString &
     m_app_key(app_key)
 {
     SetBackgroundColour(*wxWHITE);
-    std::string icon_path = (boost::format("%1%/images/OrcaSlicerTitle.ico") % resources_dir()).str();
+    std::string icon_path = (boost::format("%1%/images/AnycubicSlicerTitle.ico") % resources_dir()).str();
     SetIcon(wxIcon(encode_path(icon_path.c_str()), wxBITMAP_TYPE_ICO));
 
     wxBoxSizer *m_sizer_main = new wxBoxSizer(wxVERTICAL);
@@ -225,7 +225,7 @@ ParamsPanel::ParamsPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos, c
         m_tips_arrow = new ScalableButton(m_top_panel, wxID_ANY, "tips_arrow");
         m_tips_arrow->Hide();
 
-        m_title_view = new Label(m_top_panel, Label::Body_12, _L("Advance")); // ORCA match size with advanced toggle on tab.cpp m_static_title
+        m_title_view = new Label(m_top_panel, Label::Body_12, _L("Advance")); // Anycubic match size with advanced toggle on tab.cpp m_static_title
         m_mode_view = new SwitchButton(m_top_panel, wxID_ABOUT);
 
         // BBS: new layout

@@ -1,4 +1,4 @@
-// Orca: WipeTower2 for all non bbl printers, support all MMU device and toolchanger
+// Anycubic: WipeTower2 for all non bbl printers, support all MMU device and toolchanger
 
 #ifndef WipeTower2_
 #define WipeTower2_

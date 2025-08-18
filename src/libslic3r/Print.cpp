@@ -53,7 +53,7 @@ PrintRegion::PrintRegion(const PrintRegionConfig &config) : PrintRegion(config, 
 PrintRegion::PrintRegion(PrintRegionConfig &&config) : PrintRegion(std::move(config), config.hash()) {}
 
 //BBS
-// ORCA: Now this is a parameter
+// Anycubic: Now this is a parameter
 //float Print::min_skirt_length = 0;
 
 void Print::clear()
@@ -178,7 +178,7 @@ bool Print::invalidate_state_by_config_options(const ConfigOptionResolver & /* n
         "required_nozzle_HRC",
         "upward_compatible_machine",
         "is_infill_first",
-        // Orca
+        // Anycubic
         "chamber_temperature",
         "thumbnails",
         "thumbnails_format",
@@ -193,7 +193,7 @@ bool Print::invalidate_state_by_config_options(const ConfigOptionResolver & /* n
         "gcode_label_objects", 
         "exclude_object",
         "support_material_interface_fan_speed",
-        "internal_bridge_fan_speed", // ORCA: Add support for separate internal bridge fan speed control
+        "internal_bridge_fan_speed", // Anycubic: Add support for separate internal bridge fan speed control
         "single_extruder_multi_material_priming",
         "activate_air_filtration",
         "during_print_exhaust_fan_speed",
@@ -394,7 +394,7 @@ std::vector<unsigned int> Print::object_extruders() const
     std::vector<unsigned int> extruders;
     extruders.reserve(m_print_regions.size() * m_objects.size() * 3);
 
-    //Orca: Collect extruders from all regions.
+    //Anycubic: Collect extruders from all regions.
     for (const PrintObject *object : m_objects)
 		for (const PrintRegion &region : object->all_regions())
         	region.collect_object_printing_extruders(*this, extruders);
@@ -509,7 +509,7 @@ std::vector<ObjectID> Print::print_object_ids() const
 
 bool Print::has_infinite_skirt() const
 {
-    // Orca: unclear why (m_config.ooze_prevention && this->extruders().size() > 1) logic is here, removed.
+    // Anycubic: unclear why (m_config.ooze_prevention && this->extruders().size() > 1) logic is here, removed.
     // return (m_config.draft_shield == dsEnabled && m_config.skirt_loops > 0) || (m_config.ooze_prevention && this->extruders().size() > 1);
 
     return (m_config.draft_shield == dsEnabled && m_config.skirt_loops > 0);
@@ -1056,7 +1056,7 @@ StringObjectException Print::check_multi_filament_valid(const Print& print)
     return {std::string()};
 }
 
-// Orca: this g92e0 regex is used copied from PrusaSlicer
+// Anycubic: this g92e0 regex is used copied from PrusaSlicer
 // Matches "G92 E0" with various forms of writing the zero and with an optional comment.
 boost::regex regex_g92e0 { "^[ \\t]*[gG]92[ \\t]*[eE](0(\\.0*)?|\\.0+)[ \\t]*(;.*)?$" };
 
@@ -1169,7 +1169,7 @@ StringObjectException Print::validate(StringObjectException *warning, Polygons* 
     for (size_t print_object_idx = 0; print_object_idx < m_objects.size(); ++ print_object_idx)
         if (const PrintObject &print_object = *m_objects[print_object_idx];
             print_object.has_support_material() && is_tree(print_object.config().support_type.value) && (print_object.config().support_style.value == smsTreeOrganic || 
-                // Orca: use organic as default
+                // Anycubic: use organic as default
                 print_object.config().support_style.value == smsDefault) &&
             print_object.model_object()->has_custom_layering()) {
             if (const std::vector<coordf_t> &layers = layer_height_profile(print_object_idx); ! layers.empty())
@@ -1342,7 +1342,7 @@ StringObjectException Print::validate(StringObjectException *warning, Polygons* 
                 // Prusa: Fixing crashes with invalid tip diameter or branch diameter
                 // https://github.com/prusa3d/PrusaSlicer/commit/96b3ae85013ac363cd1c3e98ec6b7938aeacf46d
                 if (is_tree(object->config().support_type.value) && (object->config().support_style == smsTreeOrganic ||
-                    // Orca: use organic as default
+                    // Anycubic: use organic as default
                     object->config().support_style == smsDefault)) {
                     float extrusion_width = std::min(
                         support_material_flow(object).width(),
@@ -1407,7 +1407,7 @@ StringObjectException Print::validate(StringObjectException *warning, Polygons* 
         }
     }
 
-    // Orca: G92 E0 is not supported when using absolute extruder addressing
+    // Anycubic: G92 E0 is not supported when using absolute extruder addressing
     // This check is copied from PrusaSlicer, the original author is Vojtech Bubnik
     if(!is_BBL_printer()) {
         bool before_layer_gcode_resets_extruder =
@@ -1576,7 +1576,7 @@ StringObjectException Print::validate(StringObjectException *warning, Polygons* 
             }
 
             // check speed
-            // Orca: disable the speed check for now as we don't cap the speed
+            // Anycubic: disable the speed check for now as we don't cap the speed
             // if (warning_key.empty()) {
             //    auto       speed_to_check = {"inner_wall_speed",  "outer_wall_speed", "sparse_infill_speed",   "internal_solid_infill_speed",
             //                                 "top_surface_speed", "bridge_speed",     "internal_bridge_speed", "gap_infill_speed"};
@@ -1595,7 +1595,7 @@ StringObjectException Print::validate(StringObjectException *warning, Polygons* 
             // }
 
         } catch (std::exception& e) {
-            BOOST_LOG_TRIVIAL(warning) << "Orca: validate motion ability failed: " << e.what() << std::endl;
+            BOOST_LOG_TRIVIAL(warning) << "Anycubic: validate motion ability failed: " << e.what() << std::endl;
         }
     }
     if (!this->has_same_shrinkage_compensations()){
@@ -2478,7 +2478,7 @@ std::vector<Point> Print::first_layer_wipe_tower_corners(bool check_wipe_tower_e
 
         for (Vec2d& pt : pts) {
             pt = Eigen::Rotation2Dd(Geometry::deg2rad(m_config.wipe_tower_rotation_angle.value)) * pt;
-            //Orca: offset the wipe tower to the plate origin
+            //Anycubic: offset the wipe tower to the plate origin
             pt += Vec2d(m_config.wipe_tower_x.get_at(m_plate_index) + m_origin(0), m_config.wipe_tower_y.get_at(m_plate_index) + m_origin(1));
             corners.emplace_back(Point(scale_(pt.x()), scale_(pt.y())));
         }
@@ -2608,7 +2608,7 @@ const WipeTowerData &Print::wipe_tower_data(size_t filaments_cnt) const
             float maximum = std::accumulate(max_wipe_volumes.begin(), max_wipe_volumes.end(), 0.f);
             maximum       = maximum * filaments_cnt / max_wipe_volumes.size();
             
-            // Orca: it's overshooting a bit, so let's reduce it a bit
+            // Anycubic: it's overshooting a bit, so let's reduce it a bit
             maximum *= 0.6; 
             const_cast<Print *>(this)->m_wipe_tower_data.depth = maximum / (layer_height * width);
         } else {
@@ -2645,7 +2645,7 @@ void Print::_make_wipe_tower()
         wipe_volumes.push_back(std::vector<float>(flush_matrix.begin()+i*number_of_extruders, flush_matrix.begin()+(i+1)*number_of_extruders));
 
     const auto bUseWipeTower2 = is_BBL_printer() ? false : true;
-    // Orca: itertate over wipe_volumes and change the non-zero values to the prime_volume
+    // Anycubic: itertate over wipe_volumes and change the non-zero values to the prime_volume
     if ((!m_config.purge_in_prime_tower || !m_config.single_extruder_multi_material) && !is_BBL_printer()) {
         for (unsigned int i = 0; i < number_of_extruders; ++i) {
             for (unsigned int j = 0; j < number_of_extruders; ++j) {
@@ -3028,7 +3028,7 @@ std::string PrintStatistics::finalize_output_path(const std::string &path_in) co
     return final_path;
 }
 
-// Orca: Implement prusa's filament shrink compensation approach
+// Anycubic: Implement prusa's filament shrink compensation approach
 // Returns if all used filaments have same shrinkage compensations.
  bool Print::has_same_shrinkage_compensations() const {
      const std::vector<unsigned int> extruders = this->extruders();
@@ -3048,7 +3048,7 @@ std::string PrintStatistics::finalize_output_path(const std::string &path_in) co
      return true;
  }
 
-// Orca: Implement prusa's filament shrink compensation approach, but amended so 100% from the user is the equivalent to 0 in orca.
+// Anycubic: Implement prusa's filament shrink compensation approach, but amended so 100% from the user is the equivalent to 0 in Anycubic.
  // Returns scaling for each axis representing shrinkage compensations in each axis.
 Vec3d Print::shrinkage_compensation() const
 {

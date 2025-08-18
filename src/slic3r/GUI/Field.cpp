@@ -747,7 +747,7 @@ void TextCtrl::BUILD() {
             propagate_value();
         }), text_ctrl->GetId());
     } else {
-        // Orca: adds logic that scrolls the parent if the text control doesn't have focus
+        // Anycubic: adds logic that scrolls the parent if the text control doesn't have focus
         text_ctrl->Bind(wxEVT_MOUSEWHEEL, [text_ctrl](wxMouseEvent& event) {
             if (text_ctrl->HasFocus() && text_ctrl->GetScrollRange(wxVERTICAL) != 1)
                 event.Skip(); // don't consume the event so that the text control will scroll
@@ -1882,7 +1882,7 @@ void PointCtrl::BUILD()
 	m_combine_side_text = true; // Prefer using side text in input box
 
     //const wxSize field_size(4 * m_em_unit, -1);
-    const wxSize  field_size((m_opt.width >= 0 ? m_opt.width : def_width_wider()) * m_em_unit, -1); // ORCA match width with other components
+    const wxSize  field_size((m_opt.width >= 0 ? m_opt.width : def_width_wider()) * m_em_unit, -1); // Anycubic match width with other components
     Slic3r::Vec2d default_pt;
     if(m_opt.type == coPoints)
 	    default_pt = m_opt.get_default_value<ConfigOptionPoints>()->values.at(0);
@@ -1897,7 +1897,7 @@ void PointCtrl::BUILD()
 //#ifdef _WIN32
 //	style |= wxBORDER_SIMPLE;
 //#endif
-    // ORCA add icons to point control boxes instead of using text for X / Y
+    // Anycubic add icons to point control boxes instead of using text for X / Y
     x_input = new ::TextInput(m_parent, X, m_opt.sidetext, "inputbox_x", wxDefaultPosition, field_size, style);
     y_input = new ::TextInput(m_parent, Y, m_opt.sidetext, "inputbox_y", wxDefaultPosition, field_size, style);
     x_textctrl = x_input->GetTextCtrl();
@@ -1946,7 +1946,7 @@ void PointCtrl::msw_rescale()
     Field::msw_rescale();
 
     //wxSize field_size(4 * m_em_unit, -1);
-    wxSize  field_size((m_opt.width >= 0 ? m_opt.width : def_width_wider()) * m_em_unit, -1); // ORCA match width with other components
+    wxSize  field_size((m_opt.width >= 0 ? m_opt.width : def_width_wider()) * m_em_unit, -1); // Anycubic match width with other components
 
     if (parent_is_custom_ctrl) {
         field_size.SetHeight(lround(opt_height * m_em_unit));

@@ -2175,7 +2175,7 @@ void GLGizmoMeasure::on_render_input_window(float x, float y, float bottom_limit
     }
     m_last_active_item_imgui = m_current_active_imgui_id;
     GizmoImguiEnd();
-    // Orca
+    // Anycubic
     ImGuiWrapper::pop_toolbar_style();
 }
 
@@ -2226,9 +2226,9 @@ void GLGizmoMeasure::show_tooltip_information(float caption_max, float x, float 
     caption_max += m_imgui->calc_text_size(": "sv).x + 35.f;
 
     float  scale       = m_parent.get_scale();
-    ImVec2 button_size = ImVec2(25 * scale, 25 * scale); // ORCA: Use exact resolution will prevent blur on icon
+    ImVec2 button_size = ImVec2(25 * scale, 25 * scale); // Anycubic: Use exact resolution will prevent blur on icon
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0, 0 }); // ORCA: Dont add padding
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0, 0 }); // Anycubic: Dont add padding
     ImGui::ImageButton3(normal_id, hover_id, button_size);
 
     if (ImGui::IsItemHovered()) {

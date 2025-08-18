@@ -106,7 +106,7 @@ static wxString update_custom_filaments()
 }
 
 GuideFrame::GuideFrame(GUI_App *pGUI, long style)
-    : DPIDialog((wxWindow *) (pGUI->mainframe), wxID_ANY, "OrcaSlicer", wxDefaultPosition, wxDefaultSize, style),
+    : DPIDialog((wxWindow *) (pGUI->mainframe), wxID_ANY, "AnycubicSlicer", wxDefaultPosition, wxDefaultSize, style),
 	m_appconfig_new()
 {
     SetBackgroundColour(*wxWHITE);
@@ -793,7 +793,7 @@ bool GuideFrame::apply_config(AppConfig *app_config, PresetBundle *preset_bundle
             variant.clear();
         return std::string();
     };
-    // Orca "custom" printers are considered first, then 3rd party.
+    // Anycubic "custom" printers are considered first, then 3rd party.
     if (preferred_model = get_preferred_printer_model(PresetBundle::ORCA_DEFAULT_BUNDLE, preferred_variant);
         preferred_model.empty()) {
         for (const auto& bundle : enabled_vendors) {
@@ -989,8 +989,8 @@ int GuideFrame::LoadProfile()
         vendor_dir      = (boost::filesystem::path(Slic3r::data_dir()) / PRESET_SYSTEM_DIR ).make_preferred();
         rsrc_vendor_dir = (boost::filesystem::path(resources_dir()) / "profiles").make_preferred();
 
-        // Orca: add custom as default
-        // Orca: add json logic for vendor bundle
+        // Anycubic: add custom as default
+        // Anycubic: add json logic for vendor bundle
         orca_bundle_rsrc = true;
 
         // search if there exists a .json file in vendor_dir folder, if exists, set orca_bundle_rsrc to false

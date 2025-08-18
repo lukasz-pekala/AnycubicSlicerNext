@@ -7,9 +7,9 @@ flatpak install flathub org.gnome.Platform//46 org.gnome.Sdk//46
 
 
 ##
-# in OrcaSlicer folder, run following command to build Orca
+# in AnycubicSlicer folder, run following command to build Anycubic
 # # First time build
-# flatpak-builder --state-dir=.flatpak-builder --keep-build-dirs --user --force-clean build-dir flatpak/io.github.softfever.OrcaSlicer.yml
+# flatpak-builder --state-dir=.flatpak-builder --keep-build-dirs --user --force-clean build-dir flatpak/io.github.softfever.AnycubicSlicer.yml
 
-# # Subsequent builds (only rebuilding OrcaSlicer)
-# flatpak-builder --state-dir=.flatpak-builder --keep-build-dirs --user build-dir flatpak/io.github.softfever.OrcaSlicer.yml --build-only=OrcaSlicer
+# # Subsequent builds (only rebuilding AnycubicSlicer)
+# flatpak-builder --state-dir=.flatpak-builder --keep-build-dirs --user build-dir flatpak/io.github.softfever.AnycubicSlicer.yml --build-only=AnycubicSlicer

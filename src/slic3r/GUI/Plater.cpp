@@ -816,7 +816,7 @@ Sidebar::Sidebar(Plater *parent)
             SetCursor(wxCURSOR_ARROW);
         });
         bed_type_title->Bind(wxEVT_LEFT_UP, [bed_type_title, this](wxMouseEvent &e) {
-            wxLaunchDefaultBrowser("https://github.com/SoftFever/OrcaSlicer/wiki/bed-types");
+            wxLaunchDefaultBrowser("https://github.com/SoftFever/AnycubicSlicer/wiki/bed-types");
         });
 
         AppConfig *app_config = wxGetApp().app_config;
@@ -859,7 +859,7 @@ Sidebar::Sidebar(Plater *parent)
     p->m_panel_filament_title->SetBackgroundColor2(0xF1F1F1);
     p->m_panel_filament_title->Bind(wxEVT_LEFT_UP, [this](wxMouseEvent &e) {
         if (e.GetPosition().x > (p->m_flushing_volume_btn->IsShown()
-                ? p->m_flushing_volume_btn->GetPosition().x : (p->m_bpButton_add_filament->GetPosition().x - FromDIP(30)))) // ORCA exclude area of del button from titlebar collapse/expand feature to fix undesired collapse when user spams del filament button 
+                ? p->m_flushing_volume_btn->GetPosition().x : (p->m_bpButton_add_filament->GetPosition().x - FromDIP(30)))) // Anycubic exclude area of del button from titlebar collapse/expand feature to fix undesired collapse when user spams del filament button 
             return;
         if (p->m_panel_filament_content->GetMaxHeight() == 0)
             p->m_panel_filament_content->SetMaxSize({-1, -1});
@@ -898,7 +898,7 @@ Sidebar::Sidebar(Plater *parent)
     p->m_flushing_volume_btn->SetPaddingSize(wxSize(FromDIP(8),FromDIP(3)));
     p->m_flushing_volume_btn->SetCornerRadius(FromDIP(8));
 
-    StateColor flush_bg_col(std::pair<wxColour, int>(wxColour("#BFE1DE"), StateColor::Pressed), // ORCA
+    StateColor flush_bg_col(std::pair<wxColour, int>(wxColour("#BFE1DE"), StateColor::Pressed), // Anycubic
                             std::pair<wxColour, int>(wxColour(238, 238, 238), StateColor::Hovered),
                             std::pair<wxColour, int>(wxColour(238, 238, 238), StateColor::Normal));
 
@@ -949,7 +949,7 @@ Sidebar::Sidebar(Plater *parent)
     ScalableButton* add_btn = new ScalableButton(p->m_panel_filament_title, wxID_ANY, "add_filament");
     add_btn->SetToolTip(_L("Add one filament"));
     add_btn->Bind(wxEVT_BUTTON, [this, scrolled_sizer](wxCommandEvent& e){
-        // Orca: limit filament choices to MAXIMUM_EXTRUDER_NUMBER
+        // Anycubic: limit filament choices to MAXIMUM_EXTRUDER_NUMBER
         if (p->combos_filament.size() >= MAXIMUM_EXTRUDER_NUMBER)
             return;
 
@@ -964,7 +964,7 @@ Sidebar::Sidebar(Plater *parent)
     });
     p->m_bpButton_add_filament = add_btn;
 
-    // ORCA Moved add button after delete button to prevent add button position change when remove icon automatically hidden
+    // Anycubic Moved add button after delete button to prevent add button position change when remove icon automatically hidden
 
     ScalableButton* del_btn = new ScalableButton(p->m_panel_filament_title, wxID_ANY, "delete_filament");
     del_btn->SetToolTip(_L("Remove last filament"));
@@ -989,12 +989,12 @@ Sidebar::Sidebar(Plater *parent)
     p->m_bpButton_del_filament = del_btn;
 
     bSizer39->Add(del_btn, 0, wxALIGN_CENTER | wxLEFT, FromDIP(SidebarProps::IconSpacing()));
-    bSizer39->Add(add_btn, 0, wxALIGN_CENTER | wxLEFT, FromDIP(SidebarProps::IconSpacing())); // ORCA Moved add button after delete button to prevent add button position change when remove icon automatically hidden
+    bSizer39->Add(add_btn, 0, wxALIGN_CENTER | wxLEFT, FromDIP(SidebarProps::IconSpacing())); // Anycubic Moved add button after delete button to prevent add button position change when remove icon automatically hidden
     bSizer39->AddSpacer(FromDIP(20));
 
-    if (p->combos_filament.size() <= 1) { // ORCA Fix Flushing button and Delete filament button not hidden on launch while only 1 filament exist
+    if (p->combos_filament.size() <= 1) { // Anycubic Fix Flushing button and Delete filament button not hidden on launch while only 1 filament exist
         bSizer39->Hide(p->m_flushing_volume_btn);
-        bSizer39->Hide(p->m_bpButton_del_filament); // ORCA: Hide delete filament button if there is only one filament
+        bSizer39->Hide(p->m_bpButton_del_filament); // Anycubic: Hide delete filament button if there is only one filament
     }
 
     ams_btn = new ScalableButton(p->m_panel_filament_title, wxID_ANY, "ams_fila_sync", wxEmptyString, wxDefaultSize, wxDefaultPosition,
@@ -1270,7 +1270,7 @@ void Sidebar::update_all_preset_comboboxes()
         wxString url = cfg.opt_string("print_host_webui").empty() ? cfg.opt_string("print_host") : cfg.opt_string("print_host_webui");
         wxString apikey;
         if(url.empty())
-            url = wxString::Format("file://%s/web/orca/missing_connection.html", from_u8(resources_dir()));
+            url = wxString::Format("file://%s/web/Anycubic/missing_connection.html", from_u8(resources_dir()));
         else {
             if (!url.Lower().starts_with("http"))
                 url = wxString::Format("http://%s", url);
@@ -1301,7 +1301,7 @@ void Sidebar::update_all_preset_comboboxes()
 
     if (is_bbl_vendor || cfg.opt_bool("support_multi_bed_types")) {
         m_bed_type_list->Enable();
-        // Orca: don't update bed type if loading project
+        // Anycubic: don't update bed type if loading project
         if (!p->plater->is_loading_project()) {
             auto str_bed_type = wxGetApp().app_config->get_printer_setting(wxGetApp().preset_bundle->printers.get_selected_preset_name(),
                                                                            "curr_bed_type");
@@ -1339,7 +1339,7 @@ void Sidebar::update_all_preset_comboboxes()
     if (p->combo_printer)
         p->combo_printer->update();
 
-    // Orca:: show device tab based on vendor type
+    // Anycubic:: show device tab based on vendor type
     p_mainframe->show_device(preset_bundle.use_bbl_device_tab());
     p_mainframe->m_tabpanel->SetSelection(p_mainframe->m_tabpanel->GetSelection());
 }
@@ -1652,10 +1652,10 @@ void Sidebar::on_filaments_change(size_t num_filaments)
     if (p->m_flushing_volume_btn != nullptr && sizer != nullptr) {
         if (num_filaments > 1) {
             sizer->Show(p->m_flushing_volume_btn);
-            sizer->Show(p->m_bpButton_del_filament); // ORCA: Show delete filament button if multiple filaments
+            sizer->Show(p->m_bpButton_del_filament); // Anycubic: Show delete filament button if multiple filaments
         } else {
             sizer->Hide(p->m_flushing_volume_btn);
-            sizer->Hide(p->m_bpButton_del_filament); // ORCA: Hide delete filament button if there is only one filament
+            sizer->Hide(p->m_bpButton_del_filament); // Anycubic: Hide delete filament button if there is only one filament
         }
     }
 
@@ -1839,7 +1839,7 @@ void Sidebar::sync_ams_list()
     wxGetApp().app_config ->set("ams_filament_ids", p->ams_list_device, ams_filament_ids);
     if (unknowns > 0) {
         MessageDialog dlg(this,
-            _L("There are some unknown filaments mapped to generic preset. Please update Orca Slicer or restart Orca Slicer to check if there is an update to system presets."),
+            _L("There are some unknown filaments mapped to generic preset. Please update Anycubic Slicer or restart Anycubic Slicer to check if there is an update to system presets."),
             _L("Sync filaments with AMS"), wxOK);
         dlg.ShowModal();
     }
@@ -1877,9 +1877,9 @@ void Sidebar::show_SEMM_buttons(bool bshow)
 {
     if(p->m_bpButton_add_filament)
         p->m_bpButton_add_filament->Show(bshow);
-    if (p->m_bpButton_del_filament && p->combos_filament.size() > 1) // ORCA add filament count as condition to prevent showing Flushing volumes and Del Filament icon visible while only 1 filament exist
+    if (p->m_bpButton_del_filament && p->combos_filament.size() > 1) // Anycubic add filament count as condition to prevent showing Flushing volumes and Del Filament icon visible while only 1 filament exist
         p->m_bpButton_del_filament->Show(bshow);
-    if (p->m_flushing_volume_btn && p->combos_filament.size() > 1) // ORCA add filament count as condition to prevent showing Flushing volumes and Del Filament icon visible while only 1 filament exist
+    if (p->m_flushing_volume_btn && p->combos_filament.size() > 1) // Anycubic add filament count as condition to prevent showing Flushing volumes and Del Filament icon visible while only 1 filament exist
         p->m_flushing_volume_btn->Show(bshow);
     Layout();
 }
@@ -2899,7 +2899,7 @@ Plater::priv::priv(Plater *q, MainFrame *main_frame)
 
     update();
 
-    // Orca: Make sidebar dockable
+    // Anycubic: Make sidebar dockable
     m_aui_mgr.AddPane(sidebar, wxAuiPaneInfo()
                                    .Name("sidebar")
                                    .Left()
@@ -3368,7 +3368,7 @@ wxColour Plater::get_next_color_for_filament()
     static int curr_color_filamenet = 0;
     // refs to https://www.ebaomonthly.com/window/photo/lesson/colorList.htm
     wxColour colors[FILAMENT_SYSTEM_COLORS_NUM] = {
-        // ORCA updated all color palette
+        // Anycubic updated all color palette
         *wxYELLOW,
         * wxRED,
         *wxBLUE,
@@ -3823,7 +3823,7 @@ std::vector<size_t> Plater::priv::load_files(const std::vector<fs::path>& input_
                         // do not reset the model config
                         load_config = false;
                         if(load_type != LoadType::LoadGeometry)
-                            show_info(q, _L("The 3mf is not supported by OrcaSlicer, load geometry data only."), _L("Load 3mf"));
+                            show_info(q, _L("The 3mf is not supported by AnycubicSlicer, load geometry data only."), _L("Load 3mf"));
                     }
                     // else if (load_config && (file_version.maj() != app_version.maj())) {
                     //     // version mismatch, only load geometries
@@ -3841,9 +3841,9 @@ std::vector<size_t> Plater::priv::load_files(const std::vector<fs::path>& input_
                     //     q->select_plate(0);
                     //     if (load_type != LoadType::LoadGeometry) {
                     //         if (en_3mf_file_type == En3mfType::From_BBS)
-                    //             show_info(q, _L("The 3mf is generated by old Orca Slicer, load geometry data only."), _L("Load 3mf"));
+                    //             show_info(q, _L("The 3mf is generated by old Anycubic Slicer, load geometry data only."), _L("Load 3mf"));
                     //         else
-                    //             show_info(q, _L("The 3mf is not supported by OrcaSlicer, load geometry data only."), _L("Load 3mf"));
+                    //             show_info(q, _L("The 3mf is not supported by AnycubicSlicer, load geometry data only."), _L("Load 3mf"));
                     //     }
                     //     for (ModelObject *model_object : model.objects) {
                     //         model_object->config.reset();
@@ -7495,7 +7495,7 @@ void Plater::priv::on_change_color_mode(SimpleEvent& evt) {
 void Plater::priv::apply_color_mode()
 {
     const bool is_dark         = wxGetApp().dark_mode();
-    wxColour   orca_color      = wxColour(67, 67, 67);//wxColour(ColorRGBA::ORCA().r_uchar(), ColorRGBA::ORCA().g_uchar(), ColorRGBA::ORCA().b_uchar());
+    wxColour   orca_color      = wxColour(67, 67, 67);//wxColour(ColorRGBA::Anycubic().r_uchar(), ColorRGBA::Anycubic().g_uchar(), ColorRGBA::Anycubic().b_uchar());
     orca_color                 = is_dark ? StateColor::darkModeColorFor(orca_color) : StateColor::lightModeColorFor(orca_color);
     wxColour sash_color = is_dark ? wxColour(38, 46, 48) : wxColour(206, 206, 206);
     m_aui_mgr.GetArtProvider()->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, sash_color);
@@ -7778,7 +7778,7 @@ void Plater::priv::set_project_name(const wxString& project_name)
     m_project_name = project_name;
     //update topbar title
 #ifdef __WINDOWS__
-    wxGetApp().mainframe->SetTitle(m_project_name + " - OrcaSlicer");
+    wxGetApp().mainframe->SetTitle(m_project_name + " - AnycubicSlicer");
     wxGetApp().mainframe->topbar()->SetTitle(m_project_name);
 #else
     wxGetApp().mainframe->SetTitle(m_project_name);
@@ -8176,7 +8176,7 @@ bool Plater::priv::show_publish_dlg(bool show)
 //BBS: add bed exclude area
 void Plater::priv::set_bed_shape(const Pointfs& shape, const Pointfs& exclude_areas, const double printable_height, const std::string& custom_texture, const std::string& custom_model, bool force_as_custom)
 {
-    //Orca: reduce resolution for large bed printer
+    //Anycubic: reduce resolution for large bed printer
     BoundingBoxf bed_size = get_extents(shape);
     if (bed_size.size().maxCoeff() <= LARGE_BED_THRESHOLD)
         SCALING_FACTOR = SCALING_FACTOR_INTERNAL;
@@ -8734,7 +8734,7 @@ void Plater::priv::bring_instance_forward() const
         BOOST_LOG_TRIVIAL(debug) << "Couldnt bring instance forward - mainframe is null";
         return;
     }
-    BOOST_LOG_TRIVIAL(debug) << "Orca Slicer window going forward";
+    BOOST_LOG_TRIVIAL(debug) << "Anycubic Slicer window going forward";
     //this code maximize app window on Fedora
     {
         main_frame->Iconize(false);
@@ -9174,7 +9174,7 @@ void Plater::import_model_id(wxString download_info)
     /* prepare project and profile */
     boost::thread import_thread = Slic3r::create_thread([&percent, &cont, &cancel, &retry_count, max_retries, &msg, &target_path, &download_ok, download_url, &filename] {
 
-        // Orca: NetworkAgent is not needed and only prevents this from running
+        // Anycubic: NetworkAgent is not needed and only prevents this from running
 //        NetworkAgent* m_agent = Slic3r::GUI::wxGetApp().getAgent();
 //        if (!m_agent) return;
 
@@ -9287,7 +9287,7 @@ void Plater::import_model_id(wxString download_info)
                         error);
 
                     if (retry_count == max_retries) {
-                        msg = _L("Importing to Orca Slicer failed. Please download the file and manually import it.");
+                        msg = _L("Importing to Anycubic Slicer failed. Please download the file and manually import it.");
                         cont = false;
                     }
                 })
@@ -9326,7 +9326,7 @@ void Plater::import_model_id(wxString download_info)
     if (download_ok) {
         BOOST_LOG_TRIVIAL(trace) << "import_model_id: target_path = " << target_path.string();
         /* load project */
-        // Orca: If download is a zip file, treat it as if file has been drag and dropped on the plater
+        // Anycubic: If download is a zip file, treat it as if file has been drag and dropped on the plater
         if (target_path.extension() == ".zip")
             this->load_files(wxArrayString(1, target_path.string()));
         else
@@ -9482,13 +9482,13 @@ void Plater::_calib_pa_pattern(const Calib_Params& params)
     printer_config.set_key_value("wipe", new ConfigOptionBools{false});
     printer_config.set_key_value("retract_when_changing_layer", new ConfigOptionBools{false});
 
-    //Orca: find acceleration to use in the test
+    //Anycubic: find acceleration to use in the test
     auto accel = print_config.option<ConfigOptionFloat>("outer_wall_acceleration")->value; // get the outer wall acceleration
     if (accel == 0) // if outer wall accel isnt defined, fall back to inner wall accel
         accel = print_config.option<ConfigOptionFloat>("inner_wall_acceleration")->value;
     if (accel == 0) // if inner wall accel is not defined fall back to default accel
         accel = print_config.option<ConfigOptionFloat>("default_acceleration")->value;
-    // Orca: Set all accelerations except first layer, as the first layer accel doesnt affect the PA test since accel
+    // Anycubic: Set all accelerations except first layer, as the first layer accel doesnt affect the PA test since accel
     // is set to the travel accel before printing the pattern.
     if (accels.empty()) {
         accels.assign({accel});
@@ -9502,7 +9502,7 @@ void Plater::_calib_pa_pattern(const Calib_Params& params)
     print_config.set_key_value( "outer_wall_acceleration", new ConfigOptionFloat(accel));
     print_config.set_key_value( "print_sequence", new ConfigOptionEnum(PrintSequence::ByLayer));
     
-    //Orca: find jerk value to use in the test
+    //Anycubic: find jerk value to use in the test
     if(print_config.option<ConfigOptionFloat>("default_jerk")->value > 0){ // we have set a jerk value
         auto jerk = print_config.option<ConfigOptionFloat>("outer_wall_jerk")->value; // get outer wall jerk
         if (jerk == 0) // if outer wall jerk is not defined, get inner wall jerk
@@ -9510,7 +9510,7 @@ void Plater::_calib_pa_pattern(const Calib_Params& params)
         if (jerk == 0) // if inner wall jerk is not defined, get the default jerk
             jerk = print_config.option<ConfigOptionFloat>("default_jerk")->value;
         
-        //Orca: Set jerk values. Again first layer jerk should not matter as it is reset to the travel jerk before the
+        //Anycubic: Set jerk values. Again first layer jerk should not matter as it is reset to the travel jerk before the
         // first PA pattern is printed.
         print_config.set_key_value( "default_jerk", new ConfigOptionFloat(jerk));
         print_config.set_key_value( "outer_wall_jerk", new ConfigOptionFloat(jerk));
@@ -9546,7 +9546,7 @@ void Plater::_calib_pa_pattern(const Calib_Params& params)
         new ConfigOptionEnum<BrimType>(SuggestedConfigCalibPAPattern().brim_pair.second)
     );
 
-    // Orca: Set the outer wall speed to the optimal speed for the test, cap it with max volumetric speed
+    // Anycubic: Set the outer wall speed to the optimal speed for the test, cap it with max volumetric speed
     if (speeds.empty()) {
         double speed = CalibPressureAdvance::find_optimal_PA_speed(
             wxGetApp().preset_bundle->full_config(),
@@ -9870,7 +9870,7 @@ auto print_config = &wxGetApp().preset_bundle->prints.get_edited_preset().config
         obj_name = obj_name.substr(9);
         if (obj_name[0] == 'm')
             obj_name[0] = '-';
-        // Orca: force set locale to C to avoid parsing error
+        // Anycubic: force set locale to C to avoid parsing error
         const std::string _loc = std::setlocale(LC_NUMERIC, nullptr);
         std::setlocale(LC_NUMERIC,"C");
         auto              modifier  = 1.0f;
@@ -9907,7 +9907,7 @@ void Plater::calib_flowrate(bool is_linear, int pass) {
         return;
     wxString calib_name;
     if (is_linear) {
-        calib_name = L"Orca YOLO Flow Calibration";
+        calib_name = L"Anycubic YOLO Flow Calibration";
         if (pass == 2)
             calib_name += L" - Perfectionist version";
     } else
@@ -9921,10 +9921,10 @@ void Plater::calib_flowrate(bool is_linear, int pass) {
     if (is_linear) {
         if (pass == 1)
             add_model(false,
-                      (boost::filesystem::path(Slic3r::resources_dir()) / "calib" / "filament_flow" / "Orca-LinearFlow.3mf").string());
+                      (boost::filesystem::path(Slic3r::resources_dir()) / "calib" / "filament_flow" / "Anycubic-LinearFlow.3mf").string());
         else
             add_model(false,
-                      (boost::filesystem::path(Slic3r::resources_dir()) / "calib" / "filament_flow" / "Orca-LinearFlow_fine.3mf").string());
+                      (boost::filesystem::path(Slic3r::resources_dir()) / "calib" / "filament_flow" / "Anycubic-LinearFlow_fine.3mf").string());
     } else {
         if (pass == 1)
             add_model(false,
@@ -10274,7 +10274,7 @@ void Plater::load_gcode(const wxString& filename)
         set_project_filename(filename);
     }
 
-    // Orca: Fix crash when loading gcode file multiple times
+    // Anycubic: Fix crash when loading gcode file multiple times
     if (m_only_gcode) {
         p->view3D->get_canvas3d()->remove_raycasters_for_picking(SceneRaycaster::EType::Bed);
     }
@@ -10597,7 +10597,7 @@ ProjectDropDialog::ProjectDropDialog(const std::string &filename)
     SetBackgroundColour(m_def_color);
 
     // icon
-    std::string icon_path = (boost::format("%1%/images/OrcaSlicerTitle.ico") % resources_dir()).str();
+    std::string icon_path = (boost::format("%1%/images/AnycubicSlicerTitle.ico") % resources_dir()).str();
     SetIcon(wxIcon(encode_path(icon_path.c_str()), wxBITMAP_TYPE_ICO));
 
     wxBoxSizer *m_sizer_main = new wxBoxSizer(wxVERTICAL);
@@ -10973,7 +10973,7 @@ bool Plater::load_files(const wxArrayString& filenames)
         }
     }
 
-    // Orca: Iters through given paths and imports files from zip then remove zip from paths
+    // Anycubic: Iters through given paths and imports files from zip then remove zip from paths
     // returns true if zip files were found
     auto handle_zips = [this](vector<fs::path>& paths) { // NOLINT(*-no-recursion) - Recursion is intended and should be managed properly
         bool res = false;
@@ -12135,7 +12135,7 @@ void publish(Model &model, SaveStrategy strategy) {
         }
     }
 
-    // Orca: don't show this in silence mode
+    // Anycubic: don't show this in silence mode
     if (exist_new && !(strategy & SaveStrategy::Silence)) {
         MessageDialog dialog(nullptr,
                              _L("Are you sure you want to store original SVGs with their local paths into the 3MF file?\n"
@@ -12475,7 +12475,7 @@ void Plater::reslice()
         return;
     }
 
-    // Orca: regenerate CalibPressureAdvancePattern custom G-code to apply changes
+    // Anycubic: regenerate CalibPressureAdvancePattern custom G-code to apply changes
     if (model().calib_pa_pattern) {
         _calib_pa_pattern_gen_gcode();
     }
@@ -13140,7 +13140,7 @@ void Plater::on_config_change(const DynamicPrintConfig &config)
             bed_shape_changed = true;
             update_scheduled = true;
         }
-        // Orca: update when *_filament changed
+        // Anycubic: update when *_filament changed
         else if (opt_key == "support_interface_filament" || opt_key == "support_filament" || opt_key == "wall_filament" ||
                  opt_key == "sparse_infill_filament" || opt_key == "solid_infill_filament") {
             update_scheduled = true;
@@ -14383,7 +14383,7 @@ void Plater::show_object_info()
 
     #ifndef __WINDOWS__
     if (non_manifold_edges > 0) {
-        info_manifold += into_u8("\n" + _L("Tips:") + "\n" +_L("\"Fix Model\" feature is currently only on Windows. Please repair the model on Orca Slicer(windows) or CAD softwares."));
+        info_manifold += into_u8("\n" + _L("Tips:") + "\n" +_L("\"Fix Model\" feature is currently only on Windows. Please repair the model on Anycubic Slicer(windows) or CAD softwares."));
     }
     #endif //APPLE & LINUX
 

@@ -98,7 +98,7 @@ EditGCodeDialog::EditGCodeDialog(wxWindow* parent, const std::string& key, const
 
     m_param_description = new wxStaticText(this, wxID_ANY, wxEmptyString);
 
-    //Orca: use custom buttons
+    //Anycubic: use custom buttons
     auto btn_sizer = create_btn_sizer(wxOK | wxCANCEL);
     for(auto btn : m_button_list)
         wxGetApp().UpdateDarkUI(btn.second);
@@ -267,11 +267,11 @@ wxDataViewItem EditGCodeDialog::add_presets_placeholders()
     }
 
 
-    // Orca: create subgroups from the pages of the tabs
+    // Anycubic: create subgroups from the pages of the tabs
     auto init_from_tab = [this, full_config](wxDataViewItem parent, Tab* tab, const set<string>& preset_keys){
         set extra_keys(preset_keys);
         for (const auto& page : tab->m_pages) {
-            // ORCA: Pull icons from tabs for subgroups, icons are hidden on tabs
+            // Anycubic: Pull icons from tabs for subgroups, icons are hidden on tabs
             std::string icon_name = "empty"; // use empty icon if not defined
             for (const auto& icons_list : tab->m_icon_index) {
                 if (icons_list.second == page->iconID()) {
@@ -356,7 +356,7 @@ void EditGCodeDialog::selection_changed(wxDataViewEvent& evt)
                 break;
             }
         }
-        // Orca: move below checking for def in custom defined gcode placeholders
+        // Anycubic: move below checking for def in custom defined gcode placeholders
         // This allows custom placeholders to override the default ones for this dialog
         // Override custom def if selection is within the preset category
         if (!def || m_params_list->GetSelectedTopLevelCategory() == "Presets") {
@@ -415,7 +415,7 @@ void EditGCodeDialog::on_dpi_changed(const wxRect&suggested_rect)
 {
     const int& em = em_unit();
 
-    //Orca: use custom buttons
+    //Anycubic: use custom buttons
     for (auto button_item : m_button_list)
     {
         if (button_item.first == wxOK) {
@@ -440,7 +440,7 @@ void EditGCodeDialog::on_sys_color_changed()
     m_add_btn->msw_rescale();
 }
 
-//Orca
+//Anycubic
 wxBoxSizer* EditGCodeDialog::create_btn_sizer(long flags)
 {
     auto btn_sizer = new wxBoxSizer(wxHORIZONTAL);

@@ -62,7 +62,7 @@ Fill* Fill::new_from_type(const InfillPattern type)
     // BBS: for internal solid infill only
     case ipConcentricInternal:  return new FillConcentricInternal();
     // BBS: for bottom and top surface only
-    // Orca: Replace BBS implementation with Prusa implementation
+    // Anycubic: Replace BBS implementation with Prusa implementation
     case ipMonotonicLine:       return new FillMonotonicLines();
     default: throw Slic3r::InvalidArgument("unknown type");
     }
@@ -170,19 +170,19 @@ void Fill::fill_surface_extrusion(const Surface* surface, const FillParams& para
                 eec->entities[i]->set_reverse();
         }
         
-        // Orca: run gap fill
+        // Anycubic: run gap fill
         this->_create_gap_fill(surface, params, eec);
     }
 }
 
-// Orca: Dedicated function to calculate gap fill lines for the provided surface, according to the print object parameters
+// Anycubic: Dedicated function to calculate gap fill lines for the provided surface, according to the print object parameters
 // and append them to the out ExtrusionEntityCollection.
 void Fill::_create_gap_fill(const Surface* surface, const FillParams& params, ExtrusionEntityCollection* out){
     
-    //Orca: just to be safe, check against null pointer for the print object config and if NULL return.
+    //Anycubic: just to be safe, check against null pointer for the print object config and if NULL return.
     if (this->print_object_config == nullptr) return;
     
-    // Orca: Enable gap fill as per the user preference. Return early if gap fill is to not be applied.
+    // Anycubic: Enable gap fill as per the user preference. Return early if gap fill is to not be applied.
     if ((this->print_object_config->gap_fill_target.value == gftNowhere) ||
         (surface->surface_type == stInternalSolid && this->print_object_config->gap_fill_target.value != gftEverywhere))
         return;

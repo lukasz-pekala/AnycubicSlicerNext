@@ -1,4 +1,4 @@
-﻿orcaslicer_add_cmake_project(
+﻿AnycubicSlicer_add_cmake_project(
     OpenPlugins
     GIT_REPOSITORY "http://10.0.169.101/qprj/fdm/open-plugins.git"
     GIT_TAG "main"

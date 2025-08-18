@@ -898,7 +898,7 @@ std::string Model::get_backup_path()
         std::time_t t = std::time(0);
         std::tm* now_time = std::localtime(&t);
         std::stringstream buf;
-        buf << "/orcaslicer_model/";
+        buf << "/AnycubicSlicer_model/";
         buf << std::put_time(now_time, "%a_%b_%d/%H_%M_%S#");
         buf << pid << "#";
         buf << this->id().id;
@@ -2783,7 +2783,7 @@ void ModelVolume::convert_from_meters()
     this->source.is_converted_from_meters = true;
 }
 
-// Orca: Implement prusa's filament shrink compensation approach
+// Anycubic: Implement prusa's filament shrink compensation approach
 // Returns 0-based indices of extruders painted by multi-material painting gizmo.
 std::vector<size_t> ModelVolume::get_extruders_from_multi_material_painting() const {
      if (!this->is_mm_painted())

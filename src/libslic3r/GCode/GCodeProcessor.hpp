@@ -493,7 +493,7 @@ class Print;
             // Additional load / unload times for a filament exchange sequence.
             float filament_load_times;
             float filament_unload_times;
-            //Orca:  time for tool change
+            //Anycubic:  time for tool change
             float machine_tool_change_time;
 
             std::array<TimeMachine, static_cast<size_t>(PrintEstimatedStatistics::ETimeMode::Count)> machines;
@@ -738,7 +738,7 @@ class Print;
         enum class EProducer
         {
             Unknown,
-            OrcaSlicer,
+            AnycubicSlicer,
             Slic3rPE,
             Slic3r,
             SuperSlicer,
@@ -803,7 +803,7 @@ class Print;
         //BBS: set offset for gcode writer
         void set_xy_offset(double x, double y) { m_x_offset = x; m_y_offset = y; }
 
-        // Orca: if true, only change new layer if ETags::Layer_Change occurs
+        // Anycubic: if true, only change new layer if ETags::Layer_Change occurs
         // otherwise when we got a lift of z during extrusion, a new layer will be added
         void detect_layer_based_on_tag(bool enabled) { m_detect_layer_based_on_tag = enabled; }
 

@@ -307,7 +307,7 @@ void NotificationManager::PopNotification::render(GLCanvas3D& canvas, float init
         m_minimize_b_visible = false;
         if (m_multiline && m_lines_count > 3)
 			render_minimize_button(imgui, win_pos.x, win_pos.y);
-        render_close_button(imgui, win_size.x, win_size.y, win_pos.x, win_pos.y); // ORCA draw it after minimize button since its position related to minimize button
+        render_close_button(imgui, win_size.x, win_size.y, win_pos.x, win_pos.y); // Anycubic draw it after minimize button since its position related to minimize button
 	}
 	imgui.end();
 
@@ -1306,14 +1306,14 @@ void NotificationManager::URLDownloadNotification::render_close_button_inner(ImG
 
 
 	std::string button_text;
-    // Orca: Change based on dark mode
+    // Anycubic: Change based on dark mode
 	button_text = m_is_dark ? ImGui::CloseNotifDarkButton : ImGui::CloseNotifButton;
 
 	if (ImGui::IsMouseHoveringRect(ImVec2(win_pos.x - win_size.x / 10.f, win_pos.y),
 		ImVec2(win_pos.x, win_pos.y + win_size.y - (m_minimize_b_visible ? 2 * m_line_height : 0)),
 		true))
 	{
-        // Orca: Change based on dark mode
+        // Anycubic: Change based on dark mode
 		button_text = m_is_dark ? ImGui::CloseNotifHoverDarkButton : ImGui::CloseNotifHoverButton;
 	}
 	ImVec2 button_pic_size = ImGui::CalcTextSize(button_text.c_str());
@@ -1353,14 +1353,14 @@ void NotificationManager::URLDownloadNotification::render_pause_button_inner(ImG
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(.0f, .0f, .0f, .0f));
 
 	std::wstring button_text;
-    // Orca: Change based on dark mode
+    // Anycubic: Change based on dark mode
 	button_text = m_is_dark ? (m_download_paused ? ImGui::PlayDarkButton : ImGui::PauseDarkButton) : (m_download_paused ? ImGui::PlayButton : ImGui::PauseButton);
 
 	if (ImGui::IsMouseHoveringRect(ImVec2(win_pos.x - m_line_height * 5.f, win_pos.y),
 		ImVec2(win_pos.x - m_line_height * 2.5f, win_pos.y + win_size.y),
 		true))
 	{
-        // Orca: Change based on dark mode
+        // Anycubic: Change based on dark mode
 		button_text = m_is_dark ? (m_download_paused ? ImGui::PlayHoverDarkButton : ImGui::PauseHoverDarkButton) : (m_download_paused ? ImGui::PlayHoverButton : ImGui::PauseHoverButton);
 	}
 
@@ -1394,14 +1394,14 @@ void NotificationManager::URLDownloadNotification::render_open_button_inner(ImGu
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(.0f, .0f, .0f, .0f));
 
 	std::wstring button_text;
-    // Orca: Change based on dark mode
+    // Anycubic: Change based on dark mode
 	button_text = m_is_dark ? ImGui::OpenDarkButton : ImGui::OpenButton;
 
 	if (ImGui::IsMouseHoveringRect(ImVec2(win_pos.x - m_line_height * 5.f, win_pos.y),
 		ImVec2(win_pos.x - m_line_height * 2.5f, win_pos.y + win_size.y),
 		true))
 	{
-        // Orca: Change based on dark mode
+        // Anycubic: Change based on dark mode
 		button_text = m_is_dark ? ImGui::OpenHoverDarkButton : ImGui::OpenHoverButton;
 	}
 

@@ -28,7 +28,7 @@ static std::map<wxColour, wxColour> gDarkColors{
     {"#437DFF", "#3985FF"},
     {"#EFF5FF", "#4068BE"},
     {"#3986FF", "#3986FF"},
-    {"#3986FF", "#00675b"}, // rgb(57, 134, 255)    ORCA color
+    {"#3986FF", "#00675b"}, // rgb(57, 134, 255)    Anycubic color
     {"#1F8EEA", "#2778D2"}, // rgb(31, 142, 234)   ???
     {"#FF6F00", "#D15B00"}, // rgb(255, 111, 0)    Secondary color
     {"#D01B1B", "#BB2A3A"}, // rgb(208, 27, 27)    ???
@@ -55,16 +55,16 @@ static std::map<wxColour, wxColour> gDarkColors{
     {"#FEFFFF", "#242428"}, // rgb(254, 255, 255)  Side Tabbar bg | 
     {"#A6A9AA", "#2D2D29"}, // rgb(166, 169, 170)  Seperator color
     {"#363636", "#B2B3B5"}, // rgb(54, 54, 54)     Sidebar > Parameter Label/Title color | Sidebar tab text | Create Filament window text
-    {"#F0F0F1", "#404040"}, // rgb(240, 240, 241)  Disabled element background // ORCA Used better background color for dark mode
+    {"#F0F0F1", "#404040"}, // rgb(240, 240, 241)  Disabled element background // Anycubic Used better background color for dark mode
     {"#9E9E9E", "#53545A"}, // rgb(158, 158, 158)  ???
     {"#D7E8DE", "#1F2B27"}, // rgb(215, 232, 222)  Not Used anymore // Leftover from BBS
     {"#2B3436", "#808080"}, // rgb(43, 52, 54)     Not Used anymore // Leftover from BBS. Was used as main fill color of icons
     {"#ABABAB", "#ABABAB"},
     {"#D9D9D9", "#2D2D32"}, // rgb(217, 217, 217)  Sidebar > Toggle button track color
     //{"#F0F0F0", "#4C4C54"},
-    // ORCA
-    {"#BFE1DE", "#223C3C"}, // rgb(191, 225, 222)  Dropdown checked item background color > ORCA color with %25 opacity
-    {"#E5F0EE", "#283232"}, // rgb(229, 240, 238)  Combo / Dropdown focused background color > ORCA color with %10 opacity
+    // Anycubic
+    {"#BFE1DE", "#223C3C"}, // rgb(191, 225, 222)  Dropdown checked item background color > Anycubic color with %25 opacity
+    {"#E5F0EE", "#283232"}, // rgb(229, 240, 238)  Combo / Dropdown focused background color > Anycubic color with %10 opacity
 };
 
 std::tuple<double, double, double> StateColor::GetLAB(const wxColour& color) {

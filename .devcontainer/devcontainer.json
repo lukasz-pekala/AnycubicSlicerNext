@@ -1,5 +1,5 @@
 {
-	"name": "OrcaSlicer",
+	"name": "AnycubicSlicer",
 	"build": {
 	"dockerfile": "Dockerfile",
 		"args": {
@@ -11,7 +11,7 @@
 	"runArgs": ["--env-file", "/tmp/devcontainer.env"],
     "features": {
         "ghcr.io/devcontainers/features/desktop-lite:1": {
-			"password": "orca"
+			"password": "Anycubic"
 		}
     },
 	"customizations": {

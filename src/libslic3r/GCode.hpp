@@ -24,7 +24,7 @@
 
 #include "GCode/PressureEqualizer.hpp"
 #include "GCode/SmallAreaInfillFlowCompensator.hpp"
-// ORCA: post processor below used for Dynamic Pressure advance
+// Anycubic: post processor below used for Dynamic Pressure advance
 #include "GCode/AdaptivePAProcessor.hpp"
 
 #include <memory>
@@ -358,16 +358,16 @@ private:
     std::string     preamble();
     // BBS
     std::string     change_layer(coordf_t print_z);
-    // Orca: pass the complete collection of region perimeters to the extrude loop to check whether the wipe before external loop
+    // Anycubic: pass the complete collection of region perimeters to the extrude loop to check whether the wipe before external loop
     // should be executed
     std::string     extrude_entity(const ExtrusionEntity &entity, std::string description = "", double speed = -1., const ExtrusionEntitiesPtr& region_perimeters = ExtrusionEntitiesPtr());
-    // Orca: pass the complete collection of region perimeters to the extrude loop to check whether the wipe before external loop
+    // Anycubic: pass the complete collection of region perimeters to the extrude loop to check whether the wipe before external loop
     // should be executed
     std::string     extrude_loop(ExtrusionLoop loop, std::string description, double speed = -1., const ExtrusionEntitiesPtr& region_perimeters = ExtrusionEntitiesPtr());
     std::string     extrude_multi_path(ExtrusionMultiPath multipath, std::string description = "", double speed = -1.);
     std::string     extrude_path(ExtrusionPath path, std::string description = "", double speed = -1.);
     
-    // Orca: Adaptive PA variables
+    // Anycubic: Adaptive PA variables
     // Used for adaptive PA when extruding paths with multiple, varying flow segments.
     // This contains the sum of the mm3_per_mm values weighted by the length of each path segment.
     // The m_multi_flow_segment_path_pa_set constrains the PA change request to the first extrusion segment.
@@ -378,7 +378,7 @@ private:
     // Adaptive PA last set flow to enable issuing of PA change commands when adaptive PA for overhangs
     // is enabled
     double          m_last_mm3_mm = 0;
-    // Orca: Adaptive PA code segment end
+    // Anycubic: Adaptive PA code segment end
 
     // Extruding multiple objects with soluble / non-soluble / combined supports
     // on a multi-material printer, trying to minimize tool switches.
@@ -513,9 +513,9 @@ private:
     bool m_enable_exclude_object;
     std::vector<size_t> m_label_objects_ids;
     std::string _encode_label_ids_to_base64(std::vector<size_t> ids);
-    // Orca
+    // Anycubic
     bool m_is_overhang_fan_on;
-    bool m_is_internal_bridge_fan_on; // ORCA: Add support for separate internal bridge fan speed control
+    bool m_is_internal_bridge_fan_on; // Anycubic: Add support for separate internal bridge fan speed control
     bool m_is_supp_interface_fan_on;
     // Markers for the Pressure Equalizer to recognize the extrusion type.
     // The Pressure Equalizer removes the markers from the final G-code.
@@ -548,10 +548,10 @@ private:
 
     // Always check gcode placeholders when building in debug mode.
 #if !defined(NDEBUG)
-#define ORCA_CHECK_GCODE_PLACEHOLDERS 1
+#define Anycubic_CHECK_GCODE_PLACEHOLDERS 1
 #endif
     
-#if ORCA_CHECK_GCODE_PLACEHOLDERS
+#if Anycubic_CHECK_GCODE_PLACEHOLDERS
     std::map<std::string, std::vector<std::string>> m_placeholder_error_messages;
 #endif
 

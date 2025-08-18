@@ -15,7 +15,7 @@
             "cacheVariables": {
                 "CMAKE_OSX_DEPLOYMENT_TARGET": "11.7",
                 "CMAKE_MACOSX_BUNDLE": "ON",
-                "ORCA_SDK_TAG": "master",
+                "Anycubic_SDK_TAG": "master",
                 "CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED": "NO",
                 "CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY": ""
             }
@@ -50,7 +50,7 @@
             "generator": "Visual Studio 16 2019",
             "toolset": "host=x64",
             "cacheVariables": {
-                "ORCA_SDK_TAG": "master",
+                "Anycubic_SDK_TAG": "master",
                 "CMAKE_OSX_ARCHITECTURES": "x86_64"
             }
         },

@@ -187,7 +187,7 @@ static t_config_enum_values s_keys_map_WallSequence {
 };
 CONFIG_OPTION_ENUM_DEFINE_STATIC_MAPS(WallSequence)
 
-//Orca
+//Anycubic
 static t_config_enum_values s_keys_map_WallDirection{
     { "auto", int(WallDirection::Auto) },
     { "ccw",  int(WallDirection::CounterClockwise) },
@@ -261,7 +261,7 @@ static t_config_enum_values s_keys_map_SeamPosition {
 };
 CONFIG_OPTION_ENUM_DEFINE_STATIC_MAPS(SeamPosition)
 
-// Orca
+// Anycubic
 static t_config_enum_values s_keys_map_SeamScarfType{
     { "none",           int(SeamScarfType::None) },
     { "external",       int(SeamScarfType::External) },
@@ -269,7 +269,7 @@ static t_config_enum_values s_keys_map_SeamScarfType{
 };
 CONFIG_OPTION_ENUM_DEFINE_STATIC_MAPS(SeamScarfType)
 
-// Orca
+// Anycubic
 static t_config_enum_values s_keys_map_EnsureVerticalShellThickness{
     { "none",           int(EnsureVerticalShellThickness::evstNone) },
     { "ensure_critical_only",         int(EnsureVerticalShellThickness::evstCriticalOnly) },
@@ -278,7 +278,7 @@ static t_config_enum_values s_keys_map_EnsureVerticalShellThickness{
 };
 CONFIG_OPTION_ENUM_DEFINE_STATIC_MAPS(EnsureVerticalShellThickness)
 
-// Orca
+// Anycubic
 static t_config_enum_values s_keys_map_InternalBridgeFilter {
     { "disabled",        ibfDisabled },
     { "limited",        ibfLimited },
@@ -294,7 +294,7 @@ static t_config_enum_values s_keys_map_EnableExtraBridgeLayer {
 };
 CONFIG_OPTION_ENUM_DEFINE_STATIC_MAPS(EnableExtraBridgeLayer)
 
-// Orca
+// Anycubic
 static t_config_enum_values s_keys_map_GapFillTarget {
     { "everywhere",        gftEverywhere },
     { "topbottom",        gftTopBottom },
@@ -327,7 +327,7 @@ static const t_config_enum_values s_keys_map_BrimType = {
     {"inner_only",      btInnerOnly},
     {"outer_and_inner", btOuterAndInner},
     {"auto_brim", btAutoBrim},  // BBS
-    {"brim_ears", btEar},     // Orca
+    {"brim_ears", btEar},     // Anycubic
     {"painted", btPainted},  // BBS
 };
 CONFIG_OPTION_ENUM_DEFINE_STATIC_MAPS(BrimType)
@@ -562,7 +562,7 @@ void PrintConfigDef::init_common_params()
 
     def = this->add("print_host", coString);
     def->label = L("Hostname, IP or URL");
-    def->tooltip = L("Orca Slicer can upload G-code files to a printer host. This field should contain "
+    def->tooltip = L("Anycubic Slicer can upload G-code files to a printer host. This field should contain "
         "the hostname, IP address or URL of the printer host instance. "
         "Print host behind HAProxy with basic auth enabled can be accessed by putting the user name and password into the URL "
         "in the following format: https://username:password@your-octopi-address/");
@@ -579,7 +579,7 @@ void PrintConfigDef::init_common_params()
 
     def = this->add("printhost_apikey", coString);
     def->label = L("API Key / Password");
-    def->tooltip = L("Orca Slicer can upload G-code files to a printer host. This field should contain "
+    def->tooltip = L("Anycubic Slicer can upload G-code files to a printer host. This field should contain "
         "the API Key or the password required for authentication.");
     def->mode = comAdvanced;
     def->cli = ConfigOptionDef::nocli;
@@ -802,7 +802,7 @@ void PrintConfigDef::init_fff_params()
     def->tooltip = L("Bed types supported by the printer");
     def->mode = comSimple;
     def->enum_keys_map = &s_keys_map_BedType;
-    // Orca: make sure the order of the values is the same as the BedType enum 
+    // Anycubic: make sure the order of the values is the same as the BedType enum 
     def->enum_values.emplace_back("Cool Plate");
     def->enum_values.emplace_back("Engineering Plate");
     def->enum_values.emplace_back("High Temp Plate");
@@ -868,7 +868,7 @@ void PrintConfigDef::init_fff_params()
     def = this->add("bottom_shell_layers", coInt);
     def->label = L("Bottom shell layers");
     def->category = L("Strength");
-    def->sidetext = L("layers"); // ORCA add side text
+    def->sidetext = L("layers"); // Anycubic add side text
     def->tooltip =  L("This is the number of solid layers of bottom shell, including the bottom "
                       "surface layer. When the thickness calculated by this value is thinner "
                       "than bottom shell thickness, the bottom shell layers will be increased");
@@ -972,7 +972,7 @@ void PrintConfigDef::init_fff_params()
     def->mode = comAdvanced;
     def->set_default_value(new ConfigOptionFloat(0.));
     
-    // ORCA: Internal bridge angle override
+    // Anycubic: Internal bridge angle override
     def = this->add("internal_bridge_angle", coFloat);
     def->label = L("Internal bridge infill direction");
     def->category = L("Strength");
@@ -1142,7 +1142,7 @@ void PrintConfigDef::init_fff_params()
     def->mode = comAdvanced;
     def->set_default_value(new ConfigOptionFloatOrPercent(50, true));
 
-    // Orca: deprecated
+    // Anycubic: deprecated
     def = this->add("overhang_speed_classic", coBool);
     def->label = L("Classic mode");
     def->category = L("Speed");
@@ -1762,7 +1762,7 @@ void PrintConfigDef::init_fff_params()
     def->tooltip = L(
         "This option sets the min point for the allowed bed mesh area. Due to the probe's XY offset, most printers are unable to probe the "
         "entire bed. To ensure the probe point does not go outside the bed area, the minimum and maximum points of the bed mesh should be "
-        "set appropriately. OrcaSlicer ensures that adaptive_bed_mesh_min/adaptive_bed_mesh_max values do not exceed these min/max "
+        "set appropriately. AnycubicSlicer ensures that adaptive_bed_mesh_min/adaptive_bed_mesh_max values do not exceed these min/max "
         "points. This information can usually be obtained from your printer manufacturer. The default setting is (-99999, -99999), which "
         "means there are no limits, thus allowing probing across the entire bed.");
     def->sidetext = L("mm");
@@ -1774,7 +1774,7 @@ void PrintConfigDef::init_fff_params()
     def->tooltip = L(
         "This option sets the max point for the allowed bed mesh area. Due to the probe's XY offset, most printers are unable to probe the "
         "entire bed. To ensure the probe point does not go outside the bed area, the minimum and maximum points of the bed mesh should be "
-        "set appropriately. OrcaSlicer ensures that adaptive_bed_mesh_min/adaptive_bed_mesh_max values do not exceed these min/max "
+        "set appropriately. AnycubicSlicer ensures that adaptive_bed_mesh_min/adaptive_bed_mesh_max values do not exceed these min/max "
         "points. This information can usually be obtained from your printer manufacturer. The default setting is (99999, 99999), which "
         "means there are no limits, thus allowing probing across the entire bed.");
     def->sidetext = L("mm");
@@ -1793,7 +1793,7 @@ void PrintConfigDef::init_fff_params()
     def          = this->add("adaptive_bed_mesh_margin", coFloat);
     def->label   = L("Mesh margin");
     def->tooltip = L("This option determines the additional distance by which the adaptive bed mesh area should be expanded in the XY directions.");
-    def->sidetext = L("mm"); // ORCA add side text
+    def->sidetext = L("mm"); // Anycubic add side text
     def->mode    = comAdvanced;
     def->set_default_value(new ConfigOptionFloat(0));
 
@@ -1849,7 +1849,7 @@ void PrintConfigDef::init_fff_params()
     def->mode = comAdvanced;
     def->set_default_value(new ConfigOptionFloats { 0.02 });
     
-    // Orca: Adaptive pressure advance option and calibration values
+    // Anycubic: Adaptive pressure advance option and calibration values
     def = this->add("adaptive_pressure_advance", coBools);
     def->label = L("Enable adaptive pressure advance (beta)");
     // xgettext:no-c-format, no-boost-format
@@ -1865,7 +1865,7 @@ void PrintConfigDef::init_fff_params()
     def->mode = comAdvanced;
     def->set_default_value(new ConfigOptionBools{ false });
     
-    // Orca: Adaptive pressure advance option and calibration values
+    // Anycubic: Adaptive pressure advance option and calibration values
     def = this->add("adaptive_pressure_advance_model", coStrings);
     def->label = L("Adaptive pressure advance measurements (beta)");
     // xgettext:no-c-format, no-boost-format
@@ -2153,7 +2153,7 @@ void PrintConfigDef::init_fff_params()
     def->label = L("Minimal purge on wipe tower");
     def->tooltip = L("After a tool change, the exact position of the newly loaded filament inside "
                      "the nozzle may not be known, and the filament pressure is likely not yet stable. "
-                     "Before purging the print head into an infill or a sacrificial object, Orca Slicer will always prime "
+                     "Before purging the print head into an infill or a sacrificial object, Anycubic Slicer will always prime "
                      "this amount of material into the wipe tower to produce successive infill or sacrificial object extrusions reliably.");
     def->sidetext = L("mm³");
     def->min = 0;
@@ -2269,7 +2269,7 @@ void PrintConfigDef::init_fff_params()
     def = this->add("temperature_vitrification", coInts);
     def->label = L("Softening temperature");
     def->tooltip = L("The material softens at this temperature, so when the bed temperature is equal to or greater than it, it's highly recommended to open the front door and/or remove the upper glass to avoid clogging.");
-    def->sidetext = L("°C"); // ORCA add side text
+    def->sidetext = L("°C"); // Anycubic add side text
     def->mode = comSimple;
     def->set_default_value(new ConfigOptionInts{ 100 });
 
@@ -2405,7 +2405,7 @@ void PrintConfigDef::init_fff_params()
     def->label = L("Sparse infill anchor length");
     def->category = L("Strength");
     def->tooltip = L("Connect an infill line to an internal perimeter with a short segment of an additional perimeter. "
-                     "If expressed as percentage (example: 15%) it is calculated over infill extrusion width. Orca Slicer tries to connect two close infill lines to a short perimeter segment. If no such perimeter segment "
+                     "If expressed as percentage (example: 15%) it is calculated over infill extrusion width. Anycubic Slicer tries to connect two close infill lines to a short perimeter segment. If no such perimeter segment "
                      "shorter than infill_anchor_max is found, the infill line is connected to a perimeter segment at just one side "
                      "and the length of the perimeter segment taken is limited to this parameter, but no longer than anchor_length_max. "
                      "\nSet this parameter to zero to disable anchoring perimeters connected to a single infill line.");
@@ -2432,7 +2432,7 @@ void PrintConfigDef::init_fff_params()
     def->label = L("Maximum length of the infill anchor");
     def->category = L("Strength");
     def->tooltip = L("Connect an infill line to an internal perimeter with a short segment of an additional perimeter. "
-                     "If expressed as percentage (example: 15%) it is calculated over infill extrusion width. Orca Slicer tries to connect two close infill lines to a short perimeter segment. If no such perimeter segment "
+                     "If expressed as percentage (example: 15%) it is calculated over infill extrusion width. Anycubic Slicer tries to connect two close infill lines to a short perimeter segment. If no such perimeter segment "
                      "shorter than this parameter is found, the infill line is connected to a perimeter segment at just one side "
                      "and the length of the perimeter segment taken is limited to infill_anchor, but no longer than this parameter. "
                      "\nIf set to 0, the old algorithm for infill connection will be used, it should create the same result as with 1000 & 0.");
@@ -2656,7 +2656,7 @@ void PrintConfigDef::init_fff_params()
     def->tooltip = L("The first few layers are printed slower than normal. "
                      "The speed is gradually increased in a linear fashion over the specified number of layers.");
     def->category = L("Speed");
-    def->sidetext = L("layers"); // ORCA add side text
+    def->sidetext = L("layers"); // Anycubic add side text
     def->min = 0;
     def->mode = comAdvanced;
     def->set_default_value(new ConfigOptionInt(0));
@@ -2676,7 +2676,7 @@ void PrintConfigDef::init_fff_params()
                   "to maximum at layer \"full_fan_speed_layer\". "
                   "\"full_fan_speed_layer\" will be ignored if lower than \"close_fan_the_first_x_layers\", in which case "
                   "the fan will be running at maximum allowed speed at layer \"close_fan_the_first_x_layers\" + 1.");
-    def->sidetext = L("layer"); // ORCA add side text
+    def->sidetext = L("layer"); // Anycubic add side text
     def->min = 0;
     def->max = 1000;
     def->mode = comAdvanced;
@@ -2694,7 +2694,7 @@ void PrintConfigDef::init_fff_params()
     def->mode = comAdvanced;
     def->set_default_value(new ConfigOptionInts{ -1 });
     
-    // ORCA: Add support for separate internal bridge fan speed control
+    // Anycubic: Add support for separate internal bridge fan speed control
     def = this->add("internal_bridge_fan_speed", coInts);
     def->label = L("Internal bridges fan speed");
     def->tooltip = L("The part cooling fan speed used for all internal bridges. Set to -1 to use the overhang fan speed settings instead.\n\n"
@@ -2956,7 +2956,7 @@ void PrintConfigDef::init_fff_params()
     def->mode    = comAdvanced;
     def->set_default_value(new ConfigOptionFloat(0));
 
-    // Orca: may remove this option later
+    // Anycubic: may remove this option later
     def =this->add("support_chamber_temp_control",coBool);
     def->label=L("Support control chamber temperature");
     def->tooltip=L("This option is enabled if machine support controlling chamber temperature\nG-code command: M141 S(0-255)");
@@ -3046,7 +3046,7 @@ void PrintConfigDef::init_fff_params()
     def->mode = comAdvanced;
     def->set_default_value(new ConfigOptionBool(false));
     
-    // Orca: max layer height for combined infill
+    // Anycubic: max layer height for combined infill
     def = this->add("infill_combination_max_layer_height", coFloatOrPercent);
     def->label = L("Infill combination - Max layer height");
     def->category = L("Strength");
@@ -3601,7 +3601,7 @@ void PrintConfigDef::init_fff_params()
 
     def = this->add("host_type", coEnum);
     def->label = L("Host Type");
-    def->tooltip = L("Orca Slicer can upload G-code files to a printer host. This field must contain "
+    def->tooltip = L("Anycubic Slicer can upload G-code files to a printer host. This field must contain "
                    "the kind of the host.");
     def->enum_keys_map = &ConfigOptionEnum<PrintHostType>::get_enum_values();
     def->enum_values.push_back("prusalink");
@@ -3804,7 +3804,7 @@ void PrintConfigDef::init_fff_params()
     def->tooltip = L("If you want to process the output G-code through custom scripts, "
                    "just list their absolute paths here. Separate multiple scripts with a semicolon. "
                    "Scripts will be passed the absolute path to the G-code file as the first argument, "
-                   "and they can access the Orca Slicer config settings by reading environment variables.");
+                   "and they can access the Anycubic Slicer config settings by reading environment variables.");
     def->gui_flags = "serialized";
     def->multiline = true;
     def->full_width = true;
@@ -4481,8 +4481,8 @@ void PrintConfigDef::init_fff_params()
 
     def = this->add("preheat_time", coFloat);
     def->label = L("Preheat time");
-    def->tooltip = L("To reduce the waiting time after tool change, Orca can preheat the next tool while the current tool is still in use. "
-                     "This setting specifies the time in seconds to preheat the next tool. Orca will insert a M104 command to preheat the tool in advance.");
+    def->tooltip = L("To reduce the waiting time after tool change, Anycubic can preheat the next tool while the current tool is still in use. "
+                     "This setting specifies the time in seconds to preheat the next tool. Anycubic will insert a M104 command to preheat the tool in advance.");
     def->sidetext = "s";
     def->min = 0;
     def->max = 120;
@@ -5194,7 +5194,7 @@ void PrintConfigDef::init_fff_params()
     def = this->add("top_shell_layers", coInt);
     def->label = L("Top shell layers");
     def->category = L("Strength");
-    def->sidetext = L("layers"); // ORCA add side text
+    def->sidetext = L("layers"); // Anycubic add side text
     def->tooltip = L("This is the number of solid layers of top shell, including the top "
                      "surface layer. When the thickness calculated by this value is thinner "
                      "than top shell thickness, the top shell layers will be increased");
@@ -5591,7 +5591,7 @@ void PrintConfigDef::init_fff_params()
     "NOTE: Bottom and top surfaces will not be affected by this value to prevent visual gaps on the outside of the model. "
     "Adjust 'One wall threshold' in the Advanced settings below to adjust the sensitivity of what is considered a top-surface. "
     "'One wall threshold' is only visible if this setting is set above the default value of 0.5, or if single-wall top surfaces is enabled.");
-    def->sidetext = L("mm"); // ORCA add side text
+    def->sidetext = L("mm"); // Anycubic add side text
     def->mode = comAdvanced;
     def->min = 0.0;
     def->max = 25.0;
@@ -7480,8 +7480,8 @@ CLIMiscConfigDef::CLIMiscConfigDef()
 
     def = this->add("config_compatibility", coEnum);
     def->label = L("Forward-compatibility rule when loading configurations from config files and project files (3MF, AMF).");
-    def->tooltip = L("This version of OrcaSlicer may not understand configurations produced by the newest OrcaSlicer versions. "
-                     "For example, newer OrcaSlicer may extend the list of supported firmware flavors. One may decide to "
+    def->tooltip = L("This version of AnycubicSlicer may not understand configurations produced by the newest AnycubicSlicer versions. "
+                     "For example, newer AnycubicSlicer may extend the list of supported firmware flavors. One may decide to "
                      "bail out or to substitute an unknown value with a default silently or verbosely.");
     def->enum_keys_map = &ConfigOptionEnum<ForwardCompatibilitySubstitutionRule>::get_enum_values();
     def->enum_values.push_back("disable");
@@ -7556,8 +7556,8 @@ CLIMiscConfigDef::CLIMiscConfigDef()
 
     def = this->add("single_instance", coBool);
     def->label = L("Single instance mode");
-    def->tooltip = L("If enabled, the command line arguments are sent to an existing instance of GUI OrcaSlicer, "
-                     "or an existing OrcaSlicer window is activated. "
+    def->tooltip = L("If enabled, the command line arguments are sent to an existing instance of GUI AnycubicSlicer, "
+                     "or an existing AnycubicSlicer window is activated. "
                      "Overrides the \"single_instance\" configuration value from application preferences.");*/
 
 /*
@@ -7700,12 +7700,12 @@ ReadWriteSlicingStatesConfigDef::ReadWriteSlicingStatesConfigDef()
     def = this->add("position", coFloats);
     def->label = L("Position");
     def->tooltip = L("Position of the extruder at the beginning of the custom G-code block. If the custom G-code travels somewhere else, "
-                     "it should write to this variable so OrcaSlicer knows where it travels from when it gets control back.");
+                     "it should write to this variable so AnycubicSlicer knows where it travels from when it gets control back.");
 
     def = this->add("e_retracted", coFloats);
     def->label = L("Retraction");
     def->tooltip = L("Retraction state at the beginning of the custom G-code block. If the custom G-code moves the extruder axis, "
-                     "it should write to this variable so OrcaSlicer de-retracts correctly when it gets control back.");
+                     "it should write to this variable so AnycubicSlicer de-retracts correctly when it gets control back.");
 
     def = this->add("e_restart_extra", coFloats);
     def->label = L("Extra de-retraction");
@@ -7744,7 +7744,7 @@ OtherSlicingStatesConfigDef::OtherSlicingStatesConfigDef()
     def->label = L("Is extruder used?");
     def->tooltip = L("Vector of booleans stating whether a given extruder is used in the print.");
 
-    // Options from PS not used in Orca
+    // Options from PS not used in Anycubic
     //    def = this->add("initial_filament_type", coString);
     //    def->label = L("Initial filament type");
     //    def->tooltip = L("String containing filament type of the first used extruder.");
@@ -7785,7 +7785,7 @@ PrintStatisticsConfigDef::PrintStatisticsConfigDef()
     def->label = L("Total layer count");
     def->tooltip = L("Number of layers in the entire print.");
 
-    // Options from PS not used in Orca
+    // Options from PS not used in Anycubic
     /*    def = this->add("normal_print_time", coString);
     def->label = L("Print time (normal mode)");
     def->tooltip = L("Estimated print time when printed in normal mode (i.e. not in silent mode). Same as print_time.");

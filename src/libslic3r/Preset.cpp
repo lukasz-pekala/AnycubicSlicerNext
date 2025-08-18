@@ -576,7 +576,7 @@ std::string Preset::label(bool no_alias) const
 
 bool is_compatible_with_print(const PresetWithVendorProfile &preset, const PresetWithVendorProfile &active_print, const PresetWithVendorProfile &active_printer)
 {
-    // Orca: we allow cross vendor compatibility
+    // Anycubic: we allow cross vendor compatibility
 	// if (preset.vendor != nullptr && preset.vendor != active_printer.vendor)
 	// 	// The current profile has a vendor assigned and it is different from the active print's vendor.
 	// 	return false;
@@ -614,12 +614,12 @@ bool is_compatible_with_parent_printer(const PresetWithVendorProfile& preset, co
 
 bool is_compatible_with_printer(const PresetWithVendorProfile &preset, const PresetWithVendorProfile &active_printer, const DynamicPrintConfig *extra_config)
 {
-    // Orca: we allow cross vendor compatibility
+    // Anycubic: we allow cross vendor compatibility
 	// if (preset.vendor != nullptr && preset.vendor != active_printer.vendor)
 	// 	// The current profile has a vendor assigned and it is different from the active print's vendor.
 	// 	return false;
 
-    // Orca: check excluded printers
+    // Anycubic: check excluded printers
     if (preset.vendor != nullptr && preset.preset.type == Preset::TYPE_FILAMENT) {
         const auto& excluded_printers = preset.preset.m_excluded_from;
         const auto  excluded         = preset.vendor->name == PresetBundle::ORCA_FILAMENT_LIBRARY &&
@@ -1157,7 +1157,7 @@ void PresetCollection::load_presets(
                     if (key_values.find("instantiation") != key_values.end())
                         preset.is_visible = key_values["instantiation"] != "false";
 
-                    //Orca: find and use the inherit config as the base
+                    //Anycubic: find and use the inherit config as the base
                     Preset* inherit_preset = nullptr;
                     ConfigOption* inherits_config = config.option(BBL_JSON_KEY_INHERITS);
 
@@ -1165,7 +1165,7 @@ void PresetCollection::load_presets(
                     if (inherits_config) {
                         ConfigOptionString * option_str = dynamic_cast<ConfigOptionString *> (inherits_config);
                         std::string inherits_value = option_str->value;
-                        // Orca: try to find if the parent preset has been renamed
+                        // Anycubic: try to find if the parent preset has been renamed
                         inherit_preset = this->find_preset2(inherits_value);
 
                     } else {
@@ -2303,7 +2303,7 @@ void PresetCollection::save_current_preset(const std::string &new_name, bool det
         } else if (is_base_preset(preset)) {
             inherits = old_name;
         }
-        // Orca: check if compatible_printers exists and is not empty, set it to the current printer if it is empty
+        // Anycubic: check if compatible_printers exists and is not empty, set it to the current printer if it is empty
         if (nullptr != _current_printer && preset.is_system && m_type == Preset::TYPE_FILAMENT) {
             ConfigOptionStrings* compatible_printers = preset.config.option<ConfigOptionStrings>("compatible_printers");
             if (compatible_printers && compatible_printers->values.empty()) {
@@ -2558,7 +2558,7 @@ Preset* PresetCollection::find_preset2(const std::string& name, bool auto_match)
         if (_name != nullptr)
             preset = find_preset(*_name,false,true);
         if (auto_match && preset == nullptr) {
-            //Orca: one more try, find the most likely preset in OrcaFilamentLibrary
+            //Anycubic: one more try, find the most likely preset in OrcaFilamentLibrary
             if (name.find("Generic") != std::string::npos) {
                 // The regex pattern matches an optional prefix ending in '_' then "Generic" followed by the material name.
                 std::regex re(R"(^(?:.*?\b(?:\w+_)?)(Generic)\b\s+([^@]+?)\s*(?:@.*)?$)");
@@ -2912,7 +2912,7 @@ void PresetCollection::update_map_alias_to_profile_name()
 
 void PresetCollection::update_library_profile_excluded_from()
 {
-    // Orca: Collect all filament presets that has empty compatible_printers and belongs to the Orca Filament Library.
+    // Anycubic: Collect all filament presets that has empty compatible_printers and belongs to the Anycubic Filament Library.
     std::map<std::string, std::set<std::string>*> excluded_froms;
     for (Preset& preset : m_presets) {
         if (preset.vendor != nullptr && preset.vendor->name == PresetBundle::ORCA_FILAMENT_LIBRARY) {
@@ -2923,7 +2923,7 @@ void PresetCollection::update_library_profile_excluded_from()
         }
     }
 
-    // Check all presets that has the same alias as the filament presets with empty compatible_printers in Orca Filament Library.
+    // Check all presets that has the same alias as the filament presets with empty compatible_printers in Anycubic Filament Library.
     for (const Preset& preset : m_presets) {
         if (preset.vendor == nullptr || preset.vendor->name == PresetBundle::ORCA_FILAMENT_LIBRARY)
             continue;

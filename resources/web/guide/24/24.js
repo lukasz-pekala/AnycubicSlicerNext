@@ -70,7 +70,7 @@ function HandleModelList( pVal )
 			if( sVV=="Custom")
 				sVV="Custom Printer";
 			if( sVV=="Other")
-				sVV="Orca colosseum";
+				sVV="Anycubic colosseum";
 
 			let HtmlNewVendor='<div class="OneVendorBlock" Vendor="'+strVendor+'">'+
 '<div class="BlockBanner">'+
@@ -234,7 +234,7 @@ function FilterModelList(keyword) {
 			if (sVV == "Custom")
 				sVV = "Custom Printer";
 			if (sVV == "Other")
-				sVV = "Orca colosseum";
+				sVV = "Anycubic colosseum";
 
 			let HtmlNewVendor = '<div class="OneVendorBlock" Vendor="' + strVendor + '">' +
 				'<div class="BlockBanner">' +

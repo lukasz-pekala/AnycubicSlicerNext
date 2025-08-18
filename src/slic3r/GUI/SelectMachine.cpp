@@ -977,7 +977,7 @@ SelectMachineDialog::SelectMachineDialog(Plater *plater)
     SetFont(wxGetApp().normal_font());
 
     // icon
-    std::string icon_path = (boost::format("%1%/images/OrcaSlicerTitle.ico") % resources_dir()).str();
+    std::string icon_path = (boost::format("%1%/images/AnycubicSlicerTitle.ico") % resources_dir()).str();
     SetIcon(wxIcon(encode_path(icon_path.c_str()), wxBITMAP_TYPE_ICO));
 
     Freeze();
@@ -2395,7 +2395,7 @@ bool SelectMachineDialog::is_same_printer_model()
     if(preset_bundle == nullptr) return result;
     const auto source_model = preset_bundle->printers.get_edited_preset().get_printer_type(preset_bundle);
     const auto target_model = obj_->printer_type;
-    // Orca: ignore P1P -> P1S
+    // Anycubic: ignore P1P -> P1S
     if (source_model != target_model) {
         if ((source_model == "C12" && target_model == "C11") || (source_model == "C11" && target_model == "C12") ||
             (obj_->is_support_p1s_plus && (source_model == "C12"))) {
@@ -3680,7 +3680,7 @@ bool SelectMachineDialog::is_show_timelapse()
                 }
                 break;
             }
-            if (line == "OrcaSlicer")
+            if (line == "AnycubicSlicer")
                 is_version = true;
         }
     }
@@ -4666,7 +4666,7 @@ void SelectMachineDialog::update_lan_machine_list()
 EditDevNameDialog::EditDevNameDialog(Plater *plater /*= nullptr*/)
     : DPIDialog(static_cast<wxWindow *>(wxGetApp().mainframe), wxID_ANY, _L("Modifying the device name"), wxDefaultPosition, wxDefaultSize, wxCAPTION | wxCLOSE_BOX)
 {
-    std::string icon_path = (boost::format("%1%/images/OrcaSlicerTitle.ico") % resources_dir()).str();
+    std::string icon_path = (boost::format("%1%/images/AnycubicSlicerTitle.ico") % resources_dir()).str();
     SetIcon(wxIcon(encode_path(icon_path.c_str()), wxBITMAP_TYPE_ICO));
 
     SetBackgroundColour(*wxWHITE);
@@ -4884,7 +4884,7 @@ void EditDevNameDialog::on_edit_name(wxCommandEvent &e)
      auto size = GetSize();
      dc.DrawBitmap(m_bitmap.bmp(), wxPoint(FromDIP(12), (size.y - m_bitmap.GetBmpSize().y) / 2));
      dc.SetFont(::Label::Head_13);
-     dc.SetTextForeground(StateColor::darkModeColorFor(wxColour("#262E30"))); // ORCA fix text not visible on dark theme
+     dc.SetTextForeground(StateColor::darkModeColorFor(wxColour("#262E30"))); // Anycubic fix text not visible on dark theme
      wxString txt;
      if (m_type == 0) { txt = _L("Bind with Pin Code"); }
      else if (m_type == 1) { txt = _L("Bind with Access Code"); }

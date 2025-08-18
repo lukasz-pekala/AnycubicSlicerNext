@@ -527,19 +527,19 @@ wxMenu* MenuFactory::append_submenu_add_generic(wxMenu* menu, ModelVolumeType ty
     return sub_menu;
 }
 
-// Orca: add submenu for adding handy models
+// Anycubic: add submenu for adding handy models
 wxMenu* MenuFactory::append_submenu_add_handy_model(wxMenu* menu, ModelVolumeType type) {
     auto sub_menu = new wxMenu;
 
-    for (auto &item : {L("Orca Cube"), L("3DBenchy"), L("Autodesk FDM Test"),
-                       L("Voron Cube"), L("Stanford Bunny"), L("Orca String Hell") }) {
+    for (auto &item : {L("Anycubic Cube"), L("3DBenchy"), L("Autodesk FDM Test"),
+                       L("Voron Cube"), L("Stanford Bunny"), L("Anycubic String Hell") }) {
         append_menu_item(
             sub_menu, wxID_ANY, _(item), "",
             [type, item](wxCommandEvent&) {
                 std::vector<boost::filesystem::path> input_files;
                 bool                                 is_stringhell = false;
                 std::string                          file_name     = item;
-                if (file_name == L("Orca Cube"))
+                if (file_name == L("Anycubic Cube"))
                     file_name = "OrcaCube_v2.3mf";
                 else if (file_name == L("3DBenchy"))
                     file_name = "3DBenchy.3mf";
@@ -549,7 +549,7 @@ wxMenu* MenuFactory::append_submenu_add_handy_model(wxMenu* menu, ModelVolumeTyp
                     file_name = "Voron_Design_Cube_v7.3mf";
                 else if (file_name == L("Stanford Bunny"))
                     file_name = "Stanford_Bunny.3mf";
-                else if (file_name == L("Orca String Hell")) {
+                else if (file_name == L("Anycubic String Hell")) {
                     file_name     = "Orca_stringhell.3mf";
                     is_stringhell = true;
                 } else
@@ -1232,7 +1232,7 @@ void MenuFactory::create_default_menu()
         []() {return true; }, m_parent);
     append_submenu(&m_default_menu, sub_menu_handy, wxID_ANY, _L("Add Handy models"), "", "menu_add_part",
         []() {return true; }, m_parent);
-    append_menu_item(&m_default_menu, wxID_ANY, _L("Add Models"), "", // ORCA: Add Models
+    append_menu_item(&m_default_menu, wxID_ANY, _L("Add Models"), "", // Anycubic: Add Models
         [](wxCommandEvent&) { plater()->add_file(); }, "menu_add_part", &m_default_menu,
         []() {return wxGetApp().plater()->can_add_model(); }, m_parent);
 #else
@@ -1240,7 +1240,7 @@ void MenuFactory::create_default_menu()
         []() {return true; }, m_parent);
     append_submenu(&m_default_menu, sub_menu_handy, wxID_ANY, _L("Add Handy models"), "", "",
         []() {return true; }, m_parent);
-    append_menu_item(&m_default_menu, wxID_ANY, _L("Add Models"), "", // ORCA: Add Models
+    append_menu_item(&m_default_menu, wxID_ANY, _L("Add Models"), "", // Anycubic: Add Models
         [](wxCommandEvent&) { plater()->add_file(); }, "", &m_default_menu,
         []() {return wxGetApp().plater()->can_add_model(); }, m_parent);
 #endif
@@ -1547,7 +1547,7 @@ void MenuFactory::create_plate_menu()
         []() {return true; }, m_parent);
     append_submenu(menu, sub_menu_handy, wxID_ANY, _L("Add Handy models"), "", "menu_add_part",
         []() {return true; }, m_parent);
-    append_menu_item(menu, wxID_ANY, _L("Add Models"), "", // ORCA: Add Models
+    append_menu_item(menu, wxID_ANY, _L("Add Models"), "", // Anycubic: Add Models
         [](wxCommandEvent&) { plater()->add_file(); }, "menu_add_part", menu,
         []() {return wxGetApp().plater()->can_add_model(); }, m_parent);
 #else
@@ -1555,7 +1555,7 @@ void MenuFactory::create_plate_menu()
         []() {return true; }, m_parent);
     append_submenu(menu, sub_menu_handy, wxID_ANY, _L("Add Handy models"), "", "",
         []() {return true; }, m_parent);
-    append_menu_item(menu, wxID_ANY, _L("Add Models"), "", // ORCA: Add Models
+    append_menu_item(menu, wxID_ANY, _L("Add Models"), "", // Anycubic: Add Models
         [](wxCommandEvent&) { plater()->add_file(); }, "", menu,
         []() {return wxGetApp().plater()->can_add_model(); }, m_parent);
 #endif

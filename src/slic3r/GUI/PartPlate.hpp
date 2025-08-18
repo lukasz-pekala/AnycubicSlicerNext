@@ -371,7 +371,7 @@ public:
     const BoundingBoxf3& get_bounding_box(bool extended = false) { return extended ? m_extended_bounding_box : m_bounding_box; }
     const BoundingBox get_bounding_box_crd();
     BoundingBoxf3 get_plate_box() {return get_build_volume();}
-    // Orca: support non-rectangular bed
+    // Anycubic: support non-rectangular bed
     BoundingBoxf3 get_build_volume()
     {
         auto  eps=Slic3r::BuildVolume::SceneEpsilon;

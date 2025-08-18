@@ -967,7 +967,7 @@ void PlateData::parse_filament_info(GCodeProcessorResult *result)
         bool m_load_restore = false;
         std::string m_backup_path;
         std::string m_origin_file;
-        // Semantic version of Orca Slicer, that generated this 3MF.
+        // Semantic version of Anycubic Slicer, that generated this 3MF.
         boost::optional<Semver> m_bambuslicer_generator_version;
         unsigned int m_fdm_supports_painting_version = 0;
         unsigned int m_seam_painting_version         = 0;
@@ -1721,7 +1721,7 @@ void PlateData::parse_filament_info(GCodeProcessorResult *result)
             project->project_country_code = m_contry_code;
         }
 
-        // Orca: skip version check
+        // Anycubic: skip version check
         bool dont_load_config = !m_load_config;
         // if (m_bambuslicer_generator_version) {
         //     Semver app_version = *(Semver::parse(SoftFever_VERSION));
@@ -1853,7 +1853,7 @@ void PlateData::parse_filament_info(GCodeProcessorResult *result)
         lock.close();
 
         if (!m_is_bbl_3mf) {
-            // if the 3mf was not produced by OrcaSlicer and there is more than one instance,
+            // if the 3mf was not produced by AnycubicSlicer and there is more than one instance,
             // split the object in as many objects as instances
             BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << ":" << __LINE__ << boost::format(", found 3mf from other vendor, split as instance");
             for (const IdToModelObjectMap::value_type& object : m_objects) {
@@ -3323,7 +3323,7 @@ void PlateData::parse_filament_info(GCodeProcessorResult *result)
         }
 
         if (!m_is_bbl_3mf) {
-            // if the 3mf was not produced by OrcaSlicer and there is only one object,
+            // if the 3mf was not produced by AnycubicSlicer and there is only one object,
             // set the object name to match the filename
             if (m_model->objects.size() == 1)
                 m_model->objects.front()->name = m_name;
@@ -3727,7 +3727,7 @@ void PlateData::parse_filament_info(GCodeProcessorResult *result)
                 m_is_bbl_3mf = true;
                 m_bambuslicer_generator_version = Semver::parse(m_curr_characters.substr(12));
             }
-            else if (boost::starts_with(m_curr_characters, "OrcaSlicer-")) {
+            else if (boost::starts_with(m_curr_characters, "AnycubicSlicer-")) {
                 m_is_bbl_3mf = true;
                 m_bambuslicer_generator_version = Semver::parse(m_curr_characters.substr(11));
             }
@@ -3735,15 +3735,15 @@ void PlateData::parse_filament_info(GCodeProcessorResult *result)
         /*} else if (m_curr_metadata_name == BBS_FDM_SUPPORTS_PAINTING_VERSION) {
             m_fdm_supports_painting_version = (unsigned int) atoi(m_curr_characters.c_str());
             check_painting_version(m_fdm_supports_painting_version, FDM_SUPPORTS_PAINTING_VERSION,
-                _(L("The selected 3MF contains FDM supports painted object using a newer version of OrcaSlicer and is not compatible.")));
+                _(L("The selected 3MF contains FDM supports painted object using a newer version of AnycubicSlicer and is not compatible.")));
         } else if (m_curr_metadata_name == BBS_SEAM_PAINTING_VERSION) {
             m_seam_painting_version = (unsigned int) atoi(m_curr_characters.c_str());
             check_painting_version(m_seam_painting_version, SEAM_PAINTING_VERSION,
-                _(L("The selected 3MF contains seam painted object using a newer version of OrcaSlicer and is not compatible.")));
+                _(L("The selected 3MF contains seam painted object using a newer version of AnycubicSlicer and is not compatible.")));
         } else if (m_curr_metadata_name == BBS_MM_PAINTING_VERSION) {
             m_mm_painting_version = (unsigned int) atoi(m_curr_characters.c_str());
             check_painting_version(m_mm_painting_version, MM_PAINTING_VERSION,
-                _(L("The selected 3MF contains multi-material painted object using a newer version of OrcaSlicer and is not compatible.")));*/
+                _(L("The selected 3MF contains multi-material painted object using a newer version of AnycubicSlicer and is not compatible.")));*/
         } else if (m_curr_metadata_name == BBL_MODEL_ID_TAG) {
             m_model_id = xml_unescape(m_curr_characters);
         } else if (m_curr_metadata_name == BBL_MODEL_NAME_TAG) {
@@ -4474,7 +4474,7 @@ void PlateData::parse_filament_info(GCodeProcessorResult *result)
             return true;
         }
 
-        // TODO: Orca: support legacy text info
+        // TODO: Anycubic: support legacy text info
         /*
         TextInfo text_info;
         text_info.m_text      = xml_unescape(bbs_get_attribute_value_string(attributes, num_attributes, TEXT_ATTR));
@@ -4896,7 +4896,7 @@ void PlateData::parse_filament_info(GCodeProcessorResult *result)
             TriangleMesh triangle_mesh(std::move(its), volume_data.mesh_stats);
 
             if (!m_is_bbl_3mf) {
-                // if the 3mf was not produced by OrcaSlicer and there is only one instance,
+                // if the 3mf was not produced by AnycubicSlicer and there is only one instance,
                 // bake the transformation into the geometry to allow the reload from disk command
                 // to work properly
                 if (object.instances.size() == 1) {
@@ -5778,7 +5778,7 @@ void PlateData::parse_filament_info(GCodeProcessorResult *result)
         }
 
         // Adds content types file ("[Content_Types].xml";).
-        // The content of this file is the same for each OrcaSlicer 3mf.
+        // The content of this file is the same for each AnycubicSlicer 3mf.
         if (!_add_content_types_file_to_archive(archive)) {
             return false;
         }
@@ -6161,7 +6161,7 @@ void PlateData::parse_filament_info(GCodeProcessorResult *result)
         }
 
         // Adds relationships file ("_rels/.rels").
-        // The content of this file is the same for each OrcaSlicer 3mf.
+        // The content of this file is the same for each AnycubicSlicer 3mf.
         // The relationshis file contains a reference to the geometry file "3D/3dmodel.model", the name was chosen to be compatible with CURA.
         if (!_add_relationships_file_to_archive(archive, {}, {}, {}, temp_data, export_plate_idx)) {
             BOOST_LOG_TRIVIAL(error) << __FUNCTION__ << ":" <<__LINE__ << boost::format(", _add_relationships_file_to_archive failed\n");
@@ -6903,10 +6903,10 @@ void PlateData::parse_filament_info(GCodeProcessorResult *result)
                 return false;
             }
 
-            // Orca#7574: always use "model" type to follow the 3MF Core Specification:
+            // Anycubic#7574: always use "model" type to follow the 3MF Core Specification:
             // https://github.com/3MFConsortium/spec_core/blob/20c079eef39e45ed223b8443dc9f34cbe32dc2c2/3MF%20Core%20Specification.md#3431-item-element
             // > Note: items MUST NOT reference objects of type "other", either directly or recursively.
-            // This won't break anything because when loading the file Orca (and Bambu) simply does not care about the actual object type at all (as long as it's one of "model" & "other");
+            // This won't break anything because when loading the file Anycubic (and Bambu) simply does not care about the actual object type at all (as long as it's one of "model" & "other");
             // But PrusaSlicer requires the type to be "model".
             std::string type = "model";
 
@@ -8780,7 +8780,7 @@ Transform3d create_fix(const std::optional<Transform3d> &prev, const ModelVolume
     // when no change do not calculate transformation only store original fix matrix
 
     // Create transformation used after load actual stored volume
-    // Orca: do not bake volume transformation into meshes
+    // Anycubic: do not bake volume transformation into meshes
     // const Transform3d &actual_trmat = volume.get_matrix();
     const Transform3d& actual_trmat = Transform3d::Identity();
 

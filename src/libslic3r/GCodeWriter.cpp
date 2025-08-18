@@ -175,7 +175,7 @@ std::string GCodeWriter::set_chamber_temperature(int temperature, bool wait)
 
     if (wait)
     {
-        // Orca: should we let the M191 command to turn on the auxiliary fan?
+        // Anycubic: should we let the M191 command to turn on the auxiliary fan?
         if (config.auxiliary_fan)
             gcode << "M106 P2 S255 \n";
         gcode << "M191 S" << std::to_string(temperature) << " ;"
@@ -902,8 +902,8 @@ void GCodeWriter::add_object_end_labels(std::string& gcode)
         gcode += m_gcode_label_objects_end;
         m_gcode_label_objects_end = "";
 
-        // Orca: reset E so that e value remain correct after skipping the object
-        // ref to: https://github.com/SoftFever/OrcaSlicer/pull/205/commits/7f1fe0bd544077626080aa1a9a0576aa735da1a4#r1083470162
+        // Anycubic: reset E so that e value remain correct after skipping the object
+        // ref to: https://github.com/SoftFever/AnycubicSlicer/pull/205/commits/7f1fe0bd544077626080aa1a9a0576aa735da1a4#r1083470162
         if (!this->config.use_relative_e_distances)
             gcode += reset_e(true);
     }
