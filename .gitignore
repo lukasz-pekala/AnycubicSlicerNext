@@ -39,3 +39,4 @@ resources/profiles/user/default
 /vscode-build-*/
 /universal
 LIBRARY_CONFIG.cmake
+*_install/

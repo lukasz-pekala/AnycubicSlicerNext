@@ -24,15 +24,17 @@ wxString getSerialNumber(void) {
 
   // If WMI query failed, try PowerShell as fallback
   if (serialNumber.IsEmpty()) {
-    cmd = "powershell.exe -Command "(Get - WmiObject - Class Win32_BIOS)
-              .SerialNumber "";
+    cmd = "powershell.exe -Command \"(Get-WmiObject -Class Win32_BIOS).SerialNumber\"";
     result = wxExecute(cmd, output, errors, wxEXEC_NODISABLE);
-
     if (result == 0 && !output.IsEmpty()) {
       serialNumber = output[0];
       serialNumber.Trim();
     }
   }
+  if(serialNumber==wxASCII_STR("Default string")){
+    serialNumber.clear();
+  }
+
 
   return serialNumber;
 }

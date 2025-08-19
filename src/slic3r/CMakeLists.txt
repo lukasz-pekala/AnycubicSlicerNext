@@ -626,7 +626,7 @@ find_package(libnoise REQUIRED)
 target_link_libraries(libslic3r_gui PUBLIC libslic3r cereal::cereal imgui imguizmo minilzo GLEW::GLEW OpenGL::GL hidapi ${wxWidgets_LIBRARIES} glfw libcurl OpenSSL::SSL OpenSSL::Crypto noise::noise)
 
 if (MSVC)
-    target_link_libraries(libslic3r_gui Setupapi.lib)
+    target_link_libraries(libslic3r_gui PUBLIC Setupapi.lib)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     FIND_LIBRARY(WAYLAND_SERVER_LIBRARIES NAMES wayland-server)
     FIND_LIBRARY(WAYLAND_EGL_LIBRARIES    NAMES wayland-egl)

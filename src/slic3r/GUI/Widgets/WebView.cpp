@@ -12,12 +12,11 @@
 #include <webview/osx/webview_webkit.h>
 #endif
 #include <wx/uri.h>
-#if defined(__WIN32__) || defined(__WXMAC__)
+#if defined(__WXMSW__) || defined(__WXMAC__)
 #include "webview/private/jsscriptwrapper.h"
 #endif
 
-#ifdef __WIN32__
-#include <WebView2.h>
+#ifdef __WXMSW__
 #include <Shellapi.h>
 #include <slic3r/Utils/Http.hpp>
 #elif defined __linux__
@@ -41,7 +40,7 @@ webkit_javascript_result_unref              (WebKitJavascriptResult *js_result);
 }
 #endif
 
-#ifdef __WIN32__
+#ifdef __WXMSW__
 // Run Download and Install in another thread so we don't block the UI thread
 DWORD DownloadAndInstallWV2RT() {
 
@@ -97,130 +96,10 @@ DWORD DownloadAndInstallWV2RT() {
   }
   return returnCode;
 }
+#endif // __WXMSW__
 
-class WebViewEdge : public wxWebViewEdge
-{
-public:
-    bool SetUserAgent(const wxString &userAgent)
-    {
-        bool dark = userAgent.Contains("dark");
-        SetColorScheme(dark ? COREWEBVIEW2_PREFERRED_COLOR_SCHEME_DARK : COREWEBVIEW2_PREFERRED_COLOR_SCHEME_LIGHT);
 
-        ICoreWebView2 *webView2 = (ICoreWebView2 *) GetNativeBackend();
-        if (webView2) {
-            ICoreWebView2Settings *settings;
-            HRESULT                hr = webView2->get_Settings(&settings);
-            if (hr == S_OK) {
-                ICoreWebView2Settings2 *settings2;
-                hr = settings->QueryInterface(&settings2);
-                if (hr == S_OK) {
-                    settings2->put_UserAgent(userAgent.wc_str());
-                    settings2->Release();
-                    return true;
-                }
-            }
-            settings->Release();
-            return false;
-        }
-        pendingUserAgent = userAgent;
-        return true;
-    }
 
-    bool SetColorScheme(COREWEBVIEW2_PREFERRED_COLOR_SCHEME colorScheme)
-    {
-        ICoreWebView2 *webView2 = (ICoreWebView2 *) GetNativeBackend();
-        if (webView2) {
-            ICoreWebView2_13 * webView2_13;
-            HRESULT           hr = webView2->QueryInterface(&webView2_13);
-            if (hr == S_OK) {
-                ICoreWebView2Profile *profile;
-                hr = webView2_13->get_Profile(&profile);
-                if (hr == S_OK) {
-                    profile->put_PreferredColorScheme(colorScheme);
-                    profile->Release();
-                    return true;
-                }
-                webView2_13->Release();
-            }
-            return false;
-        }
-        pendingColorScheme = colorScheme;
-        return true;
-    }
-
-    void DoGetClientSize(int *x, int *y) const override
-    {
-        if (!pendingUserAgent.empty()) {
-            auto thiz = const_cast<WebViewEdge *>(this);
-            auto userAgent = std::move(thiz->pendingUserAgent);
-            thiz->pendingUserAgent.clear();
-            thiz->SetUserAgent(userAgent);
-        }
-        if (pendingColorScheme) {
-            auto thiz      = const_cast<WebViewEdge *>(this);
-            auto colorScheme = pendingColorScheme;
-            thiz->pendingColorScheme = COREWEBVIEW2_PREFERRED_COLOR_SCHEME_AUTO;
-            thiz->SetColorScheme(colorScheme);
-        }
-        wxWebViewEdge::DoGetClientSize(x, y);
-    };
-private:
-    wxString pendingUserAgent;
-    COREWEBVIEW2_PREFERRED_COLOR_SCHEME pendingColorScheme = COREWEBVIEW2_PREFERRED_COLOR_SCHEME_AUTO;
-};
-
-#elif defined __WXOSX__
-
-class WebViewWebKit : public wxWebViewWebKit
-{
-    WebViewWebKit(const wxWebViewConfiguration& config, WX_NSObject request = nullptr)
-        : wxWebViewWebKit(config,request) {}
-    
-    ~WebViewWebKit() override
-    {
-        RemoveScriptMessageHandler("wx");
-    }
-};
-
-#endif
-
-class FakeWebView : public wxWebView
-{
-    virtual bool Create(wxWindow* parent, wxWindowID id, const wxString& url, const wxPoint& pos, const wxSize& size, long style, const wxString& name) override { return false; }
-    virtual wxString GetCurrentTitle() const override { return wxString(); }
-    virtual wxString GetCurrentURL() const override { return wxString(); }
-    virtual bool IsBusy() const override { return false; }
-    virtual bool IsEditable() const override { return false; }
-    virtual void LoadURL(const wxString& url) override { }
-    virtual void Print() override { }
-    virtual void RegisterHandler(wxSharedPtr<wxWebViewHandler> handler) override { }
-    virtual void Reload(wxWebViewReloadFlags flags = wxWEBVIEW_RELOAD_DEFAULT) override { }
-    virtual bool RunScript(const wxString& javascript, wxString* output = NULL) const override { return false; }
-    virtual void SetEditable(bool enable = true) override { }
-    virtual void Stop() override { }
-    virtual bool CanGoBack() const override { return false; }
-    virtual bool CanGoForward() const override { return false; }
-    virtual void GoBack() override { }
-    virtual void GoForward() override { }
-    virtual void ClearHistory() override { }
-    virtual void EnableHistory(bool enable = true) override { }
-    virtual wxVector<wxSharedPtr<wxWebViewHistoryItem>> GetBackwardHistory() override { return {}; }
-    virtual wxVector<wxSharedPtr<wxWebViewHistoryItem>> GetForwardHistory() override { return {}; }
-    virtual void LoadHistoryItem(wxSharedPtr<wxWebViewHistoryItem> item) override { }
-    virtual bool CanSetZoomType(wxWebViewZoomType type) const override { return false; }
-    virtual float GetZoomFactor() const override { return 0.0f; }
-    virtual wxWebViewZoomType GetZoomType() const override { return wxWebViewZoomType(); }
-    virtual void SetZoomFactor(float zoom) override { }
-    virtual void SetZoomType(wxWebViewZoomType zoomType) override { }
-    virtual bool CanUndo() const override { return false; }
-    virtual bool CanRedo() const override { return false; }
-    virtual void Undo() override { }
-    virtual void Redo() override { }
-    virtual void* GetNativeBackend() const override { return nullptr; }
-    virtual void DoSetPage(const wxString& html, const wxString& baseUrl) override { }
-};
-
-wxDEFINE_EVENT(EVT_WEBVIEW_RECREATED, wxCommandEvent);
 
 static std::vector<wxWebView*> g_webviews;
 static std::vector<wxWebView*> g_delay_webviews;
@@ -267,7 +146,8 @@ wxWebView* WebView::CreateWebView(wxWindow * parent, wxString const & url,wxWebV
             visitor(webView);
         }
         webView->SetBackgroundColour(StateColor::darkModeColorFor(*wxWHITE));
-#ifdef __WIN32__
+        webView->SetUserAgent(CustomUserAgent());
+#ifdef __WXMSW__
         webView->Create(parent, wxID_ANY, url, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
         // We register the wxfs:// protocol for testing purposes
         webView->RegisterHandler(wxSharedPtr<wxWebViewHandler>(new wxWebViewArchiveHandler("bbl")));
@@ -293,7 +173,7 @@ wxWebView* WebView::CreateWebView(wxWindow * parent, wxString const & url,wxWebV
             Slic3r::GUI::wxGetApp().set_adding_script_handler(false);
             BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << ": finished add script message handler for wx.";
         };
-#ifndef __WIN32__
+#ifndef __WXMSW__
         webView->CallAfter([webView, addScriptMessageHandler] {
 #endif
             if (Slic3r::GUI::wxGetApp().is_adding_script_handler()) {
@@ -306,14 +186,11 @@ wxWebView* WebView::CreateWebView(wxWindow * parent, wxString const & url,wxWebV
                         addScriptMessageHandler(wv);
                 }
             }
-#ifndef __WIN32__
+#ifndef __WXMSW__
         });
 #endif
-        webView->EnableContextMenu(true);
-    } else {
-        BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << ": failed. Use fake web view.";
-        webView = new FakeWebView;
-    }
+
+    } 
     webView->SetRefData(new WebViewRef(webView));
     g_webviews.push_back(webView);
     return webView;
@@ -347,31 +224,9 @@ bool WebView::RunScript(wxWebView *webView, wxString const &javascript)
     if (Slic3r::GUI::wxGetApp().app_config->get("internal_developer_mode") == "true"
             && javascript.find("studio_userlogin") == wxString::npos)
         wxLogMessage("Running JavaScript:\n%s\n", javascript);
-
     try {
-#ifdef __WIN32__
-        ICoreWebView2 *   webView2 = (ICoreWebView2 *) webView->GetNativeBackend();
-        if (webView2 == nullptr)
-            return false;
-        return webView2->ExecuteScript(javascript, NULL) == 0;
-#elif defined __WXMAC__
-        WKWebView * wkWebView = (WKWebView *) webView->GetNativeBackend();
-        Slic3r::GUI::WKWebView_evaluateJavaScript(wkWebView, javascript, nullptr);
+        webView->RunScript(javascript);
         return true;
-#else
-        WebKitWebView *wkWebView = (WebKitWebView *) webView->GetNativeBackend();
-        webkit_web_view_run_javascript(
-            wkWebView, javascript.utf8_str(), NULL,
-            [](GObject *wkWebView, GAsyncResult *res, void *) {
-                GError * error = NULL;
-                auto result = webkit_web_view_run_javascript_finish((WebKitWebView*)wkWebView, res, &error);
-                if (!result)
-                    g_error_free (error);
-                else
-                    webkit_javascript_result_unref (result);
-        }, NULL);
-        return true;
-#endif
     } catch (std::exception &) {
         return false;
     }

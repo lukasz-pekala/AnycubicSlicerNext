@@ -15,6 +15,20 @@
 
 #include <set>
 
+
+#ifdef __WXMSW__
+#include <Windows.h>
+static int setenv(const char *name, const char *value, int overwrite) {
+  if (!overwrite) {
+      DWORD size = GetEnvironmentVariableA(name, NULL, 0);
+      if (size > 0) {
+        return 0;
+      }
+  }
+  return SetEnvironmentVariableA(name, value)?0:-1;
+}
+#endif // __WXMSW__
+
 namespace Slic3r {
 namespace GUI {
 // 定义白名单
