@@ -6,7 +6,10 @@ include(PrecompiledHeader)
 string(TIMESTAMP COMPILE_TIME %Y%m%d-%H%M%S)
 set(SLIC3R_BUILD_TIME ${COMPILE_TIME})
 
-if(NOT DEFINED Anycubic_CHECK_GCODE_PLACEHOLDERS)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # Always check gcode placeholders when building in debug mode.
+    set(Anycubic_CHECK_GCODE_PLACEHOLDERS "1")
+elseif(NOT DEFINED Anycubic_CHECK_GCODE_PLACEHOLDERS)
     set(Anycubic_CHECK_GCODE_PLACEHOLDERS "0")
 endif()
 

@@ -24,7 +24,7 @@ class WXDLLIMPEXP_FWD_CORE wxWindowDisabler;
 
 namespace Slic3r { namespace GUI {
 
-class WXDLLIMPEXP_CORE ProgressDialog : public wxDialog
+class  ProgressDialog : public wxDialog
 {
 public:
     ProgressDialog();
