@@ -1,59 +1,88 @@
 #!/bin/bash
 
-export ROOT=$(dirname $(readlink -f ${0}))
+PROJECT_DIR=$(dirname $(readlink -f ${0}))
+DEPS_DIR=${PROJECT_DIR}/deps
 
+cd ${PROJECT_DIR}
 set -e # exit on first error
-
-function check_available_memory_and_disk() {
-    FREE_MEM_GB=$(grep MemAvailable /proc/meminfo | awk '{print int($2 / 1024 / 1024)}')
-    MIN_MEM_GB=10
-
-    FREE_DISK_KB=$(df -k . | tail -1 | awk '{print $4}')
-    MIN_DISK_KB=$((10 * 1024 * 1024))
-
-    if [ ${FREE_MEM_GB} -le ${MIN_MEM_GB} ]; then
-        echo -e "\nERROR: AnycubicSlicer Slicer Builder requires at least ${MIN_MEM_GB}G of 'available' mem (systen has only ${FREE_MEM_GB}G available)"
-        echo && free -h && echo
-        exit 2
-    fi
-
-    if [[ ${FREE_DISK_KB} -le ${MIN_DISK_KB} ]]; then
-        echo -e "\nERROR: AnycubicSlicer Slicer Builder requires at least $(echo ${MIN_DISK_KB} |awk '{ printf "%.1fG\n", $1/1024/1024; }') (systen has only $(echo ${FREE_DISK_KB} | awk '{ printf "%.1fG\n", $1/1024/1024; }') disk free)"
-        echo && df -h . && echo
-        exit 1
-    fi
-}
 
 function usage() {
     echo "Usage: ./BuildLinux.sh [-1][-b][-c][-d][-i][-r][-s][-u]"
-    echo "   -1: limit builds to 1 core (where possible)"
-    echo "   -b: build in debug mode"
-    echo "   -c: force a clean build"
-    echo "   -d: build deps (optional)"
-    echo "   -h: this help output"
-    echo "   -i: Generate appimage (optional)"
-    echo "   -r: skip ram and disk checks (low ram compiling)"
-    echo "   -s: build anycubic-slicer (optional)"
-    echo "   -u: update and build dependencies (optional and need sudo)"
+    echo "   -d: Build deps only"
+    echo "   -s: Build slicer only"
+    echo "   -c: Set CMake build configuration, default is Release"
+    echo "   -j: Use single job for building"
     echo "   -g: Set GitHub proxy. default is null"
+    echo "   -u: install dependencies (optional and need sudo)"
+    echo "   -i: Generate appimage (optional)"
+    echo "   -h: Show this help message"
     echo "For a first use, you want to 'sudo ./BuildLinux.sh -u'"
-    echo "   and then './BuildLinux.sh -dsi'"
+    echo "   and then './BuildLinux.sh'"
 }
 
+function build_deps(){
+    type=$1 # CMAKE_BUILD_TYPE
+    install_dir=$2
+    build_dir=${DEPS_DIR}/build_${type}
+    
+    BUILD_ARGS="-DDEP_WX_GTK3=ON"
+
+
+    echo "Checking: ${install_dir}/done"
+    if [[ ! -f "${install_dir}/done" ]]; then
+        echo "Configuring dependencies..."
+        if [[ -n "${GITHUB_PROXY}" ]]; then
+            BUILD_ARGS="${BUILD_ARGS} -DGHPROXY=${GITHUB_PROXY}"
+        fi
+        
+        BUILD_ARGS="${BUILD_ARGS} -DCMAKE_BUILD_TYPE=${type}"
+        
+        echo "cmake -S ${DEPS_DIR} -B ${build_dir} ${BUILD_ARGS}  -DDESTDIR=\"$install_dir\" -DDEP_DOWNLOAD_DIR=\"${DEPS_DIR}/DL_CACHE\""
+        cmake -S ${DEPS_DIR} -B ${build_dir} ${BUILD_ARGS}  -DDESTDIR="$install_dir" -DDEP_DOWNLOAD_DIR="${DEPS_DIR}/DL_CACHE"
+        cmake --build ${build_dir} --config ${type} && touch ${install_dir}/done
+    else
+        echo "Dependencies already built, skip building..."
+    fi
+}
+
+
+function build_slicer(){
+    type=$1 # CMAKE_BUILD_TYPE
+    deps_install_dir=$2/usr/local
+    echo "Configuring AnycubicSlicer..."
+    build_dir=$3
+    BUILD_ARGS=""
+    if [[ -n "${FOUND_GTK3_DEV}" ]]
+    then
+        BUILD_ARGS="-DSLIC3R_GTK=3"
+    fi
+    BUILD_ARGS="${BUILD_ARGS} -DCMAKE_BUILD_TYPE=${type}"
+
+    echo -e "cmake -S ${PROJECT_DIR} -B ${build_dir}  -DCMAKE_PREFIX_PATH="${deps_install_dir}" ${BUILD_ARGS}"
+    cmake -S ${PROJECT_DIR} -B ${build_dir}  \
+        -DCMAKE_PREFIX_PATH="${deps_install_dir}" \
+        -DANYCUBICTOOLS=ON  ${BUILD_ARGS} -DSLIC3R_STATIC=ON
+    echo "done"
+    echo "Building AnycubicSlicer ..."
+    cmake --build ${build_dir} --target AnycubicSlicer
+    echo "Building AnycubicSlicer_profile_validator .."
+    cmake --build ${build_dir} --target AnycubicSlicer_profile_validator
+    sh "$PROJECT_DIR/run_gettext.sh"
+    echo "done"
+}
+
+BUILD_TARGET="all"
 unset name
-while getopts ":1bcdg:hirsu" opt; do
+while getopts ":jg:sduihc:" opt; do
   case ${opt} in
-    1 )
+    j )
         export CMAKE_BUILD_PARALLEL_LEVEL=1
         ;;
-    b )
-        BUILD_DEBUG="1"
-        ;;
     c )
-        CLEAN_BUILD=1
+        CONFIG=${OPTARG}
         ;;
     d )
-        BUILD_DEPS="1"
+       BUILD_TARGET="deps"
         ;;
     h ) usage
         exit 0
@@ -61,21 +90,25 @@ while getopts ":1bcdg:hirsu" opt; do
     i )
         BUILD_IMAGE="1"
         ;;
-    r )
-	    SKIP_RAM_CHECK="1"
-	;;
     s )
-        BUILD_Anycubic="1"
+        BUILD_TARGET="slicer"
         ;;
     u )
         UPDATE_LIB="1"
         ;;
     g )
         GITHUB_PROXY=${OPTARG}
-        echo "GITHUB_PROXY=${GITHUB_PROXY}"
         ;;
   esac
 done
+echo "PROJECT_DIR=${PROJECT_DIR}"
+echo "DEPS_DIR=${DEPS_DIR}"
+echo "BUILD_TARGET=${BUILD_TARGET}"
+echo "CONFIG=${CONFIG}"
+echo "UPDATE_LIB=${UPDATE_LIB}"
+echo "BUILD_IMAGE=${BUILD_IMAGE}"
+echo "GITHUB_PROXY=${GITHUB_PROXY}"
+
 
 if [ ${OPTIND} -eq 1 ]
 then
@@ -83,8 +116,8 @@ then
     exit 0
 fi
 
-DISTRIBUTION=$(awk -F= '/^ID=/ {print $2}' /etc/os-release | tr -d '"')
-DISTRIBUTION_LIKE=$(awk -F= '/^ID_LIKE=/ {print $2}' /etc/os-release | tr -d '"')
+DISTRIBUTION=$(grep -e ^ID= /etc/os-release | cut -d= -f 2)
+DISTRIBUTION_LIKE=$(grep -e ^ID_LIKE= /etc/os-release | cut   -d= -f 2)
 # Check for direct distribution match to Ubuntu/Debian
 if [ "${DISTRIBUTION}" == "ubuntu" ] || [ "${DISTRIBUTION}" == "linuxmint" ]; then
     DISTRIBUTION="debian"
@@ -107,90 +140,45 @@ then
     exit 1
 fi
 
-echo "Changing date in version..."
-{
-    # change date in version
-    sed -i "s/+UNKNOWN/_$(date '+%F')/" version.inc
-}
-echo "done"
 
-
-if ! [[ -n "${SKIP_RAM_CHECK}" ]]
-then
-    check_available_memory_and_disk
-fi
-
-if [[ -n "${BUILD_DEPS}" ]]
-then
-    echo "Configuring dependencies..."
-    BUILD_ARGS="-DDEP_WX_GTK3=ON"
-    if [[ -n "${CLEAN_BUILD}" ]]
-    then
-        rm -fr deps/build
-    fi
-    if [ ! -d "deps/build" ]
-    then
-        mkdir deps/build
-    fi
-    if [[ -n "${GITHUB_PROXY}" ]]; then
-        BUILD_ARGS="${BUILD_ARGS} -DGHPROXY=${GITHUB_PROXY}"
-    fi
-    if [[ -n "${BUILD_DEBUG}" ]]
-    then
-        BUILD_ARGS="${BUILD_ARGS} -DCMAKE_BUILD_TYPE=Debug"
+if [[ -n "${GITHUB_PROXY}" ]]; then
+    # 确保代理URL以斜杠结尾
+    if [[ "${GITHUB_PROXY: -1}" != "/" ]]; then
+        GITHUB_PROXY="${GITHUB_PROXY}/"
     fi
 
-    echo "cmake -S deps -B deps/build -G Ninja ${BUILD_ARGS}"
-    cmake -S deps -B deps/build -G Ninja ${BUILD_ARGS}
-    cmake --build deps/build
+    # 如果设置了代理，也去确保ippicv的下载使用代理
+    # NOTE: 如果opencv版本有变更这里也需要更新
+    IPPICV_COMMIT="a56b6ac6f030c312b2dce17430eef13aed9af274"
+    export OPENCV_IPPICV_URL="${GITHUB_PROXY}https://raw.githubusercontent.com/opencv/opencv_3rdparty/${IPPICV_COMMIT}/ippicv/"
 fi
 
 
-if [[ -n "${BUILD_Anycubic}" ]]
+if [[ "${BUILD_TARGET}" == "deps" || "${BUILD_TARGET}" == "all" ]]
 then
-    echo "Configuring AnycubicSlicer..."
-    if [[ -n "${CLEAN_BUILD}" ]]
-    then
-        rm -fr build
-    fi
-    BUILD_ARGS=""
-    if [[ -n "${FOUND_GTK3_DEV}" ]]
-    then
-        BUILD_ARGS="-DSLIC3R_GTK=3"
-    fi
-    if [[ -n "${BUILD_DEBUG}" ]]
-    then
-        BUILD_ARGS="${BUILD_ARGS} -DCMAKE_BUILD_TYPE=Debug -DBBL_INTERNAL_TESTING=1"
-    else
-        BUILD_ARGS="${BUILD_ARGS} -DBBL_RELEASE_TO_PUBLIC=1 -DBBL_INTERNAL_TESTING=0"
-    fi
-    echo -e "cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH="${PWD}/deps/build/destdir/usr/local" -DSLIC3R_STATIC=1 ${BUILD_ARGS}"
-    cmake -S . -B build -G Ninja \
-        -DCMAKE_PREFIX_PATH="${PWD}/deps/build/destdir/usr/local" \
-        -DSLIC3R_STATIC=1 \
-        -DAnycubicTOOLS=ON \
-        ${BUILD_ARGS}
-    echo "done"
-    echo "Building AnycubicSlicer ..."
-    cmake --build build --target AnycubicSlicer
-    echo "Building AnycubicSlicer_profile_validator .."
-    cmake --build build --target AnycubicSlicer_profile_validator
-    ./run_gettext.sh
-    echo "done"
+    build_deps ${CONFIG} ${PROJECT_DIR}/deps_install/${CONFIG}
 fi
 
-if [[ -e ${ROOT}/build/src/BuildLinuxImage.sh ]]; then
-# Give proper permissions to script
-chmod 755 ${ROOT}/build/src/BuildLinuxImage.sh
+
+if [[ "${BUILD_TARGET}" == "slicer" || "${BUILD_TARGET}" == "all" ]]
+then
+    build_slicer ${CONFIG} ${PROJECT_DIR}/deps_install/${CONFIG} ${PROJECT_DIR}/build_slicer_${CONFIG}
+fi
+
+if [[ -e ${PROJECT_DIR}/build_slicer_${CONFIG}/src/BuildLinuxImage.sh ]]; then
+
 
 echo "[9/9] Generating Linux app..."
     pushd build
         if [[ -n "${BUILD_IMAGE}" ]]
         then
-            ${ROOT}/build/src/BuildLinuxImage.sh -i
+           sh ${PROJECT_DIR}/build_slicer_${CONFIG}/src/BuildLinuxImage.sh -i
         else
-            ${ROOT}/build/src/BuildLinuxImage.sh
+           sh ${PROJECT_DIR}/build_slicer_${CONFIG}/src/BuildLinuxImage.sh
         fi
     popd
 echo "done"
 fi
+
+
+cd -

@@ -632,8 +632,8 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     FIND_LIBRARY(WAYLAND_EGL_LIBRARIES    NAMES wayland-egl)
     FIND_LIBRARY(WAYLAND_CLIENT_LIBRARIES NAMES wayland-client)
     find_package(CURL REQUIRED)
-    target_link_libraries(libslic3r_gui ${DBUS_LIBRARIES} OSMesa)
-    target_link_libraries(libslic3r_gui
+    target_link_libraries(libslic3r_gui PUBLIC ${DBUS_LIBRARIES})
+    target_link_libraries(libslic3r_gui PUBLIC
         OpenGL::EGL
         ${WAYLAND_SERVER_LIBRARIES}
         ${WAYLAND_EGL_LIBRARIES}
@@ -676,13 +676,13 @@ if (UNIX AND NOT APPLE)
         target_link_libraries (libslic3r_gui ${X11_LIBRARIES} ${webkit2gtk_LIBRARIES})
     endif()
     target_include_directories(libslic3r_gui PRIVATE ${GTK${SLIC3R_GTK}_INCLUDE_DIRS})
-    target_link_libraries(libslic3r_gui ${GTK${SLIC3R_GTK}_LIBRARIES} fontconfig)
+    target_link_libraries(libslic3r_gui PUBLIC ${GTK${SLIC3R_GTK}_LIBRARIES} fontconfig)
 
 
     # We add GStreamer for bambu:/// support.
     pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
     pkg_check_modules(GST_BASE REQUIRED gstreamer-base-1.0)
-    target_link_libraries(libslic3r_gui ${GSTREAMER_LIBRARIES} ${GST_BASE_LIBRARIES})
+    target_link_libraries(libslic3r_gui PUBLIC ${GSTREAMER_LIBRARIES} ${GST_BASE_LIBRARIES})
     target_include_directories(libslic3r_gui PRIVATE ${GSTREAMER_INCLUDE_DIRS} ${GST_BASE_INCLUDE_DIRS})
 endif ()
 
