@@ -104,7 +104,7 @@ void Label::initSysFont()
     Body_8  = Label::sysFont(8, false);
 }
 
-class WXDLLIMPEXP_CORE wxTextWrapper2
+class  wxTextWrapper2
 {
 public:
     wxTextWrapper2() { m_eol = false; }

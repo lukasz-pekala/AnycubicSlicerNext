@@ -707,6 +707,9 @@ function(AnycubicSlicer_copy_dlls target config postfix output_dlls)
     file(COPY ${TOP_LEVEL_PROJECT_DIR}/deps/GMP/gmp/lib/win${_bits}/libgmp-10.dll
             ${TOP_LEVEL_PROJECT_DIR}/deps/MPFR/mpfr/lib/win${_bits}/libmpfr-4.dll
         DESTINATION ${_out_dir})
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(POSTFIX "d")
+    endif()
 
     file(COPY ${CMAKE_PREFIX_PATH}/bin/occt/TKBO.dll
             ${CMAKE_PREFIX_PATH}/bin/occt/TKBRep.dll
@@ -734,7 +737,7 @@ function(AnycubicSlicer_copy_dlls target config postfix output_dlls)
             ${CMAKE_PREFIX_PATH}/bin/occt/TKXCAF.dll
             ${CMAKE_PREFIX_PATH}/bin/occt/TKXDESTEP.dll
             ${CMAKE_PREFIX_PATH}/bin/occt/TKXSBase.dll
-            ${CMAKE_PREFIX_PATH}/bin/freetype.dll
+            ${CMAKE_PREFIX_PATH}/bin/freetype${POSTFIX}.dll
          DESTINATION ${_out_dir})
 
     set(${output_dlls}
@@ -769,7 +772,7 @@ function(AnycubicSlicer_copy_dlls target config postfix output_dlls)
         ${_out_dir}/TKXDESTEP.dll
         ${_out_dir}/TKXSBase.dll
 
-        ${_out_dir}/freetype.dll
+        ${_out_dir}/freetype{POSTFIX}.dll
 
         PARENT_SCOPE
     )

@@ -5,7 +5,7 @@
 #include <wx/panel.h>
 #include "wx/stattext.h"
 
-class WXDLLIMPEXP_CORE ErrorMsgStaticText : public wxPanel
+class  ErrorMsgStaticText : public wxPanel
 {
 public:
     wxString m_msg;

@@ -203,15 +203,6 @@ if (WIN32)
         foreach (CONF ${CMAKE_CONFIGURATION_TYPES})
             file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${CONF}" WIN_CONF_OUTPUT_DIR)
             file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${CONF}/resources" WIN_RESOURCES_SYMLINK)
-            add_custom_command(TARGET AnycubicSlicer POST_BUILD
-                COMMAND if exist "${WIN_CONF_OUTPUT_DIR}" "("
-                        if not exist "${WIN_RESOURCES_SYMLINK}" "("
-                            mklink /J "${WIN_RESOURCES_SYMLINK}" "${SLIC3R_RESOURCES_DIR_WIN}"
-                        ")"
-                    ")"
-                COMMENT "Symlinking the resources directory into the build tree"
-                VERBATIM
-            )
         endforeach ()
 
         if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
@@ -222,16 +213,8 @@ if (WIN32)
             AnycubicSlicer_copy_dlls(COPY_DLLS "Release" "" output_dlls_Release)
         endif()
     else ()
-        file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/resources" WIN_RESOURCES_SYMLINK)
-        add_custom_command(TARGET AnycubicSlicer POST_BUILD
-            COMMAND if not exist "${WIN_RESOURCES_SYMLINK}" "(" mklink /J "${WIN_RESOURCES_SYMLINK}" "${SLIC3R_RESOURCES_DIR_WIN}" ")"
-            COMMENT "Symlinking the resources directory into the build tree"
-            VERBATIM
-        )
     endif ()
-
-
-else ()
+else () 
     if (APPLE AND NOT CMAKE_MACOSX_BUNDLE)
         # On OSX, the name of the binary matches the name of the Application.
         add_custom_command(TARGET AnycubicSlicer POST_BUILD
@@ -261,10 +244,7 @@ else ()
         set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${SoftFever_VERSION})
         set(MACOSX_BUNDLE_COPYRIGHT "Copyright(C) 2022-2024 Li Jiang All Rights Reserved")
     endif()
-    add_custom_command(TARGET AnycubicSlicer POST_BUILD
-        COMMAND ln -sfn "${SLIC3R_RESOURCES_DIR}" "${BIN_RESOURCES_DIR}"
-        COMMENT "Symlinking the resources directory into the build tree"
-        VERBATIM)
+
 endif ()
 
 # Slic3r binary install target. Default build type is release in case no CMAKE_BUILD_TYPE is provided.
@@ -297,6 +277,8 @@ endif()
 
 if(CMAKE_HOST_APPLE)
     set(RESOURCES_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/AnycubicSlicer.app/Contents/Resources")
+elseif(CMAKE_HOST_WIN32)
+    set(RESOURCES_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}${CMAKE_BUILD_TYPE}/Resources")
 endif()
 anycubic_create_link(AnycubicSlicer "${SLIC3R_RESOURCES_DIR_WIN}" "${RESOURCES_DIR}")
 anycubic_copy_to_build_tree(AnycubicSlicer ${OUT_SDK_DLLS})
