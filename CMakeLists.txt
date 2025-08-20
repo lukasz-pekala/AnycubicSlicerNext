@@ -121,7 +121,7 @@ endif ()
 # Proposal for C++ unit tests and sandboxes
 option(SLIC3R_BUILD_SANDBOXES   "Build development sandboxes" OFF)
 option(SLIC3R_BUILD_TESTS       "Build unit tests" OFF)
-option(Anycubic_TOOLS       "Build AnycubicSlicer tools" OFF)
+option(ANYCUBIC_TOOLS       "Build AnycubicSlicer tools" OFF)
 
 if (IS_CROSS_COMPILE)
     message("Detected cross compilation setup. Tests and encoding checks will be forcedly disabled!")

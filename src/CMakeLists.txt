@@ -102,7 +102,7 @@ if (SLIC3R_GUI)
     add_subdirectory(slic3r)
 endif()
 
-if(Anycubic_TOOLS)
+if(ANYCUBIC_TOOLS)
     # AnycubicSlicer_profile_validator
     add_executable(AnycubicSlicer_profile_validator AnycubicSlicer_profile_validator.cpp)
     target_link_libraries(AnycubicSlicer_profile_validator libslic3r boost_headeronly libcurl OpenSSL::SSL OpenSSL::Crypto)
