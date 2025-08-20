@@ -485,6 +485,7 @@ if(NOT SLIC3R_STATIC)
 endif()
 
 function(slic3r_remap_configs targets to_Cfg from_Cfg)
+    return()
     if(MSVC)
         string(TOUPPER ${from_Cfg} from_CFG)
     
