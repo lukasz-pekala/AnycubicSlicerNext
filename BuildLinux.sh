@@ -56,6 +56,7 @@ function build_slicer(){
     then
         BUILD_ARGS="-DSLIC3R_GTK=3"
     fi
+
     BUILD_ARGS="${BUILD_ARGS} -DCMAKE_BUILD_TYPE=${type}"
 
     echo -e "cmake -S ${PROJECT_DIR} -B ${build_dir}  -DCMAKE_PREFIX_PATH="${deps_install_dir}" ${BUILD_ARGS}"
@@ -64,9 +65,9 @@ function build_slicer(){
         -DANYCUBICTOOLS=ON  ${BUILD_ARGS} -DSLIC3R_STATIC=ON
     echo "done"
     echo "Building AnycubicSlicer ..."
-    cmake --build ${build_dir} --target AnycubicSlicer
+    cmake --build ${build_dir} --target AnycubicSlicer -j$(nproc)
     echo "Building AnycubicSlicer_profile_validator .."
-    cmake --build ${build_dir} --target AnycubicSlicer_profile_validator
+    cmake --build ${build_dir} --target AnycubicSlicer_profile_validator -j$(nproc)
     sh "$PROJECT_DIR/run_gettext.sh"
     echo "done"
 }
