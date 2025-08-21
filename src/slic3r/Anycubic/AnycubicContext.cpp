@@ -15,17 +15,16 @@
 
 #include <set>
 
-
 #ifdef __WXMSW__
 #include <Windows.h>
 static int setenv(const char *name, const char *value, int overwrite) {
   if (!overwrite) {
-      DWORD size = GetEnvironmentVariableA(name, NULL, 0);
-      if (size > 0) {
-        return 0;
-      }
+    DWORD size = GetEnvironmentVariableA(name, NULL, 0);
+    if (size > 0) {
+      return 0;
+    }
   }
-  return SetEnvironmentVariableA(name, value)?0:-1;
+  return SetEnvironmentVariableA(name, value) ? 0 : -1;
 }
 #endif // __WXMSW__
 
@@ -42,6 +41,18 @@ bool is_section_name_allowed(const wxString &section_name) {
   return SECTION_NAME_WHITELIST.find(section_name) !=
          SECTION_NAME_WHITELIST.end();
 }
+
+struct EmptyPM : public PluginsManager {
+  bool AddWidget(const wxString &position, wxWindow *widget) override {
+    return false;
+  }
+  bool AddStaticPlugins(create_library_t *create, size_t count) override {
+    return false;
+  }
+  bool SetConfig(class PMConfig *config) override { return false; }
+  void EmitEvent(EventType event) override { return; }
+  size_t Plugins(void) const override { return 0; }
+};
 
 class AnycubicContextPrivate : public PMConfig {
 public:
@@ -78,8 +89,12 @@ public:
   }
 
   PluginsManager *operator->() {
-    assert(pm_ != nullptr);
-    return pm_;
+    if (pm_ != nullptr)
+      return pm_;
+    else {
+      static EmptyPM empty_pm;
+      return &empty_pm;
+    }
   }
 
 private:
@@ -208,8 +223,8 @@ void AnycubicContext::OnInitByApp() {
   LOG_INFO("LD_LIBRARY_PATH after append: {}", getenv("LD_LIBRARY_PATH"));
 #endif
   auto package = Slic3r::data_dir() + "/cache/plugins.zip";
-  if (wxFileExists(wxString::FromUTF8(package))) {
-    LOG_WARN("Plugins package exists, will be unzipped");
+  if (!wxFileExists(wxString::FromUTF8(package))) {
+    LOG_WARN("Plugins package does not exist, skipping loading plugins. Path: {}", package);
     return;
   }
   PluginsPackageInfo info = {0};
