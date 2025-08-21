@@ -5985,7 +5985,9 @@ bool CLI::setup(int argc, char **argv)
     // The application is packed in the .tar.bz archive (or in AppImage) as 'bin/slic3r',
     // The resources are packed to 'resources'
     // Path from Slic3r binary to resources:
-    boost::filesystem::path path_resources = boost::filesystem::canonical(path_to_binary).parent_path().parent_path() / "resources";
+    boost::filesystem::path path_resources = boost::filesystem::canonical(path_to_binary).parent_path() / "Resources";
+    if(!boost::filesystem::exists(path_resources))
+        path_resources = "/usr/share/" SLIC3R_APP_NAME "/resources";
 #endif
 
     set_resources_dir(path_resources.string());
