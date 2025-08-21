@@ -8,9 +8,9 @@ endforeach()
 
 string(FIND ${CMAKE_GENERATOR} "Visual Studio" VS_GENERATOR)
 if((NOT VS_GENERATOR EQUAL -1) OR (${CMAKE_GENERATOR} STREQUAL "Ninja Multi-Config") )
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/src/)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/src/)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/src/)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/)
     set(OUTPUT_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}${CMAKE_BUILD_TYPE})
 elseif (${CMAKE_GENERATOR} STREQUAL "Xcode")
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/)
@@ -696,8 +696,8 @@ function(AnycubicSlicer_copy_dlls target config postfix output_dlls)
         set(_bits 32)
     endif ()
 
-    get_property(_is_multi GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-    get_target_property(_alt_out_dir ${target} RUNTIME_OUTPUT_DIRECTORY)
+
+    set(_alt_out_dir ${OUTPUT_PATH})
 
     if (_alt_out_dir)
         set (_out_dir "${_alt_out_dir}")
