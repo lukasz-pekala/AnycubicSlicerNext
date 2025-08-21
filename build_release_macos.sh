@@ -204,23 +204,6 @@ function build_slicer() {
         sh "$PROJECT_DIR/run_gettext.sh"
     )
 
-    echo "Fix macOS app package..."
-    (
-        cd "$PROJECT_BUILD_DIR"
-        mkdir -p AnycubicSlicer
-        cd AnycubicSlicer
-        # remove previously built app
-        rm -rf ./AnycubicSlicer.app
-        # fully copy newly built app
-        cp -pR "../src$BUILD_DIR_CONFIG_SUBDIR/AnycubicSlicer.app" ./AnycubicSlicer.app
-        # fix resources
-        resources_path=$(readlink ./AnycubicSlicer.app/Contents/Resources)
-        rm ./AnycubicSlicer.app/Contents/Resources
-        cp -R "$resources_path" ./AnycubicSlicer.app/Contents/Resources
-        # delete .DS_Store file
-        find ./AnycubicSlicer.app/ -name '.DS_Store' -delete
-    )
-
     # extract version
     # export ver=$(grep '^#define SoftFever_VERSION' ../src/libslic3r/libslic3r_version.h | cut -d ' ' -f3)
     # ver="_V${ver//\"}"
@@ -288,6 +271,7 @@ case "${BUILD_TARGET}" in
         else
             DEPS_BUILD_DIR="$DEPS_DIR/build_${BUILD_CONFIG}_$ARCH"
             DEPS="$PROJECT_DIR/build/${BUILD_CONFIG}_$ARCH"
+            PROJECT_BUILD_DIR="$PROJECT_DIR/build_${BUILD_CONFIG}_$ARCH"
             build_deps "$DEPS" "$DEPS_BUILD_DIR" "$ARCH"
             build_slicer "$DEPS" "$PROJECT_BUILD_DIR" "$ARCH"
         fi
