@@ -10,13 +10,11 @@ string(FIND ${CMAKE_GENERATOR} "Visual Studio" VS_GENERATOR)
 if((NOT VS_GENERATOR EQUAL -1) OR (${CMAKE_GENERATOR} STREQUAL "Ninja Multi-Config") )
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/src/)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/src/)
-    # Windows DLLs are "runtime" for CMake. Output them to "bin" like the Visual Studio projects do.
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/src/)
     set(OUTPUT_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}${CMAKE_BUILD_TYPE})
 elseif (${CMAKE_GENERATOR} STREQUAL "Xcode")
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/)
-    # Windows DLLs are "runtime" for CMake. Output them to "bin" like the Visual Studio projects do.
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/)
     set(OUTPUT_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}${CMAKE_BUILD_TYPE})
 else()
