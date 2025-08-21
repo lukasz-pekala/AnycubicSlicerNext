@@ -32,50 +32,53 @@ struct CurlGlobalInit
 	CurlGlobalInit()
     {
 #ifdef OPENSSL_CERT_OVERRIDE // defined if SLIC3R_STATIC=ON
+	const char *const SSL_CA_FILE = X509_get_default_cert_file_env();
+	const char *ssl_cafile = std::getenv(SSL_CA_FILE);
+	if (!ssl_cafile) {
+		ssl_cafile = X509_get_default_cert_file();
+	}
 
-        // Look for a set of distro specific directories. Don't change the
-        // order: https://bugzilla.redhat.com/show_bug.cgi?id=1053882
-        static const char * CA_BUNDLES[] = {
-            "/etc/pki/tls/certs/ca-bundle.crt",   // Fedora/RHEL 6
-            "/etc/ssl/certs/ca-certificates.crt", // Debian/Ubuntu/Gentoo etc.
-            "/usr/share/ssl/certs/ca-bundle.crt",
-            "/usr/local/share/certs/ca-root-nss.crt", // FreeBSD
-            "/etc/ssl/cert.pem",
-            "/etc/ssl/ca-bundle.pem"              // OpenSUSE Tumbleweed
-        };
+	if (!ssl_cafile ||!fs::exists(fs::path(ssl_cafile))) {
+#ifdef ANYCUBIC_SSL_CRT
+		fs::path rcDir = fs::path(Slic3r::resources_dir()) / ANYCUBIC_SSL_CRT;
+		if(fs::exists(rcDir)){
+			::setenv(SSL_CA_FILE, rcDir.c_str(), 1);
+		}else{
+			message = "Unable to get certificate.";
+		}
+#else
+		static const char *CA_BUNDLES[] = {
+			"/etc/pki/tls/certs/ca-bundle.crt",   // Fedora/RHEL 6
+			"/etc/ssl/certs/ca-certificates.crt", // Debian/Ubuntu/Gentoo etc.
+			"/usr/share/ssl/certs/ca-bundle.crt",
+			"/usr/local/share/certs/ca-root-nss.crt", // FreeBSD
+			"/etc/ssl/cert.pem",
+			"/etc/ssl/ca-bundle.pem"              // OpenSUSE Tumbleweed
+		};
 
-        namespace fs = boost::filesystem;
-        // Env var name for the OpenSSL CA bundle (SSL_CERT_FILE nomally)
-        const char *const SSL_CA_FILE = X509_get_default_cert_file_env();
-        const char * ssl_cafile = ::getenv(SSL_CA_FILE);
+		const char *bundle = nullptr;
+		for (const char *ca_bundle : CA_BUNDLES) {
+			if (fs::exists(fs::path(ca_bundle))) {
+				bundle = ca_bundle;
+				break;
+			}
+		}
 
-        if (!ssl_cafile)
-            ssl_cafile = X509_get_default_cert_file();
-
-        int replace = true;
-        if (!ssl_cafile || !fs::exists(fs::path(ssl_cafile))) {
-            const char * bundle = nullptr;
-            for (const char * b : CA_BUNDLES) {
-                if (fs::exists(fs::path(b))) {
-                    ::setenv(SSL_CA_FILE, bundle = b, replace);
-                    break;
-                }
-            }
-
-            if (!bundle)
-                message = "Unable to get system certificate.";
-            else
-                message = (boost::format("use system SSL certificate: %1%") % bundle).str();
-
-             message += "\n" + (boost::format("To manually specify the system certificate store, "
-                                                   "set the %1% environment variable to the correct CA and restart the application") % SSL_CA_FILE).str();
-        }
+		if (bundle != nullptr) {
+			::setenv(SSL_CA_FILE, bundle, 1);
+		} else {
+			message = "Unable to get system certificate.";
+		}
+#endif // ANYCUBIC_SSL_CRT
+	}
 #endif // OPENSSL_CERT_OVERRIDE
 
-        if (CURLcode ec = ::curl_global_init(CURL_GLOBAL_DEFAULT)) {
-            message += "CURL initialization failed. See the log for additional details.";
-            BOOST_LOG_TRIVIAL(error) << ::curl_easy_strerror(ec);
-        }
+	if (CURLcode ec = ::curl_global_init(CURL_GLOBAL_DEFAULT); ec != CURLE_OK) {
+		message += "CURL initialization failed. See the log for additional details.";
+		BOOST_LOG_TRIVIAL(error) << ::curl_easy_strerror(ec);
+	}else{
+		BOOST_LOG_TRIVIAL(info) << "CURL initialized.";
+	}
     }
 
 	~CurlGlobalInit() { ::curl_global_cleanup(); }
