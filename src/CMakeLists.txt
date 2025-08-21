@@ -131,9 +131,9 @@ endif (MINGW)
 if (NOT WIN32 AND NOT APPLE)
     find_package(X11 REQUIRED)
     # Binary name on unix like systems (Linux, Unix)
-    set_target_properties(AnycubicSlicer PROPERTIES OUTPUT_NAME "anycubic-slicer")
+    set_target_properties(AnycubicSlicer PROPERTIES OUTPUT_NAME "AnycubicSlicerNext")
     target_link_libraries(AnycubicSlicer ${X11_LIBRARIES})
-    set(SLIC3R_APP_CMD "anycubic-slicer")
+    set(SLIC3R_APP_CMD "AnycubicSlicerNext")
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/platform/unix/BuildLinuxImage.sh.in ${CMAKE_CURRENT_BINARY_DIR}/BuildLinuxImage.sh @ONLY)
 endif ()
 
@@ -189,7 +189,7 @@ if (WIN32)
     endif()
     target_compile_definitions(AnycubicSlicer_app_gui PRIVATE -DSLIC3R_WRAPPER_NOCONSOLE)
     add_dependencies(AnycubicSlicer_app_gui AnycubicSlicer)
-    set_target_properties(AnycubicSlicer_app_gui PROPERTIES OUTPUT_NAME "anycubic-slicer")
+    set_target_properties(AnycubicSlicer_app_gui PROPERTIES OUTPUT_NAME "AnycubicSlicerNext")
     target_link_libraries(AnycubicSlicer_app_gui PRIVATE boost_headeronly)
 endif ()
 
@@ -217,17 +217,7 @@ if (WIN32)
     else ()
     endif ()
 else () 
-    if (APPLE AND NOT CMAKE_MACOSX_BUNDLE)
-        # On OSX, the name of the binary matches the name of the Application.
-        add_custom_command(TARGET AnycubicSlicer POST_BUILD
-            COMMAND ln -sf AnycubicSlicer anycubic-slicer
-            WORKING_DIRECTORY "$<TARGET_FILE_DIR:AnycubicSlicer>"
-            VERBATIM)
-    # else ()
-        # add_custom_command(TARGET AnycubicSlicer POST_BUILD
-        #     WORKING_DIRECTORY "$<TARGET_FILE_DIR:AnycubicSlicer>"
-        #     VERBATIM)
-    endif ()
+
     if (XCODE)
         # Because of Debug/Release/etc. configurations (similar to MSVC) the slic3r binary is located in an extra level
         set(BIN_RESOURCES_DIR "${CMAKE_CURRENT_BINARY_DIR}/resources")

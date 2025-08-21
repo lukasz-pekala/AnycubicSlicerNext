@@ -66,8 +66,6 @@ function build_slicer(){
     echo "done"
     echo "Building AnycubicSlicer ..."
     cmake --build ${build_dir} --target AnycubicSlicer -j$(nproc)
-    echo "Building AnycubicSlicer_profile_validator .."
-    cmake --build ${build_dir} --target AnycubicSlicer_profile_validator -j$(nproc)
     sh "$PROJECT_DIR/run_gettext.sh"
     echo "done"
 }
@@ -169,15 +167,15 @@ fi
 if [[ -e ${PROJECT_DIR}/build_slicer_${CONFIG}/src/BuildLinuxImage.sh ]]; then
 
 
-echo "[9/9] Generating Linux app..."
-    pushd build
-        if [[ -n "${BUILD_IMAGE}" ]]
-        then
-           sh ${PROJECT_DIR}/build_slicer_${CONFIG}/src/BuildLinuxImage.sh -i
-        else
-           sh ${PROJECT_DIR}/build_slicer_${CONFIG}/src/BuildLinuxImage.sh
-        fi
-    popd
+echo "Generating Linux app..."
+    
+if [[ -n "${BUILD_IMAGE}" ]]
+then
+    sh ${PROJECT_DIR}/build_slicer_${CONFIG}/src/BuildLinuxImage.sh -i
+else
+    sh ${PROJECT_DIR}/build_slicer_${CONFIG}/src/BuildLinuxImage.sh
+fi
+    
 echo "done"
 fi
 

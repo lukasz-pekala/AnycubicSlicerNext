@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Bambu GCode viewer
-Exec=anycubic-slicer --gcodeviewer %F
+Exec=AnycubicSlicerNext --gcodeviewer %F
 Icon=AnycubicSlicer-gcodeviewer
 Terminal=false
 Type=Application

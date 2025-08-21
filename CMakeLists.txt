@@ -113,9 +113,9 @@ if (APPLE)
     if (CMAKE_MACOSX_BUNDLE)
         set(CMAKE_INSTALL_RPATH @executable_path/../Frameworks)
     endif()
-    SET(CMAKE_XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.softfever3d.anycubic-slicer")
+    SET(CMAKE_XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.anycubic.AnycubicSlicerNext")
 
-    message(STATUS "AnycubicSlicer: IS_CROSS_COMPILE: ${IS_CROSS_COMPILE}")
+    message(STATUS "AnycubicSlicerNext: IS_CROSS_COMPILE: ${IS_CROSS_COMPILE}")
 endif ()
 
 # Proposal for C++ unit tests and sandboxes
@@ -803,7 +803,7 @@ if(SLIC3R_BUILD_TESTS)
 endif()
 
 if (NOT WIN32 AND NOT APPLE)
-    set(SLIC3R_APP_CMD "anycubic-slicer")
+    set(SLIC3R_APP_CMD "AnycubicSlicerNext")
     configure_file(${LIBDIR}/platform/unix/build_appimage.sh.in ${CMAKE_CURRENT_BINARY_DIR}/build_appimage.sh @ONLY)
 endif()
 
@@ -853,17 +853,17 @@ set (CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
 set (CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/resources/images\\\\AnycubicSlicer.ico")
 set (CPACK_NSIS_MUI_ICON "${CPACK_PACKAGE_ICON}")
 set (CPACK_NSIS_MUI_UNIICON "${CPACK_PACKAGE_ICON}")
-set (CPACK_NSIS_INSTALLED_ICON_NAME  "$INSTDIR\\\\anycubic-slicer.exe")
+set (CPACK_NSIS_INSTALLED_ICON_NAME  "$INSTDIR\\\\AnycubicSlicerNext.exe")
 set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
-    CreateShortCut \\\"$DESKTOP\\\\AnycubicSlicer.lnk\\\" \\\"$INSTDIR\\\\anycubic-slicer.exe\\\"
+    CreateShortCut \\\"$DESKTOP\\\\AnycubicSlicer.lnk\\\" \\\"$INSTDIR\\\\AnycubicSlicerNext.exe\\\"
 ")
 set (CPACK_PACKAGE_CHECKSUM SHA256)
 set (CPACK_PACKAGE_INSTALL_REGISTRY_KEY "AnycubicSlicer")
 set (CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
 set (CPACK_NSIS_EXECUTABLES_DIRECTORY ".")
 # set (CPACK_NSIS_MODIFY_PATH "ON")
-set(CPACK_PACKAGE_EXECUTABLES "anycubic-slicer;AnycubicSlicer")
-set(CPACK_CREATE_DESKTOP_LINKS "anycubic-slicer")
+set(CPACK_PACKAGE_EXECUTABLES "AnycubicSlicerNext")
+set(CPACK_CREATE_DESKTOP_LINKS "AnycubicSlicerNext")
 set (CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/LICENSE.txt) # must also include in install command
 
 set(CPACK_WIX_UPGRADE_GUID "058245e8-20e0-4a95-9ab7-1acfe17ad511")
