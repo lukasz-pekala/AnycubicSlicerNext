@@ -102,7 +102,12 @@ set(OPENVDB_FIND_MODULE_PATH "" CACHE PATH "Path to OpenVDB installation's find 
 set(SLIC3R_GTK "2" CACHE STRING "GTK version to use with wxWidgets on Linux")
 
 set(IS_CROSS_COMPILE FALSE)
-
+if(NOT CMAKE_HOST_WIN32)
+    set(CMAKE_SKIP_RPATH OFF)
+    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH OFF)
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+    set(CMAKE_SKIP_BUILD_RPATH TRUE)
+endif()
 if (APPLE)
     set(CMAKE_FIND_FRAMEWORK LAST)
     set(CMAKE_FIND_APPBUNDLE LAST)
@@ -116,6 +121,8 @@ if (APPLE)
     SET(CMAKE_XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.anycubic.AnycubicSlicerNext")
 
     message(STATUS "AnycubicSlicerNext: IS_CROSS_COMPILE: ${IS_CROSS_COMPILE}")
+elseif(CMAKE_HOST_LINUX)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,$ORIGIN -Wl,--disable-new-dtags")
 endif ()
 
 # Proposal for C++ unit tests and sandboxes

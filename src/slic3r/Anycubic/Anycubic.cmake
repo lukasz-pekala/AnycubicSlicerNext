@@ -17,6 +17,33 @@ macro(anycubic_target_link link_to_target OUT_SDK_DLLS)
         pkg_check_modules(PSL REQUIRED libpsl)
         target_link_libraries(${link_to_target} PUBLIC  ${WEBKIT2GTK_LIBRARIES} ${GTK3_LIBRARIES} ${PSL_LIBRARIES})
     endif()
+
+
+    # 提取wxWidgets_LIBRARIES中的路径库和库名用于搜索
+    set(wxWidgets_LIBRARIES_PATH "")
+    set(wxWidgets_LIBRARIES_NAME "wx_baseu_xml-3.1")
+    foreach(lib ${wxWidgets_LIBRARIES})
+        if(lib MATCHES "^-L")
+            string(REPLACE "-L" "" path ${lib})
+            list(APPEND wxWidgets_LIBRARIES_PATH ${path})
+        elseif(lib MATCHES "^-l")
+            string(REPLACE "-l" "" name ${lib})
+            list(APPEND wxWidgets_LIBRARIES_NAME ${name})
+        endif()
+    endforeach()
+
+    
+    foreach(name ${wxWidgets_LIBRARIES_NAME})
+        find_library(wxWidgets_LIBRARY_${name} NAMES ${name} PATHS ${wxWidgets_LIBRARIES_PATH})
+        if(wxWidgets_LIBRARY_${name})
+            list(APPEND MODULE_LIST ${wxWidgets_LIBRARY_${name}})
+        else()
+            message(FATAL_ERROR "wxWidgets_LIBRARY_${name} not found")
+        endif()
+    endforeach()
+
+    
+
     if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
         set(_build_type "_DEBUG")
     else()
@@ -102,6 +129,7 @@ endfunction()
 
 
 function(anycubic_copy_to_build_tree target)
+    message("++ target: ${target}")
     get_target_property(des_directory ${target} RUNTIME_OUTPUT_DIRECTORY)
     if(CMAKE_HOST_APPLE)
         set(des_directory "${des_directory}${CMAKE_BUILD_TYPE}/${target}.app/Contents/Frameworks/")
@@ -113,16 +141,17 @@ function(anycubic_copy_to_build_tree target)
         list(FILTER OUT_SDK_DLLS INCLUDE REGEX "\\.dll$")
     elseif(CMAKE_HOST_APPLE)
         list(FILTER OUT_SDK_DLLS INCLUDE REGEX "\\.dylib$")
-    else()
+        set_target_properties(${target} PROPERTIES 
+            MACOSX_BUNDLE TRUE
+            INSTALL_RPATH "@executable_path/../Frameworks"
+        )
+    elseif(CMAKE_HOST_LINUX)
         list(FILTER OUT_SDK_DLLS INCLUDE REGEX "\\.so$")
     endif()
     add_custom_command(TARGET ${target} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy ${OUT_SDK_DLLS} "${des_directory}"
         VERBATIM)
-    set_target_properties(${target} PROPERTIES 
-            MACOSX_BUNDLE TRUE
-            INSTALL_RPATH "@executable_path/../Frameworks"
-        )
+    
 endfunction()
 
 
