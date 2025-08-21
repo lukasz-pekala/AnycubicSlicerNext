@@ -144,7 +144,7 @@ GuideFrame::GuideFrame(GUI_App *pGUI, long style)
     // wxLogMessage("User Agent: %s", m_browser->GetUserAgent());
 
     // Set a more sensible size for web browsing
-    wxSize pSize = FromDIP(wxSize(1820, 960));
+    wxSize pSize = FromDIP(wxSize(820, 660));
     SetSize(pSize);
 
     int screenheight = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y, NULL);
@@ -519,7 +519,6 @@ void GuideFrame::RunScript(const wxString &javascript)
     //m_javascript = javascript;
 
     // wxLogMessage("Running JavaScript:\n%s\n", javascript);
-
     if (!m_browser) return;
 
     WebView::RunScript(m_browser, javascript);

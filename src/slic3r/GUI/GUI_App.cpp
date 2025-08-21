@@ -6341,7 +6341,7 @@ bool GUI_App::run_wizard(ConfigWizard::RunReason reason, ConfigWizard::StartPage
                 start_page == ConfigWizard::SP_FILAMENTS ? GuideFrame::BBL_FILAMENT_ONLY :
                 start_page == ConfigWizard::SP_PRINTERS ? GuideFrame::BBL_MODELS_ONLY :
                 GuideFrame::BBL_MODELS;
-    wizard.SetStartPage(GuideFrame::BBL_REGION);
+    wizard.SetStartPage(page);
     bool       res = wizard.run();
 
     if (res) {
