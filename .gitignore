@@ -40,3 +40,4 @@ resources/profiles/user/default
 /universal
 LIBRARY_CONFIG.cmake
 *_install/
+AnycubicSlicerNext

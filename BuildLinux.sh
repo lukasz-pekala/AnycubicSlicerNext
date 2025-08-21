@@ -167,14 +167,6 @@ fi
 if [[ -e ${PROJECT_DIR}/build_slicer_${CONFIG}/src/BuildLinuxImage.sh ]]; then
 
 
-echo "Generating Linux app..."
-    
-if [[ -n "${BUILD_IMAGE}" ]]
-then
-    sh ${PROJECT_DIR}/build_slicer_${CONFIG}/src/BuildLinuxImage.sh -i
-else
-    sh ${PROJECT_DIR}/build_slicer_${CONFIG}/src/BuildLinuxImage.sh
-fi
     
 echo "done"
 fi
