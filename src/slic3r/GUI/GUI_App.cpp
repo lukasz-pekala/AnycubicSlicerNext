@@ -301,7 +301,7 @@ public:
             wxMemoryDC memDC;
             memDC.SelectObject(bitmap);
             memDC.SetFont(m_action_font);
-            memDC.SetTextForeground(StateColor::darkModeColorFor(wxColour(144, 144, 144)));
+            memDC.SetTextForeground(StateColor::darkModeColorFor(wxColour(44, 44, 44)));
             int width = bitmap.GetWidth();
             int text_height = memDC.GetTextExtent(text).GetHeight();
             int text_width = memDC.GetTextExtent(text).GetWidth();
@@ -335,9 +335,18 @@ public:
         wxBitmap logo_bmp = *bmp_cache.load_svg(is_dark ? "splash_logo_dark" : "splash_logo", width, height);  // use with full width & height
         memDc.DrawBitmap(logo_bmp, 0, 0, true);
 
+
+        // APP_NAME title
+        memDc.SetFont(Label::sysFont(30, false));
+        memDc.SetTextForeground(StateColor::darkModeColorFor(wxColor(44, 44, 44)));
+        wxSize title_ext = memDc.GetTextExtent(m_constant_text.title);
+        wxRect title_rect(wxPoint(0, int(height * 204 / 480)), wxPoint(width, int(height * 204 / 480) + title_ext.GetHeight()));
+        memDc.DrawLabel(m_constant_text.title, title_rect, wxALIGN_CENTER);
+
+
         // Version
         memDc.SetFont(m_constant_text.version_font);
-        memDc.SetTextForeground(StateColor::darkModeColorFor(wxColor(134, 134, 134)));
+        memDc.SetTextForeground(StateColor::darkModeColorFor(wxColor(44, 44, 44)));
         wxSize version_ext = memDc.GetTextExtent(m_constant_text.version);
         wxRect version_rect(
 			wxPoint(0, int(height * 0.70)),
@@ -350,7 +359,7 @@ public:
 
 		// Based on Text
         memDc.SetFont(m_constant_text.based_on_font);
-        auto bs_version = wxString::Format("Based on PrusaSlicer and BambuStudio").ToStdString();
+        auto bs_version = wxString::Format("Based on OrcaSlicer, BambuStudio and PrusaSlicer").ToStdString();
         wxSize based_on_ext = memDc.GetTextExtent(bs_version);
         wxRect based_on_rect(
 			wxPoint(0, height - based_on_ext.GetHeight() * 2),
@@ -441,7 +450,7 @@ private:
         void init(wxFont init_font)
         {
             // title
-            //title = wxGetApp().is_editor() ? SLIC3R_APP_FULL_NAME : GCODEVIEWER_APP_NAME;
+            title = wxGetApp().is_editor() ? SLIC3R_APP_FULL_NAME : GCODEVIEWER_APP_NAME;
 
             // dynamically get the version to display
             version = GUI_App::format_display_version();
