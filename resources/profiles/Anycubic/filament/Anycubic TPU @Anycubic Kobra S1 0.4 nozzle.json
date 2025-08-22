@@ -3,11 +3,19 @@
     "filament_id": "GFU99",
     "setting_id": "GFSA04",
     "from": "system",
+    "is_custom_defined": "0",
     "instantiation": "true",
+    "version": "1.3.2504.18",
     "name": "Anycubic TPU @Anycubic Kobra S1 0.4 nozzle",
-    "inherits": "fdm_filament_tpu",
+    "inherits": "Anycubic TPU @acbase",
+    "filament_vendor": [
+        "Anycubic"
+    ],
     "filament_settings_id": [
         "Anycubic TPU @Anycubic Kobra S1 0.4 nozzle"
+    ],
+    "filament_type": [
+        "TPU"
     ],
     "filament_flow_ratio": [
         "1"
@@ -27,11 +35,20 @@
     "activate_chamber_temp_control": [
         "0"
     ],
+    "adaptive_pressure_advance": [
+        "0"
+    ],
+    "adaptive_pressure_advance_bridges": [
+        "0"
+    ],
+    "adaptive_pressure_advance_model": [
+        "0,0,0\n0,0,0"
+    ],
+    "adaptive_pressure_advance_overhangs": [
+        "0"
+    ],
     "additional_cooling_fan_speed": [
         "60"
-    ],
-    "bed_type": [
-        "Cool Plate"
     ],
     "chamber_temperature": [
         "0"
@@ -53,6 +70,9 @@
     ],
     "default_filament_colour": [
         ""
+    ],
+    "dont_slow_down_outer_wall": [
+        "0"
     ],
     "during_print_exhaust_fan_speed": [
         "70"
@@ -100,13 +120,10 @@
         "1.75"
     ],
     "filament_end_gcode": [
-        "; filament end gcode\n"
+        "; filament end gcode "
     ],
     "filament_is_support": [
         "0"
-    ],
-    "filament_load_time": [
-        "31.925"
     ],
     "filament_loading_speed": [
         "0"
@@ -157,18 +174,27 @@
         "nil"
     ],
     "filament_retraction_length": [
-        "nil"
+        "1"
     ],
     "filament_retraction_minimum_travel": [
         "nil"
     ],
     "filament_retraction_speed": [
-        "nil"
+        "30"
     ],
     "filament_shrink": [
         "100%"
     ],
+    "filament_shrinkage_compensation_z": [
+        "100%"
+    ],
     "filament_soluble": [
+        "0"
+    ],
+    "filament_stamping_distance": [
+        "0"
+    ],
+    "filament_stamping_loading_speed": [
         "0"
     ],
     "filament_start_gcode": [
@@ -176,9 +202,6 @@
     ],
     "filament_toolchange_delay": [
         "0"
-    ],
-    "filament_unload_time": [
-        "24.75"
     ],
     "filament_unloading_speed": [
         "0"
@@ -202,10 +225,13 @@
         "0"
     ],
     "hot_plate_temp": [
-        "55"
+        "35"
     ],
     "hot_plate_temp_initial_layer": [
-        "55"
+        "35"
+    ],
+    "idle_temperature": [
+        "0"
     ],
     "nozzle_temperature_initial_layer": [
         "215"
@@ -246,10 +272,16 @@
     "temperature_vitrification": [
         "30"
     ],
+    "textured_cool_plate_temp": [
+        "40"
+    ],
+    "textured_cool_plate_temp_initial_layer": [
+        "40"
+    ],
     "textured_plate_temp": [
-        "55"
+        "35"
     ],
     "textured_plate_temp_initial_layer": [
-        "55"
+        "35"
     ]
 }

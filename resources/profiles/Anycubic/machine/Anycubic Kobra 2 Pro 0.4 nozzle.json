@@ -5,13 +5,17 @@
     "inherits": "fdm_machine_common",
     "instantiation": "true",
     "printer_technology": "FFF",
+    "version": "1.3.2501.10",
+
     "printer_settings_id": "Anycubic Kobra 2 Pro 0.4 nozzle",
     "printer_model": "Anycubic Kobra 2 Pro",
     "printer_variant": "0.4",
+
     "name": "Anycubic Kobra 2 Pro 0.4 nozzle",
     "nozzle_diameter": [ "0.4" ],
-    "default_print_profile": "0.16mm Optimal @Anycubic Kobra 2 Pro 0.4 nozzle",
+    "default_print_profile": "0.20mm Standard @Anycubic Kobra 2 Pro 0.4 nozzle",
     "default_filament_profile": [ "Anycubic PLA @Anycubic Kobra 2 Pro 0.4 nozzle" ],
+
     "disable_m73": "1",
     "gcode_flavor": "klipper",
     "printable_area": [
@@ -21,10 +25,13 @@
         "0x220"
     ],
     "printable_height": "250",
-    "thumbnails": [
-        "230x110"
-    ],
+    "thumbnails": "230x110/PNG",
     "thumbnails_format": "PNG",
+
+
+
+
+
     "adaptive_bed_mesh_margin": "0",
     "auxiliary_fan": "0",
     "bbl_use_printhost": "0",
@@ -68,11 +75,11 @@
     "high_current_on_filament_swap": "0",
     "host_type": "octoprint",
     "is_custom_defined": "0",
-    "layer_change_gcode": "; layer num/total_layer_count: {layer_num+1}/[total_layer_count]\n; update layer progress\nM73 L{layer_num+1}\nM991 S0 P{layer_num} ;notify layer change",
+    "layer_change_gcode": "; layer num/total_layer_count: {layer_num+1}/[total_layer_count]\n",
     "long_retractions_when_cut": [
         "0"
     ],
-    "machine_end_gcode": "{if max_layer_z < max_print_height}G1 Z{z_offset+min(max_layer_z+2, max_print_height)} F600 ; Move print head up{endif}\nG1 X5 Y{print_bed_max[1]*0.95} F{travel_speed*60} ; present print\n{if max_layer_z < max_print_height-10}G1 Z{z_offset+min(max_layer_z+70, max_print_height-10)} F600 ; Move print head further up{endif}\n{if max_layer_z < max_print_height*0.6}G1 Z{max_print_height*0.6} F600 ; Move print head further up{endif}\nM140 S0 ; turn off heatbed\nM104 S0 ; turn off temperature\nM84; disable stepper motors",
+    "machine_end_gcode": "{if max_layer_z < max_print_height}G1 Z{z_offset+min(max_layer_z+2, max_print_height)} F600 ; Move print head up{endif}\nG1 X5 Y{print_bed_max[1]*0.95} F{travel_speed*60} ; present print\n{if max_layer_z < max_print_height-10}G1 Z{z_offset+min(max_layer_z+70, max_print_height-10)} F600 ; Move print head further up{endif}\n{if max_layer_z < max_print_height*0.6}G1 Z{max_print_height*0.6} F600 ; Move print head further up{endif}\nM140 S0 ; turn off heatbed\nM104 S0 ; turn off temperature\nM84; disable motors                    ; disable stepper motors",
     "machine_load_filament_time": "25",
     "machine_max_acceleration_e": [
         "20000",
@@ -142,8 +149,9 @@
         "0",
         "0"
     ],
-    "machine_pause_gcode": "M601",
-    "machine_start_gcode": "G90 ;Use absolute coordinates\nM83 ;Extruder relative mode\nM140 S[first_layer_bed_temperature] ;Set bed temp\nM190 S[first_layer_bed_temperature] ;Wait for bed temp\nM104 S[first_layer_temperature] ;Set extruder temp\nM109 S[first_layer_temperature] ;Wait for extruder temp\nG28 ;Move X/Y/Z to min endstops\nG1 Z0.28 ;Lift nozzle a bit\nG92 E0 ;Specify current extruder position as zero\nG1 Y226 F1800 ;Move Y to purge point\nG1 X180 E25 F500 ;Extrude 25mm of filament in a 5cm line\nG92 E0 ;Zero the extruded length again\nG1 E-0.2 F500 ;Retract a little\nG1 X181 F4000 ;Quickly wipe away from the filament line\nM117\nM900 K0.07",
+    "machine_pause_gcode": "M600",
+    "machine_start_gcode": "G90 ;Use absolute coordinates\nM83 ;Extruder relative mode\nM140 S[first_layer_bed_temperature] ;Set bed temp\nM190 S[first_layer_bed_temperature] ;Wait for bed temp\nM104 S[first_layer_temperature] ;Set extruder temp\nM109 S[first_layer_temperature] ;Wait for extruder temp\nG28 ;Move X/Y/Z to min endstops\nG1 Z0.28 ;Lift nozzle a bit\nG92 E0 ;Specify current extruder position as zero\nG1 Y222 F1800 ;Move Y to purge point\nG1 X180 E25 F500 ;Extrude 25mm of filament in a 5cm line\nG92 E0 ;Zero the extruded length again\nG1 E-0.2 F500 ;Retract a little\nG1 X181 F4000 ;Quickly wipe away from the filament line\nM117\nM900 K0.07",
+    "machine_tool_change_time": "0",
     "machine_unload_filament_time": "29",
     "manual_filament_change": "0",
     "max_layer_height": [
@@ -157,9 +165,12 @@
     "nozzle_type": "brass",
     "nozzle_volume": "117",
     "parking_pos_retraction": "0",
+    "pellet_modded_printer": "0",
     "preferred_orientation": "0",
     "printer_notes": "",
     "printer_structure": "i3",
+    "printhost_authorization_type": "key",
+    "printhost_ssl_ignore_revoke": "0",
     "printing_by_object_gcode": "",
     "purge_in_prime_tower": "0",
     "retract_before_wipe": [
@@ -203,13 +214,18 @@
     "single_extruder_multi_material": "1",
     "support_air_filtration": "0",
     "support_chamber_temp_control": "0",
-    "support_multi_bed_types": "0",
+    "support_multi_bed_types": "1",
     "template_custom_gcode": "",
+    "thumbnails_internal": "512x512/PNG/plate, 512x512/PNG/top",
+    "thumbnails_internal_switch": "0",
     "time_cost": "0",
     "time_lapse_gcode": "",
+    "travel_slope": [
+        "3"
+    ],
     "upward_compatible_machine": [],
     "use_firmware_retraction": "0",
-    "use_relative_e_distances": "0",
+    "use_relative_e_distances": "1",
     "wipe": [
         "1"
     ],

@@ -3,11 +3,19 @@
     "filament_id": "GFG99",
     "setting_id": "GFSA04",
     "from": "system",
+    "is_custom_defined": "0",
     "instantiation": "true",
+    "version": "1.3.2504.18",
     "name": "Anycubic PETG @Anycubic Kobra S1 0.4 nozzle",
-    "inherits": "fdm_filament_pet",
+    "inherits": "Anycubic PETG @acbase",
+    "filament_vendor": [
+        "Anycubic"
+    ],
     "filament_settings_id": [
         "Anycubic PETG @Anycubic Kobra S1 0.4 nozzle"
+    ],
+    "filament_type": [
+        "PETG"
     ],
     "filament_flow_ratio": [
         "0.96"
@@ -16,7 +24,7 @@
         "12"
     ],
     "nozzle_temperature": [
-        "250"
+        "230"
     ],
     "compatible_printers": [
         "Anycubic Kobra S1 0.4 nozzle"
@@ -27,11 +35,20 @@
     "activate_chamber_temp_control": [
         "0"
     ],
-    "additional_cooling_fan_speed": [
+    "adaptive_pressure_advance": [
         "0"
     ],
-    "bed_type": [
-        "Cool Plate"
+    "adaptive_pressure_advance_bridges": [
+        "0"
+    ],
+    "adaptive_pressure_advance_model": [
+        "0,0,0\n0,0,0"
+    ],
+    "adaptive_pressure_advance_overhangs": [
+        "0"
+    ],
+    "additional_cooling_fan_speed": [
+        "0"
     ],
     "chamber_temperature": [
         "0"
@@ -46,13 +63,16 @@
         "70"
     ],
     "cool_plate_temp": [
-        "55"
+        "35"
     ],
     "cool_plate_temp_initial_layer": [
-        "55"
+        "35"
     ],
     "default_filament_colour": [
         ""
+    ],
+    "dont_slow_down_outer_wall": [
+        "0"
     ],
     "during_print_exhaust_fan_speed": [
         "70"
@@ -100,13 +120,10 @@
         "1.75"
     ],
     "filament_end_gcode": [
-        "; filament end gcode\n"
+        "; filament end gcode "
     ],
     "filament_is_support": [
         "0"
-    ],
-    "filament_load_time": [
-        "31.925"
     ],
     "filament_loading_speed": [
         "0"
@@ -151,34 +168,40 @@
         "nil"
     ],
     "filament_retract_when_changing_layer": [
-        "nil"
+        "1"
     ],
     "filament_retraction_distances_when_cut": [
         "nil"
     ],
     "filament_retraction_length": [
-        "1.5"
+        "0.8"
     ],
     "filament_retraction_minimum_travel": [
         "2"
     ],
     "filament_retraction_speed": [
-        "80"
+        "30"
     ],
     "filament_shrink": [
+        "100%"
+    ],
+    "filament_shrinkage_compensation_z": [
         "100%"
     ],
     "filament_soluble": [
         "0"
     ],
+    "filament_stamping_distance": [
+        "0"
+    ],
+    "filament_stamping_loading_speed": [
+        "0"
+    ],
     "filament_start_gcode": [
-        "; filament start gcode"
+        "; filament start gcode\n"
     ],
     "filament_toolchange_delay": [
         "0"
-    ],
-    "filament_unload_time": [
-        "24.75"
     ],
     "filament_unloading_speed": [
         "0"
@@ -187,7 +210,7 @@
         "0"
     ],
     "filament_wipe": [
-        "nil"
+        "1"
     ],
     "filament_wipe_distance": [
         "2"
@@ -202,13 +225,16 @@
         "0"
     ],
     "hot_plate_temp": [
-        "70"
+        "75"
     ],
     "hot_plate_temp_initial_layer": [
-        "70"
+        "75"
+    ],
+    "idle_temperature": [
+        "0"
     ],
     "nozzle_temperature_initial_layer": [
-        "250"
+        "230"
     ],
     "nozzle_temperature_range_high": [
         "260"
@@ -223,7 +249,7 @@
         "10%"
     ],
     "pressure_advance": [
-        "0.056"
+        "0.04"
     ],
     "reduce_fan_stop_start_freq": [
         "1"
@@ -246,10 +272,16 @@
     "temperature_vitrification": [
         "70"
     ],
+    "textured_cool_plate_temp": [
+        "40"
+    ],
+    "textured_cool_plate_temp_initial_layer": [
+        "40"
+    ],
     "textured_plate_temp": [
-        "70"
+        "75"
     ],
     "textured_plate_temp_initial_layer": [
-        "70"
+        "75"
     ]
 }
