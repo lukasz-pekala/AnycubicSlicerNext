@@ -24,9 +24,10 @@ wxString RandomString(int length) {
 }
 TabBookPlugin::~TabBookPlugin() {}
 
-int32_t TabBookPlugin::CreateTab(int idx, const wxString &title,
-                                 const wxString &icon, const wxString &xrcName,
-                                 const wxString &xrc) {
+int32_t TabBookPlugin::CreateTab(int idx, const std::string &title,
+                                 const std::string &icon,
+                                 const std::string &xrcName,
+                                 const std::string &xrc) {
 
   Tabbook *tabbook = dynamic_cast<Tabbook *>(host_->GetWindow("tabbook"));
   if (tabbook == nullptr) {
@@ -34,17 +35,17 @@ int32_t TabBookPlugin::CreateTab(int idx, const wxString &title,
   }
 
   wxString name = RandomString(16) + wxASCII_STR(".xrc");
-  host_->AddFS(name, xrc);
+  host_->AddFS(name, wxString::FromUTF8(xrc));
   auto pXRC = wxXmlResource::Get();
   pXRC->Load(wxASCII_STR("memory://") + name);
   host_->DelFS(name);
 
-  wxWindow *panel = pXRC->LoadPanel(tabbook, xrcName);
+  wxWindow *panel = pXRC->LoadPanel(tabbook, wxString::FromUTF8(xrcName));
   if (panel == nullptr) {
     return -1;
   }
-  auto ret =
-      tabbook->InsertNewPage(size_t(idx), panel, title, icon.utf8_string());
+  auto ret = tabbook->InsertNewPage(size_t(idx), panel,
+                                    wxString::FromUTF8(title), icon);
   if (ret)
     return 0;
   return -1;

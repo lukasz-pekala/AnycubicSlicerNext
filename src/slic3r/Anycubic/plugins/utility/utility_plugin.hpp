@@ -12,7 +12,7 @@ public:
   virtual ~UtilityPlugin();
 
 private:
-  std::string GetPCID(void) const;
+  std::string pcid(void) const;
 
 private:
   // Anycubic::Plugins::Plugin

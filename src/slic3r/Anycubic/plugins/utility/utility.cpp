@@ -8,8 +8,8 @@ PLUGIN_EXPORT_GETINFO(, utility) {
   info.plugin_type = 0xe;
   info.dependency_count = 0;
   info.dependency = nullptr;
-  info.name = BOOST_PP_STRINGIZE(prefix);
-  info.description = BOOST_PP_STRINGIZE(prefix);
+  info.name = BOOST_PP_STRINGIZE(utility);
+  info.description = BOOST_PP_STRINGIZE(utility);
   info.version = 1;
   return &info;
 }

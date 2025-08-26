@@ -6,12 +6,12 @@
 UtilityPlugin::UtilityPlugin(Anycubic::Plugins::PluginHost *host)
     : host_(host) {
   assert(host_ != nullptr);
-  host_->Router()->REGISTER_FUNCATION(UtilityPlugin, GetPCID);
+  host_->Router()->REGISTER_FUNCATION(UtilityPlugin, pcid);
 }
 
 UtilityPlugin::~UtilityPlugin() {}
 
-std::string UtilityPlugin::GetPCID(void) const {
+std::string UtilityPlugin::pcid(void) const {
   return Slic3r::GetPCID(nullptr).ToStdString();
 }
 

@@ -12,8 +12,8 @@ public:
   virtual ~TabBookPlugin();
 
 private:
-  int32_t CreateTab(int idx, const wxString &title, const wxString &icon,
-                    const wxString &xrcName, const wxString &xrc);
+  int32_t CreateTab(int idx, const std::string &title, const std::string &icon,
+                    const std::string &xrcName, const std::string &xrc);
   int32_t RemoveTab(int idx);
 
 private:
