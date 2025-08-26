@@ -5,7 +5,9 @@
 
 #include "plugins_base/plugins.hxx"
 #include "plugins_base/plugins_base.hxx"
-
+namespace Slic3r {
+class AppConfig;
+};
 class UtilityPlugin : public Anycubic::Plugins::Plugin {
 public:
   UtilityPlugin(Anycubic::Plugins::PluginHost *host);
@@ -13,6 +15,9 @@ public:
 
 private:
   std::string pcid(void) const;
+  bool is_test_env(void) const;
+  bool is_china_env(void) const;
+  std::string language(void) const;
 
 private:
   // Anycubic::Plugins::Plugin
@@ -26,4 +31,5 @@ private:
 
 private:
   Anycubic::Plugins::PluginHost *host_;
+  Slic3r::AppConfig *appconf_;
 };
