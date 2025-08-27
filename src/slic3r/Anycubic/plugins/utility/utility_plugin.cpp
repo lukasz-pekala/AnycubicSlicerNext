@@ -6,6 +6,8 @@
 
 #include <plugins_base/funcation.hxx>
 
+#include <wx/filename.h>
+
 UtilityPlugin::UtilityPlugin(Anycubic::Plugins::PluginHost *host)
     : host_(host) {
   assert(host_ != nullptr);
@@ -34,6 +36,16 @@ bool UtilityPlugin::is_china_env(void) const {
 std::string UtilityPlugin::language(void) const {
   return appconf_->get("language");
 }
+std::string UtilityPlugin::get_temp_path(void) const {
+  wxStandardPaths &standardPaths = wxStandardPaths::Get();
+  wxFileName tmpDir = wxFileName::DirName(standardPaths.GetTempDir());
+  tmpDir.AppendDir(wxASCII_STR(SLIC3R_APP_NAME));
+  if (!tmpDir.DirExists()) {
+    tmpDir.Mkdir();
+  }
+  return tmpDir.GetFullPath().utf8_string();
+}
+
 bool UtilityPlugin::AttachEvt(wxEvtHandler *) { return false; }
 
 bool UtilityPlugin::DetachEvt(wxEvtHandler *) { return false; }
