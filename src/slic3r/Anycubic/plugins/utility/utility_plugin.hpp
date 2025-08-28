@@ -5,6 +5,10 @@
 
 #include "plugins_base/plugins.hxx"
 #include "plugins_base/plugins_base.hxx"
+
+#define PLGUINS_NAME utility
+#define PLUGIN_NAME_STR BOOST_PP_STRINGIZE(PLGUINS_NAME)
+
 namespace Slic3r {
 class AppConfig;
 };
@@ -22,6 +26,8 @@ private:
 
 private:
   // Anycubic::Plugins::Plugin
+  const char *Name(void) override { return PLUGIN_NAME_STR; };
+  bool Start(void) override { return true; };
   bool AttachEvt(class wxEvtHandler *) override;
   bool DetachEvt(class wxEvtHandler *) override;
   bool CreateDialog(class wxDialog *dlg, class wxWindow *parent = nullptr,

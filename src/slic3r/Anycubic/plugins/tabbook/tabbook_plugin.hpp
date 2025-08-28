@@ -6,6 +6,9 @@
 #include "plugins_base/plugins.hxx"
 #include "plugins_base/plugins_base.hxx"
 
+#define PLGUINS_NAME tabbook
+#define PLUGIN_NAME_STR BOOST_PP_STRINGIZE(PLGUINS_NAME)
+
 class TabBookPlugin : public Anycubic::Plugins::Plugin {
 public:
   TabBookPlugin(Anycubic::Plugins::PluginHost *host);
@@ -17,7 +20,8 @@ private:
   int32_t RemoveTab(int idx);
 
 private:
-  // Anycubic::Plugins::Plugin
+  const char *Name(void) override { return PLUGIN_NAME_STR; };
+  bool Start(void) override { return true; };
   bool AttachEvt(class wxEvtHandler *) override;
   bool DetachEvt(class wxEvtHandler *) override;
   bool CreateDialog(class wxDialog *dlg, class wxWindow *parent = nullptr,
