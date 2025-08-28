@@ -12,10 +12,10 @@ class AnycubicContextPrivate;
 
 class AnycubicContext {
 public:
-  AnycubicContext(AppConfig *app_config);
+  explicit AnycubicContext(AppConfig *app_config);
   ~AnycubicContext();
-  bool PluginsIsLoaded();
-  bool AddWindow(const wxString& position, wxWindow* window);
+  bool PluginsIsLoaded() const;
+  bool AddWindow(const wxString &position, wxWindow *window);
   void OnInitByApp();     ///< 在 new MainFrame 之前调用
   void OnInitByGui();     ///< 在 new MainFrame 构造时调用
   void OnFinishedByGui(); ///< GUI初始化完成后调用

@@ -56,12 +56,13 @@ struct EmptyPM : public PluginsManager {
 
 class AnycubicContextPrivate : public PMConfig {
 public:
-  AnycubicContextPrivate(AppConfig *app_config) : app_config_(app_config) {
+  explicit AnycubicContextPrivate(AppConfig *app_config)
+      : app_config_(app_config) {
     assert(app_config_ != nullptr);
   }
-  virtual ~AnycubicContextPrivate() {
+  ~AnycubicContextPrivate() override {
     if (pm_ != nullptr) {
-      ShutdownPM(pm_);
+      ::ShutdownPM(pm_);
       pm_ = nullptr;
     }
   }
@@ -70,13 +71,13 @@ public:
     pm_ = pm;
     pm_->SetConfig(this);
   }
-  bool PluginsIsLoaded() { return pm_ != nullptr; }
+  bool PluginsIsLoaded() const { return pm_ != nullptr; }
 
 public:
   static bool append_env(const std::string &env_name, const std::string &path) {
-    char *env = getenv(env_name.c_str());
+    const char *env = ::getenv(env_name.c_str());
     if (env == nullptr) {
-      setenv(env_name.c_str(), path.c_str(), 1);
+      ::setenv(env_name.c_str(), path.c_str(), 1);
       return true;
     }
     std::string env_path = env;
@@ -84,7 +85,7 @@ public:
       return false;
     }
     env_path += ":" + path;
-    setenv(env_name.c_str(), env_path.c_str(), 1);
+    ::setenv(env_name.c_str(), env_path.c_str(), 1);
     return true;
   }
 
@@ -105,7 +106,8 @@ private:
     }
 
     wxStringTokenizer tokenizer(key, ",. ");
-    switch (tokenizer.CountTokens()) {
+    auto tokens = tokenizer.CountTokens();
+    switch (tokens) {
     case 2: {
       auto section_name = tokenizer.GetNextToken();
       // 检查section_name是否在白名单中
@@ -175,8 +177,8 @@ private:
   }
 
   wxString Decrypt(const wxString &value) {
-    wxMemoryBuffer decoded_data = wxBase64Decode(value);
-    auto ret = aesDecrypt(
+    wxMemoryBuffer decoded_data = ::wxBase64Decode(value);
+    auto ret = ::aesDecrypt(
         GetPCID(app_config_).utf8_string(),
         std::string((char *)decoded_data.GetData(), decoded_data.GetDataLen()));
     return wxString::FromUTF8(ret);
@@ -184,8 +186,8 @@ private:
 
   wxString Encrypt(const wxString &value) {
     auto ret =
-        aesEncrypt(GetPCID(app_config_).utf8_string(), value.utf8_string());
-    return wxBase64Encode(static_cast<const void *>(ret.data()), ret.size());
+        ::aesEncrypt(GetPCID(app_config_).utf8_string(), value.utf8_string());
+    return ::wxBase64Encode(static_cast<const void *>(ret.data()), ret.size());
   }
 
 private:
@@ -207,7 +209,9 @@ bool AnycubicContext::AddWindow(const wxString &position, wxWindow *window) {
   return (*impl_)->AddWidget(position, window);
 }
 
-bool AnycubicContext::PluginsIsLoaded() { return impl_->PluginsIsLoaded(); }
+bool AnycubicContext::PluginsIsLoaded() const {
+  return impl_->PluginsIsLoaded();
+}
 
 void AnycubicContext::OnInitByApp() {
   assert(impl_ != nullptr);
@@ -223,18 +227,20 @@ void AnycubicContext::OnInitByApp() {
   LOG_INFO("LD_LIBRARY_PATH after append: {}", getenv("LD_LIBRARY_PATH"));
 #endif
   auto package = Slic3r::data_dir() + "/cache/plugins.zip";
-  if (!wxFileExists(wxString::FromUTF8(package))) {
-    LOG_WARN("Plugins package does not exist, skipping loading plugins. Path: {}", package);
+  if (!::wxFileExists(wxString::FromUTF8(package))) {
+    LOG_WARN(
+        "Plugins package does not exist, skipping loading plugins. Path: {}",
+        package);
     return;
   }
   PluginsPackageInfo info = {0};
-  if (!GetPluginsPackageInfo(package.c_str(), &info)) {
+  if (!::GetPluginsPackageInfo(package.c_str(), &info)) {
     LOG_ERROR("GetPluginsPackageInfo failed");
     return;
   }
 
   auto pm =
-      SetupPM(package.c_str(), WebView::CreateWebView, current_dir.c_str());
+      ::SetupPM(package.c_str(), WebView::CreateWebView, current_dir.c_str());
   if (pm != nullptr) {
     impl_->SetPM(pm);
   } else {
