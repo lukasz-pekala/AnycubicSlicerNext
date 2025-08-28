@@ -556,7 +556,7 @@ void GuideFrame::OnRunScriptArrayWithEmulationLevel(wxCommandEvent &WXUNUSED(evt
 void GuideFrame::OnError(wxWebViewEvent &evt)
 {
 #define WX_ERROR_CASE(type) \
-    case type: category = #type; break;
+    case type: category = #type; break
 
     wxString category;
     switch (evt.GetInt()) {
