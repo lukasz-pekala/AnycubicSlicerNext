@@ -178,9 +178,9 @@ private:
 
   wxString Decrypt(const wxString &value) {
     wxMemoryBuffer decoded_data = ::wxBase64Decode(value);
-    auto ret = ::aesDecrypt(
-        GetPCID(app_config_).utf8_string(),
-        std::string((char *)decoded_data.GetData(), decoded_data.GetDataLen()));
+    auto ret = ::aesDecrypt(GetPCID(app_config_).utf8_string(),
+                            std::string_view((char *)decoded_data.GetData(),
+                                             decoded_data.GetDataLen()));
     return wxString::FromUTF8(ret);
   }
 
