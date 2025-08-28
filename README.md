@@ -1,7 +1,7 @@
 
-<h1> <p "font-size:200px;"><img align="left" src="https://github.com/SoftFever/OrcaSlicer/blob/main/resources/images/OrcaSlicer.ico" width="100"> Orca Slicer</p> </h1>
+<h1> <p "font-size:200px;"><img align="left" src="https://github.com/ANYCUBIC-3D/blob/main/resources/images/AnycubicSlicer.ico" width="100"> Orca Slicer</p> </h1>
 
-[![Build all](https://github.com/SoftFever/OrcaSlicer/actions/workflows/build_all.yml/badge.svg?branch=main)](https://github.com/SoftFever/OrcaSlicer/actions/workflows/build_all.yml)
+[![Build all](https://github.com/ANYCUBIC-3D/actions/workflows/build_all.yml/badge.svg?branch=main)](https://github.com/ANYCUBIC-3D/actions/workflows/build_all.yml)
 <br>Orca Slicer is an open source slicer for FDM printers. 
 
 
@@ -10,13 +10,13 @@ Join our Discord community here:<br>
  
  <h3>🚨🚨🚨Important Security Alert🚨🚨🚨</h3> 
 
-The only official platforms for OrcaSlicer are **our GitHub project page**, <a href="https://www.orcaslicer.com/">**orcaslicer.com**</a>, and the <a href="https://discord.gg/P4VE9UY9gJ">**official Discord channel**</a>.
+The only official platforms for AnycubicSlicer are **our GitHub project page**, <a href="https://www.makeronline.com/">**makeronline.com**</a>, and the <a href="https://discord.gg/P4VE9UY9gJ">**official Discord channel**</a>.
 
-Please be aware that "**orcaslicer.net**", "**orcaslicer.co**" or "**anycubic-slicer.com**" are NOT an official website for OrcaSlicer and may be potentially malicious. These sites appear to use AI-generated content, lacking genuine context and seems to exist solely to profit from advertisements. Worse, it may redirect download links to harmful sources. For your safety, avoid downloading OrcaSlicer from this site as the links may be compromised. 
+Please be aware that "**makeronline.net**", "**makeronline.co**" or "**makeronline.com**" are NOT an official website for AnycubicSlicer and may be potentially malicious. These sites appear to use AI-generated content, lacking genuine context and seems to exist solely to profit from advertisements. Worse, it may redirect download links to harmful sources. For your safety, avoid downloading AnycubicSlicer from this site as the links may be compromised. 
 
 If you see the above sites in your searches, report them as spam or unsafe to the search engine. This small action will assist everyone.
 
-We deeply value our OrcaSlicer community and appreciate all the social groups that support us. However, it is crucial to address the risk posed by any group that falsely claims to be official or misleads its members. If you encounter such a group or are part of one, please assist by encouraging the group owner to add a clear disclaimer or by alerting its members.
+We deeply value our AnycubicSlicer community and appreciate all the social groups that support us. However, it is crucial to address the risk posed by any group that falsely claims to be official or misleads its members. If you encounter such a group or are part of one, please assist by encouraging the group owner to add a clear disclaimer or by alerting its members.
 
 
 
@@ -25,45 +25,45 @@ Thank you for your vigilance and support in keeping our community safe!
 # Main features
 - Auto-calibration for all printers
 - Sandwich (inner-outer-inner) mode - An improved version of the `External Perimeters First` mode
-- [Precise wall](https://github.com/SoftFever/OrcaSlicer/wiki/Precise-wall)
+- [Precise wall](https://github.com/ANYCUBIC-3D/wiki/Precise-wall)
 - Polyholes conversion support: [SuperSlicer Wiki: Polyholes](https://github.com/supermerill/SuperSlicer/wiki/Polyholes)
 - Klipper support
 - More granular controls
-- Additional features can be found in the [change notes](https://github.com/SoftFever/OrcaSlicer/releases/)  
+- Additional features can be found in the [change notes](https://github.com/ANYCUBIC-3D/releases/)  
 
 # Wiki
 The wiki below aims to provide a detailed explanation of the slicer settings, including how to maximize their use and how to calibrate and set up your printer.
 
 Please note that the wiki is a work in progress. We appreciate your patience as we continue to develop and improve it!
 
-**[Access the wiki here](https://github.com/SoftFever/OrcaSlicer/wiki)**  
+**[Access the wiki here](https://github.com/ANYCUBIC-3D/wiki)**  
 
 # Download
 
 ### Stable Release
-📥 **[Download the Latest Stable Release](https://github.com/SoftFever/OrcaSlicer/releases/latest)**  
+📥 **[Download the Latest Stable Release](https://github.com/ANYCUBIC-3D/releases/latest)**  
 Visit our GitHub Releases page for the latest stable version of Orca Slicer, recommended for most users.
 
 ### Nightly Builds
-🌙 **[Download the Latest Nightly Build](https://github.com/SoftFever/OrcaSlicer/releases/tag/nightly-builds)**  
+🌙 **[Download the Latest Nightly Build](https://github.com/ANYCUBIC-3D/releases/tag/nightly-builds)**  
 Explore the latest developments in Orca Slicer with our nightly builds. Feedback on these versions is highly appreciated.
 
 
 # How to install
 **Windows**: 
-1.  Download the installer for your preferred version from the [releases page](https://github.com/SoftFever/OrcaSlicer/releases).
+1.  Download the installer for your preferred version from the [releases page](https://github.com/ANYCUBIC-3D/releases).
     - *For convenience there is also a portable build available.*
     - *If you have troubles to run the build, you might need to install following runtimes:*
-      - [MicrosoftEdgeWebView2RuntimeInstallerX64](https://github.com/SoftFever/OrcaSlicer/releases/download/v1.0.10-sf2/MicrosoftEdgeWebView2RuntimeInstallerX64.exe)
+      - [MicrosoftEdgeWebView2RuntimeInstallerX64](https://github.com/ANYCUBIC-3D/releases/download/v1.0.10-sf2/MicrosoftEdgeWebView2RuntimeInstallerX64.exe)
           - [Details of this runtime](https://aka.ms/webview2)
           - [Alternative Download Link Hosted by Microsoft](https://go.microsoft.com/fwlink/p/?LinkId=2124703)
-      - [vcredist2019_x64](https://github.com/SoftFever/OrcaSlicer/releases/download/v1.0.10-sf2/vcredist2019_x64.exe)
+      - [vcredist2019_x64](https://github.com/ANYCUBIC-3D/releases/download/v1.0.10-sf2/vcredist2019_x64.exe)
           -  [Alternative Download Link Hosted by Microsoft](https://aka.ms/vs/17/release/vc_redist.x64.exe)
           -  This file may already be available on your computer if you've installed visual studio.  Check the following location: `%VCINSTALLDIR%Redist\MSVC\v142`
 
 **Mac**:
 1. Download the DMG for your computer: `arm64` version for Apple Silicon and `x86_64` for Intel CPU.  
-2. Drag OrcaSlicer.app to Application folder. 
+2. Drag AnycubicSlicer.app to Application folder. 
 3. *If you want to run a build from a PR, you also need to follow the instructions below:*  
     <details quarantine>
     - Option 1 (You only need to do this once. After that the app can be opened normally.):
@@ -71,9 +71,9 @@ Explore the latest developments in Orca Slicer with our nightly builds. Feedback
       - Step 2: A warning window will pop up, click _Open_  
       
     - Option 2:  
-      Execute this command in terminal: `xattr -dr com.apple.quarantine /Applications/OrcaSlicer.app`
+      Execute this command in terminal: `xattr -dr com.apple.quarantine /Applications/AnycubicSlicer.app`
       ```console
-          softfever@mac:~$ xattr -dr com.apple.quarantine /Applications/OrcaSlicer.app
+          softfever@mac:~$ xattr -dr com.apple.quarantine /Applications/AnycubicSlicer.app
       ```
     - Option 3:  
         - Step 1: open the app, a warning window will pop up  
@@ -84,7 +84,7 @@ Explore the latest developments in Orca Slicer with our nightly builds. Feedback
     
 **Linux (Ubuntu)**:
  1. If you run into trouble executing it, try this command in the terminal:  
-    `chmod +x /path_to_appimage/OrcaSlicer_Linux.AppImage`
+    `chmod +x /path_to_appimage/AnycubicSlicer_Linux.AppImage`
     
 # How to compile
 - Windows 64-bit  
@@ -100,8 +100,8 @@ Explore the latest developments in Orca Slicer with our nightly builds. Feedback
   - run `build_release_macos.sh`
   - To build and debug in Xcode:
       - run `Xcode.app`
-      - open ``build_`arch`/OrcaSlicer.Xcodeproj``
-      - menu bar: Product => Scheme => OrcaSlicer
+      - open ``build_`arch`/AnycubicSlicer.Xcodeproj``
+      - menu bar: Product => Scheme => AnycubicSlicer
       - menu bar: Product => Scheme => Edit Scheme...
           - Run => Info tab => Build Configuration: `RelWithDebInfo`
           - Run => Options tab => Document Versions: uncheck `Allow debugging when browsing versions`
@@ -110,10 +110,10 @@ Explore the latest developments in Orca Slicer with our nightly builds. Feedback
 - Linux (All Distros)
     - Docker
         - Dependencies: Docker [Installation Instructions](https://www.docker.com/get-started/), git
-        - clone this repository `git clone https://github.com/SoftFever/OrcaSlicer`
-        - run `cd OrcaSlicer`
+        - clone this repository `git clone https://github.com/ANYCUBIC-3D`
+        - run `cd AnycubicSlicer`
         - run `./DockerBuild.sh`
-        - To run OrcaSlicer:
+        - To run AnycubicSlicer:
             - run `./DockerRun.sh`
                 - For most common errors, open `DockerRun.sh` and read the comments.  
     - Ubuntu 
@@ -165,7 +165,7 @@ Thank you! :)
 
 
 ## Some background
-OrcaSlicer is originally forked from Bambu Studio, it was previously known as BambuStudio-SoftFever.
+AnycubicSlicer is originally forked from Bambu Studio, it was previously known as BambuStudio-SoftFever.
 
 Bambu Studio is forked from [PrusaSlicer](https://github.com/prusa3d/PrusaSlicer) by Prusa Research, which is from [Slic3r](https://github.com/Slic3r/Slic3r) by Alessandro Ranellucci and the RepRap community. 
 Orca Slicer incorporates a lot of features from SuperSlicer by @supermerill
