@@ -121,11 +121,9 @@ GuideFrame::GuideFrame(GUI_App *pGUI, long style)
     // set the frame icon
     wxBoxSizer *topsizer = new wxBoxSizer(wxVERTICAL);
 
-    wxString TargetUrl = SetStartPage(BBL_WELCOME, false);
-    BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << boost::format(",  set start page to welcome ");
 
     // Create the webview
-    m_browser = WebView::CreateWebView(this, TargetUrl);
+    m_browser = WebView::CreateWebView(this, wxEmptyString);
     if (m_browser == nullptr) {
         wxLogError("Could not init m_browser");
         return;
@@ -135,7 +133,7 @@ GuideFrame::GuideFrame(GUI_App *pGUI, long style)
     
     SetSizer(topsizer);
 
-    topsizer->Add(m_browser, wxSizerFlags().Expand().Proportion(1));
+    topsizer->Add(m_browser, wxSizerFlags().Expand().Proportion(1)); 
 
     // Log backend information
     // wxLogMessage(wxWebView::GetBackendVersionInfo().ToString());
@@ -144,7 +142,11 @@ GuideFrame::GuideFrame(GUI_App *pGUI, long style)
     // wxLogMessage("User Agent: %s", m_browser->GetUserAgent());
 
     // Set a more sensible size for web browsing
+#if  !defined(__WXMAC__) || defined(NDEBUG) 
     wxSize pSize = FromDIP(wxSize(820, 660));
+#else
+    wxSize pSize = FromDIP(wxSize(1920, 1080));
+#endif
     SetSize(pSize);
 
     int screenheight = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y, NULL);
@@ -398,7 +400,7 @@ void GuideFrame::OnScriptMessage(wxWebViewEvent &evt)
             m_Res["response"]        = m_ProfileJson;
 
             //wxString strJS = wxString::Format("HandleStudio(%s)", m_Res.dump(-1, ' ', false, json::error_handler_t::ignore));
-            wxString strJS = wxString::Format("HandleStudio(%s)", m_Res.dump(-1, ' ', true));
+            wxString strJS = wxString::Format("HandleStudio(%s);", m_Res.dump(-1, ' ', true));
 
             BOOST_LOG_TRIVIAL(trace) << "GuideFrame::OnScriptMessage;request_userguide_profile:" << strJS.c_str();
             wxGetApp().CallAfter([this,strJS] { RunScript(strJS); });
