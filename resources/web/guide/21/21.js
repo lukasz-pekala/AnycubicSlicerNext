@@ -50,9 +50,19 @@ function HandleModelList( pVal )
 {
 	if( !pVal.hasOwnProperty("model") )
 		return;
-
+debugger
     pModel=pVal['model'];
-	
+	console.log(pModel);
+	// 排序
+	pModel.sort((a, b) => {
+		// 优先Anycubic
+		if(a.vendor === 'Anycubic' && b.vendor !== 'Anycubic') return -1;
+		if(b.vendor === 'Anycubic' && a.vendor !== 'Anycubic') return 1;
+		
+		// 其他按字母顺序
+		return a.vendor.localeCompare(b.vendor);
+	});
+
 	let nTotal=pModel.length;
 	let ModelHtml={};
 	for(let n=0;n<nTotal;n++)
