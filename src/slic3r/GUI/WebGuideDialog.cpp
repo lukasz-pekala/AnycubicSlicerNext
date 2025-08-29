@@ -5,6 +5,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/iostreams/detail/select.hpp>
 #include <boost/callable_traits.hpp>
+#include <boost/algorithm/string.hpp>
 #include <string.h>
 #include "I18N.hpp"
 #include "libslic3r/AppConfig.hpp"
@@ -35,12 +36,31 @@
 #include <libslic3r/Utils.hpp>
 #include "CreatePresetsDialog.hpp"
 
+#include <iterator>
+
 using namespace nlohmann;
 
 namespace Slic3r { namespace GUI {
 
 json m_ProfileJson;
 
+json load_json_file(const std::string& jPath)
+{
+    try {
+        boost::nowide::ifstream t(jPath);
+        std::stringstream buffer;
+        buffer << t.rdbuf();
+        auto  sContent=buffer.str();
+        return json::parse(sContent);
+    }
+    catch (std::exception &e)
+    {
+        BOOST_LOG_TRIVIAL(error) << __FUNCTION__ << ",  got exception: "<<e.what();
+        
+    }
+
+    return json::parse("{}");
+}
 static wxString update_custom_filaments()
 {
     json m_Res                                                                     = json::object();
@@ -181,11 +201,8 @@ GuideFrame::GuideFrame(GUI_App *pGUI, long style)
     // Bind(wxEVT_IDLE, &GuideFrame::OnIdle, this);
     // Bind(wxEVT_CLOSE_WINDOW, &GuideFrame::OnClose, this);
 
-    auto start = std::chrono::high_resolution_clock::now();
+    
     LoadProfile();
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    BOOST_LOG_TRIVIAL(debug) << __FUNCTION__ << ": LoadProfile() took " << duration.count() << " milliseconds";
 
     // UI
     SetStartPage(BBL_REGION);
@@ -511,8 +528,6 @@ void GuideFrame::OnScriptMessage(wxWebViewEvent &evt)
         // wxMessageBox(e.what(), "json Exception", MB_OK);
         BOOST_LOG_TRIVIAL(trace) << "GuideFrame::OnScriptMessage;Error:" << e.what();
     }
-
-    wxString strAll = m_ProfileJson.dump(-1,' ',false, json::error_handler_t::ignore);
 }
 
 void GuideFrame::RunScript(const wxString &javascript)
@@ -898,16 +913,14 @@ bool GuideFrame::run()
         return false;
 }
 
-int GuideFrame::GetFilamentInfo( std::string VendorDirectory, json & pFilaList, std::string filepath, std::string &sVendor, std::string &sType)
+int GuideFrame::GetFilamentInfo( std::string VendorDirectory, json & pFilaList, std::string filepath, std::string &sVendor, std::string &sType)const
 {
     //GetStardardFilePath(filepath);
     BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << " GetFilamentInfo:VendorDirectory - " << VendorDirectory << ", Filepath - "<<filepath;
 
     try {
-        std::string contents;
-        LoadFile(filepath, contents);
-        BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << ": Json Contents: " << contents;
-        json jLocal = json::parse(contents);
+
+        json jLocal = load_json_file(filepath);
 
         if (sVendor == "") {
             if (jLocal.contains("filament_vendor"))
@@ -982,6 +995,9 @@ int GuideFrame::GetFilamentInfo( std::string VendorDirectory, json & pFilaList, 
 int GuideFrame::LoadProfile()
 {
     try {
+        std::mutex mtx;
+        std::mutex *pMtx = &mtx;
+
         m_ProfileJson             = json::parse("{}");
         m_ProfileJson["model"]    = json::array();
         m_ProfileJson["machine"]  = json::object();
@@ -1007,30 +1023,34 @@ int GuideFrame::LoadProfile()
         std::set<std::string> loaded_vendors;
         auto filament_library_name = boost::filesystem::path(PresetBundle::ORCA_FILAMENT_LIBRARY).replace_extension(".json");
         if (boost::filesystem::exists(vendor_dir / filament_library_name)) {
-            LoadProfileFamily(PresetBundle::ORCA_FILAMENT_LIBRARY, (vendor_dir / filament_library_name).string());
+            LoadProfileFamily(PresetBundle::ORCA_FILAMENT_LIBRARY, (vendor_dir / filament_library_name).string(),&mtx);
             m_OrcaFilaLibPath = (vendor_dir / PresetBundle::ORCA_FILAMENT_LIBRARY).string();
         } else {
-            LoadProfileFamily(PresetBundle::ORCA_FILAMENT_LIBRARY, (rsrc_vendor_dir / filament_library_name).string());
+            LoadProfileFamily(PresetBundle::ORCA_FILAMENT_LIBRARY, (rsrc_vendor_dir / filament_library_name).string(),&mtx);
             m_OrcaFilaLibPath = (rsrc_vendor_dir / PresetBundle::ORCA_FILAMENT_LIBRARY).string();
         }
         loaded_vendors.insert(PresetBundle::ORCA_FILAMENT_LIBRARY);
 
-        auto search_dir = [this,&loaded_vendors](const boost::filesystem::path&directory) {
-            boost::filesystem::directory_iterator endIter;
-            for (boost::filesystem::directory_iterator iter(directory); iter != endIter; iter++) {
-                if (!boost::filesystem::is_directory(*iter)) {
-                    wxString strVendor = from_u8(iter->path().string()).BeforeLast('.');
-                    strVendor          = strVendor.AfterLast('\\');
-                    strVendor          = strVendor.AfterLast('/');
-
-                    wxString strExtension = from_u8(iter->path().string()).AfterLast('.').Lower();
-                    if(strExtension.CmpNoCase("json") != 0 || loaded_vendors.find(w2s(strVendor)) != loaded_vendors.end())
-                        continue;
-
-                    LoadProfileFamily(w2s(strVendor), iter->path().string());
-                    loaded_vendors.insert(w2s(strVendor));
-                }
-            }
+        auto search_dir = [this,&loaded_vendors,pMtx](const boost::filesystem::path&directory) {
+            std::vector<boost::filesystem::directory_entry> entries;
+            std::copy_if(boost::filesystem::directory_iterator(directory), boost::filesystem::directory_iterator(),
+                         std::back_inserter(entries),[&loaded_vendors](auto &p){
+                            if(! boost::filesystem::is_regular_file(p)){
+                                return false;
+                            }
+                            auto strVendor = p.path().stem().string();
+                            auto is_json =boost::iequals(p.path().extension().string(),".json");
+                            // 同一个目录下，不能有相同文件名的文件，这样做是合适的
+                            return is_json && loaded_vendors.insert(strVendor).second ;;
+                         });
+          
+            tbb::parallel_for(tbb::blocked_range<size_t>(0, entries.size()),
+                [pMtx,this,&entries](const tbb::blocked_range<size_t>& r) {
+                    for(auto i=r.begin(); i<r.end(); ++i) {
+                        auto entry = entries[i].path();
+                        LoadProfileFamily(entry.stem().string(), entry.string(),pMtx);
+                    }
+                });
         };
         // load custom bundle from user data path
         search_dir(vendor_dir);
@@ -1086,10 +1106,6 @@ int GuideFrame::LoadProfile()
     catch (std::exception &e) {
         BOOST_LOG_TRIVIAL(error) << __FUNCTION__ << ", error: "<< e.what() <<std::endl;
     }
-
-    std::string strAll = m_ProfileJson.dump(-1, ' ', false, json::error_handler_t::ignore);
-
-    BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << ", finished, json contents: "<< std::endl<<strAll;
     return 0;
 }
 
@@ -1106,7 +1122,7 @@ void StringReplace(string &strBase, string strSrc, string strDes)
 }
 
 
-int GuideFrame::LoadProfileFamily(std::string strVendor, std::string strFilePath)
+int GuideFrame::LoadProfileFamily(std::string strVendor, std::string strFilePath,std::mutex*mtx)
 {
     namespace  fs  = boost::filesystem;
     // wxString strFolder = strFilePath.BeforeLast(boost::filesystem::path::preferred_separator);
@@ -1114,11 +1130,6 @@ int GuideFrame::LoadProfileFamily(std::string strVendor, std::string strFilePath
     fs::path vendor_dir = fs::absolute(file_path.parent_path() / strVendor).make_preferred();
     BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << boost::format(",  vendor path %1%.") % vendor_dir.string();
 
-    auto load_json_file = [this](const std::string& path) {
-        std::string contents;
-        LoadFile(path, contents);
-        return json::parse(contents);
-    };
     auto make_absolute_path = [&vendor_dir]( const std::string& sub) {
         return fs::absolute(vendor_dir / sub).make_preferred();
     };
@@ -1135,7 +1146,7 @@ int GuideFrame::LoadProfileFamily(std::string strVendor, std::string strFilePath
     try {
         json jLocal =load_json_file(strFilePath);
 
-        auto process_section = [ &make_absolute_path, &load_json_file,  &jLocal](const std::string& section, auto processor) {
+        auto process_section = [ &make_absolute_path, &jLocal](const std::string& section, auto processor) {
             if (jLocal.contains(section)) {
                 for (auto& item : jLocal[section]) {
                     fs::path sub_path = make_absolute_path(item["sub_path"]);
@@ -1153,7 +1164,7 @@ int GuideFrame::LoadProfileFamily(std::string strVendor, std::string strFilePath
             }
         };
         // BBS:models
-        process_section("machine_model_list",[&make_absolute_image,&strVendor](json& pm, json& OneModel){
+        process_section("machine_model_list",[&make_absolute_image,&strVendor,mtx](json& pm, json& OneModel){
             OneModel["model"] = OneModel["name"];
             OneModel.erase("name");
 
@@ -1168,7 +1179,7 @@ int GuideFrame::LoadProfileFamily(std::string strVendor, std::string strFilePath
             OneModel["cover"] = cover_path.string();
 
             OneModel["nozzle_selected"] = "";
-
+            std::unique_lock<std::mutex> lock(*mtx);
             m_ProfileJson["model"].push_back(OneModel);
         });
 
@@ -1188,17 +1199,20 @@ int GuideFrame::LoadProfileFamily(std::string strVendor, std::string strFilePath
 
         // BBS:Filament
         
-        json tFilaList = m_OrcaFilaList;
-       
+        json                        tFilaList;
+       { std::lock_guard<std::mutex> lock(*mtx);
+        tFilaList = m_OrcaFilaList;}
 
         process_section("filament_list", [&tFilaList](json& pm, json& OneFF) {
             std::string s1    = OneFF["name"];
             tFilaList[s1] = OneFF;
         });
-        process_section("filament_list", [&tFilaList,this,&vendor_dir](json& pm, json& OneFF,const std::string&sub_file) {
+        process_section("filament_list", [&tFilaList,this,&vendor_dir,mtx](json& pm, json& OneFF,const std::string&sub_file) {
             std::string s1    = OneFF["name"];
-            if (!m_ProfileJson["filament"].contains(s1)) {
-                
+            bool bExist = false;
+            {std::lock_guard<std::mutex> lock(*mtx);
+            bExist = m_ProfileJson["filament"].contains(s1);}
+            if (!bExist) {
                 std::string strInstant = pm["instantiation"];
                 BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << "Load Filament:" << s1 << ",Path:" << sub_file << ",instantiation?" << strInstant;
 
@@ -1218,6 +1232,7 @@ int GuideFrame::LoadProfileFamily(std::string strVendor, std::string strFilePath
                     OneFF["models"]   = "";
                     std::string ModelList;
                     for (std::string printer : pm["compatible_printers"]) {
+                        std::lock_guard<std::mutex> lock(*mtx);
                         if (m_ProfileJson["machine"].contains(printer))
                         {
                             std::string mModel = m_ProfileJson["machine"][printer]["model"];
@@ -1231,20 +1246,22 @@ int GuideFrame::LoadProfileFamily(std::string strVendor, std::string strFilePath
 
                     OneFF["models"]    = ModelList;
                     OneFF["selected"] = 0;
-
-                    m_ProfileJson["filament"][s1] = OneFF;
-                } 
+                    {std::lock_guard<std::mutex> lock(*mtx);
+                    m_ProfileJson["filament"][s1] = OneFF;}
+                }
             }
         });
        
         if(strVendor == PresetBundle::ORCA_FILAMENT_LIBRARY)
-            m_OrcaFilaList = tFilaList;
+            { std::lock_guard<std::mutex> lock(*mtx);
+        m_OrcaFilaList =tFilaList ;}
 
         // process
-        process_section("process_list", [](json& pm,const json& OneProcess) {
+        process_section("process_list", [mtx](json& pm,const json& OneProcess) {
             bool install;
             pm["instantiation"].get_to(install);
             if (install) {
+                std::lock_guard<std::mutex> lock(*mtx);
                 m_ProfileJson["process"].push_back(OneProcess);
             }
         });
@@ -1284,23 +1301,7 @@ void GuideFrame::GetStardardFilePath(std::string &FilePath) {
     StrReplace(FilePath, "/" , w2s(wxString::Format("%c", boost::filesystem::path::preferred_separator)));
 }
 
-bool GuideFrame::LoadFile(std::string jPath, std::string &sContent)
-{
-    try {
-        boost::nowide::ifstream t(jPath);
-        std::stringstream buffer;
-        buffer << t.rdbuf();
-        sContent=buffer.str();
-        BOOST_LOG_TRIVIAL(trace) << __FUNCTION__ << boost::format(", load %1% into buffer")% jPath;
-    }
-    catch (std::exception &e)
-    {
-        BOOST_LOG_TRIVIAL(error) << __FUNCTION__ << ",  got exception: "<<e.what();
-        return false;
-    }
 
-    return true;
-}
 
 int GuideFrame::DownloadPlugin()
 {
