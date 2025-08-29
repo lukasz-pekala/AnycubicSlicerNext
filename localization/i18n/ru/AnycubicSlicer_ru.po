@@ -1505,8 +1505,8 @@ msgstr "Неизвестная ошибка OrcaSlicer : %1%"
 msgid "Untitled"
 msgstr "Без названия"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "Загрузка сетевого плагина для принтеров Bambu"
+msgid "Downloading Anycubic Plug-in"
+msgstr "Загрузка сетевого плагина для принтеров Anycubic"
 
 msgid "Login information expired. Please login again."
 msgstr "Срок действия данных для входа истек. Пожалуйста, авторизуйтесь снова."

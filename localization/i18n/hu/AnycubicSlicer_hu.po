@@ -1456,8 +1456,8 @@ msgstr ""
 msgid "Untitled"
 msgstr "Névtelen"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "Bambu Network bővítmény letöltése"
+msgid "Downloading Anycubic Plug-in"
+msgstr "Anycubic Network bővítmény letöltése"
 
 msgid "Login information expired. Please login again."
 msgstr "A bejelentkezési adatok érvénytelenek. Kérjük, jelentkezz be újra."

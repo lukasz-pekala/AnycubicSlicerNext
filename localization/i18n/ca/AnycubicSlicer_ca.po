@@ -1501,8 +1501,8 @@ msgstr "OrcaSlicer ha tingut una excepció no gestionada: %1%"
 msgid "Untitled"
 msgstr "Sense títol"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "Descarregant el Plug-in de Xarxa de Bambu"
+msgid "Downloading Anycubic Plug-in"
+msgstr "Descarregant el Plug-in de Xarxa de Anycubic"
 
 msgid "Login information expired. Please login again."
 msgstr ""

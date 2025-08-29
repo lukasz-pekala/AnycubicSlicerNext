@@ -1464,8 +1464,8 @@ msgstr "Orca Slicer 遭遇到一個未處理的例外：%1%"
 msgid "Untitled"
 msgstr "未命名"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "正在下載 Bambu 網路插件"
+msgid "Downloading Anycubic Plug-in"
+msgstr "正在下載 Anycubic 網路插件"
 
 msgid "Login information expired. Please login again."
 msgstr "登入資訊已過期。請重新登入。"

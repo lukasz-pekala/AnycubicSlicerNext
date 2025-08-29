@@ -40,10 +40,10 @@
       </dict>
 		<dict>
         <key>CFBundleURLName</key>
-        <string>BambuStudio Downloads</string>
+        <string>AnycubicStudio Downloads</string>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>bambustudioopen</string>
+          <string>Anycubicstudioopen</string>
         </array>
       </dict>
     </array>

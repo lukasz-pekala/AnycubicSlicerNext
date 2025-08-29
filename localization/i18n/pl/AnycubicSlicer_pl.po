@@ -1494,8 +1494,8 @@ msgstr "OrcaSlicer napotkał nieobsługiwany wyjątek: %1%"
 msgid "Untitled"
 msgstr "Bez tytułu"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "Pobieranie wtyczki sieciowej Bambu"
+msgid "Downloading Anycubic Plug-in"
+msgstr "Pobieranie wtyczki sieciowej Anycubic"
 
 msgid "Login information expired. Please login again."
 msgstr "Informacje logowania wygasły. Proszę zalogować się ponownie."

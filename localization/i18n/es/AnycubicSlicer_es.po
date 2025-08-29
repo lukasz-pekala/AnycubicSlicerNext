@@ -1517,8 +1517,8 @@ msgstr "Sin título"
 
 # msgid "OrcaSlicer got an unhandled exception: %1%"
 # msgstr "OrcaSlicer obtuvo una excepción no manejada: %1%"
-msgid "Downloading Bambu Network Plug-in"
-msgstr "Descargando el plug-in de Red de Bambu Lab"
+msgid "Downloading Anycubic Plug-in"
+msgstr "Descargando el plug-in de Red de Anycubic"
 
 msgid "Login information expired. Please login again."
 msgstr "La sesión ha caducado. Por favor, inicie sesión de nuevo."

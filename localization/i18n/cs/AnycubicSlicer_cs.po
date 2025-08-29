@@ -1478,8 +1478,8 @@ msgstr "OrcaSlicer dostal neošetřenou výjimku: %1%"
 msgid "Untitled"
 msgstr "Bez názvu"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "Stahování Bambu Network Plug-in"
+msgid "Downloading Anycubic Plug-in"
+msgstr "Stahování Anycubic Network Plug-in"
 
 msgid "Login information expired. Please login again."
 msgstr "Platnost přihlašovacích údajů vypršela. Přihlaste se prosím znovu."

@@ -1518,8 +1518,8 @@ msgstr "Orca Slicer a reçu une exception non gérée : %1%"
 msgid "Untitled"
 msgstr "Sans titre"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "Téléchargement du plug-in Bambu Network"
+msgid "Downloading Anycubic Plug-in"
+msgstr "Téléchargement du plug-in Anycubic Network"
 
 msgid "Login information expired. Please login again."
 msgstr "Les informations de connexion ont expiré. Veuillez vous reconnecter."

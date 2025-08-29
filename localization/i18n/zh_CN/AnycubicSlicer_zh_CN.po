@@ -1462,8 +1462,8 @@ msgstr "OrcaSlicer 捕捉到一个未处理的异常：%1%"
 msgid "Untitled"
 msgstr "未命名"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "正在下载Bambu网络插件"
+msgid "Downloading Anycubic Plug-in"
+msgstr "正在下载Anycubic网络插件"
 
 msgid "Login information expired. Please login again."
 msgstr "登录信息过期。请重新登录。"

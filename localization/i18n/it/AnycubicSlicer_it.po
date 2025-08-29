@@ -1513,8 +1513,8 @@ msgstr "OrcaSlicer ha ricevuto un'eccezione non gestita: %1%"
 msgid "Untitled"
 msgstr "Senza titolo"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "Scaricamento del modulo Bambu Network"
+msgid "Downloading Anycubic Plug-in"
+msgstr "Scaricamento del modulo Anycubic Network"
 
 msgid "Login information expired. Please login again."
 msgstr ""

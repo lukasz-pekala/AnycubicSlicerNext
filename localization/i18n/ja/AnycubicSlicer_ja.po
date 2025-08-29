@@ -1470,8 +1470,8 @@ msgstr ""
 msgid "Untitled"
 msgstr "名称未設定"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "Bambuネットワークプラグインをダウンロード"
+msgid "Downloading Anycubic Plug-in"
+msgstr "Anycubicネットワークプラグインをダウンロード"
 
 msgid "Login information expired. Please login again."
 msgstr "サインイン情報の有効期限切れ、もう一度サインインしてください"

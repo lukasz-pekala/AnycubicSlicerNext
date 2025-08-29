@@ -1477,8 +1477,8 @@ msgstr "Orca Slicer에 처리되지 않은 예외가 발생했습니다: %1%"
 msgid "Untitled"
 msgstr "제목 없음"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "뱀부 네트워크 플러그인 다운로드"
+msgid "Downloading Anycubic Plug-in"
+msgstr "Anycubic 플러그인 다운로드"
 
 msgid "Login information expired. Please login again."
 msgstr "로그인 정보가 만료되었습니다. 다시 로그인해주세요."

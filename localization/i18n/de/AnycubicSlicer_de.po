@@ -1502,8 +1502,8 @@ msgstr "OrcaSlicer hat eine unbehandelte Ausnahme erzeugt: %1%"
 msgid "Untitled"
 msgstr "Unbenannt"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "Lade Orca Network Plug-in herunter"
+msgid "Downloading Anycubic Plug-in"
+msgstr "Lade Anycubic Network Plug-in herunter"
 
 msgid "Login information expired. Please login again."
 msgstr "Login abgelaufen. Bitte neu einloggen."

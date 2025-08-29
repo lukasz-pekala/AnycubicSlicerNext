@@ -1543,7 +1543,7 @@ void GUI_App::remove_old_networking_plugins()
 
 int GUI_App::updating_bambu_networking()
 {
-    DownloadProgressDialog dlg(_L("Downloading Bambu Network Plug-in"));
+    DownloadProgressDialog dlg(_L("Downloading Anycubic Plug-in"));
     dlg.ShowModal();
     return 0;
 }
@@ -3477,7 +3477,7 @@ void GUI_App::ShowDownNetPluginDlg() {
         });
         if (iter != dialogStack.end())
             return;
-        DownloadProgressDialog dlg(_L("Downloading Bambu Network Plug-in"));
+        DownloadProgressDialog dlg(_L("Downloading Anycubic Plug-in"));
         dlg.ShowModal();
     } catch (std::exception &) {
         ;

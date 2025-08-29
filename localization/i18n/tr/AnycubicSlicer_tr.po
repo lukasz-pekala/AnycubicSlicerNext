@@ -1488,8 +1488,8 @@ msgstr "OrcaSlicer'da işlenmeyen bir istisna oluştu: %1%"
 msgid "Untitled"
 msgstr "İsimsiz"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "Bambu Ağ Eklentisini İndirme"
+msgid "Downloading Anycubic Plug-in"
+msgstr "Anycubic Ağ Eklentisini İndirme"
 
 msgid "Login information expired. Please login again."
 msgstr "Giriş bilgilerinin süresi doldu. Lütfen tekrar giriş yapın."

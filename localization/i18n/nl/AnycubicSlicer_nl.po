@@ -1473,8 +1473,8 @@ msgstr "OrcaSlicer kreeg een onbehandelde uitzondering: %1%"
 msgid "Untitled"
 msgstr "Naamloos"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "Bambu Netwerk Plug-in downloaden"
+msgid "Downloading Anycubic Plug-in"
+msgstr "Anycubic Netwerk Plug-in downloaden"
 
 msgid "Login information expired. Please login again."
 msgstr "Uw login informatie is verlopen. Log alstublieft opnieuw in."

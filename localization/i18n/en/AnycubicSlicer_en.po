@@ -1455,8 +1455,8 @@ msgstr ""
 msgid "Untitled"
 msgstr "Untitled"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "Downloading Bambu Network Plug-in"
+msgid "Downloading Anycubic Plug-in"
+msgstr "Downloading Anycubic Plug-in"
 
 msgid "Login information expired. Please login again."
 msgstr "Login information expired. Please login again."

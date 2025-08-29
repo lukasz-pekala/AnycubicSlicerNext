@@ -1499,8 +1499,8 @@ msgstr "OrcaSlicer encontrou uma exceção não tratada: %1%"
 msgid "Untitled"
 msgstr "Sem título"
 
-msgid "Downloading Bambu Network Plug-in"
-msgstr "Baixando o Plug-in de Rede Bambu"
+msgid "Downloading Anycubic Plug-in"
+msgstr "Baixando o Plug-in de Rede Anycubic"
 
 msgid "Login information expired. Please login again."
 msgstr "As informações de login expiraram. Por favor, faça o login novamente."
