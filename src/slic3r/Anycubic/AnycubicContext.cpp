@@ -217,7 +217,21 @@ void AnycubicContext::OnInitByApp() {
   assert(impl_ != nullptr);
 
   std::string current_dir = Slic3r::data_dir();
+  auto package = Slic3r::data_dir() + "/cache";
   current_dir += "/plugins";
+#ifndef NDEBUG
+  if (auto dir = std::getenv("PLUGINS_DEBUG_DIR"); dir != nullptr) {
+    current_dir = dir;
+    LOG_INFO("PLUGINS_DEBUG_DIR: {}", current_dir);
+  }
+#else
+  if (!::wxFileExists(wxString::FromUTF8(package))) {
+    LOG_WARN(
+        "Plugins package does not exist, skipping loading plugins. Path: {}",
+        package);
+    return;
+  }
+#endif // NDEBUG
 
 #ifdef __APPLE__
   AnycubicContextPrivate::append_env("DYLD_LIBRARY_PATH", current_dir);
@@ -226,18 +240,6 @@ void AnycubicContext::OnInitByApp() {
   AnycubicContextPrivate::append_env("LD_LIBRARY_PATH", current_dir);
   LOG_INFO("LD_LIBRARY_PATH after append: {}", getenv("LD_LIBRARY_PATH"));
 #endif
-  auto package = Slic3r::data_dir() + "/cache/plugins.zip";
-  if (!::wxFileExists(wxString::FromUTF8(package))) {
-    LOG_WARN(
-        "Plugins package does not exist, skipping loading plugins. Path: {}",
-        package);
-    return;
-  }
-  PluginsPackageInfo info = {0};
-  if (!::GetPluginsPackageInfo(package.c_str(), &info)) {
-    LOG_ERROR("GetPluginsPackageInfo failed");
-    return;
-  }
 
   auto pm =
       ::SetupPM(package.c_str(), WebView::CreateWebView, current_dir.c_str());

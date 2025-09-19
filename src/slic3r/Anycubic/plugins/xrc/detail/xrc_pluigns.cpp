@@ -10,8 +10,6 @@
 #include <boost/preprocessor/seq.hpp>
 #include <boost/preprocessor/tuple.hpp>
 
-#include <mutex>
-
 namespace Slic3r::GUI {
 
 // 自定义控件列表--如果添加自定义控件，需要在这添加到CONTORL_LIST宏中
@@ -36,11 +34,8 @@ BOOST_PP_SEQ_FOR_EACH(CONTROL_HANDLER, nil, BOOST_PP_TUPLE_TO_SEQ(CONTORL_LIST))
   wxXmlResource::Get()->AddHandler(new HANDLER_TYPE_NAME(type));
 
 XrcPlugin::XrcPlugin(Anycubic::Plugins::PluginHost *host) {
-  static std::once_flag once_flag;
-  std::call_once(once_flag, []() {
-    BOOST_PP_SEQ_FOR_EACH(REGISTER_HANDLER, nil,
-                          BOOST_PP_TUPLE_TO_SEQ(CONTORL_LIST))
-  });
+  BOOST_PP_SEQ_FOR_EACH(REGISTER_HANDLER, nil,
+                        BOOST_PP_TUPLE_TO_SEQ(CONTORL_LIST));
 }
 XrcPlugin::~XrcPlugin() {}
 } // namespace Slic3r::GUI

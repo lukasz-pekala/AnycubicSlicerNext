@@ -2679,7 +2679,7 @@ bool GUI_App::on_init_inner()
 
         if (! plater_)
             return;
-        m_anycubic_context->OnFinishedByGui();
+        
         // BBS
         //this->obj_manipul()->update_if_dirty();
 
@@ -2698,6 +2698,7 @@ bool GUI_App::on_init_inner()
             this->mainframe->register_win32_callbacks();
 #endif
             this->post_init();
+            m_anycubic_context->OnFinishedByGui();
 
             update_publish_status();
         }
