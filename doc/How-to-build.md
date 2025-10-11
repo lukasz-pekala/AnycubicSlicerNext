@@ -25,10 +25,20 @@ winget install cmake "Strawberry Perl" Git.Git "Visual Studio Community 2019"
 
 ## macOS Build
 ### Dependency Preparation
+
 ```bash
 # Install basic dependencies using Homebrew
-brew install cmake gettext
+brew install gettext pkg-config autoconf automake libtool texinfo
+# Install CMake 
+# not support cmake 4.0 or later
+wget https://github.com/Kitware/CMake/releases/download/v3.31.9/cmake-3.31.9.tar.gz
+tar -xvf cmake-3.31.9.tar.gz
+cd cmake-3.31.9
+./configure
+make
+sudo make install
 ```
+
 
 ### Build Command
 ```bash
