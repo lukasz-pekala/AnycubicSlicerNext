@@ -14,7 +14,7 @@
             "generator": "Ninja",
             "cacheVariables": {
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-                "CMAKE_OSX_DEPLOYMENT_TARGET": "11.7",
+                "CMAKE_OSX_DEPLOYMENT_TARGET": "11.3",
                 "CMAKE_MACOSX_BUNDLE": "ON",
                 "CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED": "NO",
                 "CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY": ""
