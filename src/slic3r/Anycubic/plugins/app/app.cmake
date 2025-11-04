@@ -1,0 +1,4 @@
+﻿list(APPEND PLUGINS_LIST app)
+set(PLUGINS_LIST ${PLUGINS_LIST} PARENT_SCOPE)
+anycubic_search_src(${CMAKE_CURRENT_LIST_DIR})
+
