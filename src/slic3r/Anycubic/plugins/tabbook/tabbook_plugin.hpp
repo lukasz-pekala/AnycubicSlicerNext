@@ -18,6 +18,8 @@ private:
   int32_t CreateTab(int idx, const std::string &title, const std::string &icon,
                     const std::string &xrcName, const std::string &xrc);
   int32_t RemoveTab(int idx);
+  int32_t GetTabCount(void) const;
+  std::string GetTabTitle(int idx) const;
 
 private:
   const char *Name(void) override { return PLUGIN_NAME_STR; };

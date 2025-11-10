@@ -12,8 +12,12 @@
 TabBookPlugin::TabBookPlugin(Anycubic::Plugins::PluginHost *host)
     : host_(host) {
   assert(host_ != nullptr);
-  host_->Router()->REGISTER_FUNCATION(TabBookPlugin, CreateTab);
-  host_->Router()->REGISTER_FUNCATION(TabBookPlugin, RemoveTab);
+  auto router = host_->Router();
+  assert(router != nullptr);
+  router->REGISTER_FUNCATION(TabBookPlugin, CreateTab);
+  router->REGISTER_FUNCATION(TabBookPlugin, RemoveTab);
+  router->REGISTER_FUNCATION(TabBookPlugin, GetTabTitle);
+  router->REGISTER_FUNCATION(TabBookPlugin, GetTabCount);
 }
 wxString RandomString(int length) {
   wxString str;
@@ -65,7 +69,21 @@ int32_t TabBookPlugin::RemoveTab(int idx) {
   tabbook->RemovePage(size_t(idx));
   return 0;
 }
-
+int32_t TabBookPlugin::GetTabCount(void) const {
+  Tabbook *tabbook = dynamic_cast<Tabbook *>(host_->GetWindow("tabbook"));
+  if (tabbook == nullptr) {
+    return -1;
+  }
+  return static_cast<int32_t>(tabbook->GetPageCount());
+}
+std::string TabBookPlugin::GetTabTitle(int idx) const {
+  Tabbook *tabbook = dynamic_cast<Tabbook *>(host_->GetWindow("tabbook"));
+  if (tabbook == nullptr) {
+    return std::string();
+  }
+  assert(idx >= 0 && idx < static_cast<int>(tabbook->GetPageCount()));
+  return tabbook->GetPageText(size_t(idx)).utf8_string();
+}
 bool TabBookPlugin::AttachEvt(wxEvtHandler *) { return false; }
 
 bool TabBookPlugin::DetachEvt(wxEvtHandler *) { return false; }
