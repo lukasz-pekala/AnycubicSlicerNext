@@ -33,7 +33,7 @@ UtilityPlugin::UtilityPlugin(Anycubic::Plugins::PluginHost *host)
 UtilityPlugin::~UtilityPlugin() {}
 
 std::string UtilityPlugin::pcid(void) const {
-  return Slic3r::GetPCID(appconf_).ToStdString();
+  return Slic3r::GetPCID(nullptr).ToStdString();
 }
 bool UtilityPlugin::is_test_env(void) const {
   wxString developer_mode;
@@ -73,7 +73,7 @@ void UtilityPlugin::set_access_token(const std::string &token) {
 bool UtilityPlugin::is_auto_login(void) const {
   wxString auto_login;
   host_->GetValue("user/auto_login", auto_login);
-  auto_login.toLower();
+  auto_login.Lower();
   return auto_login == "true" || auto_login == "1" || auto_login == "on" ||
          auto_login == "yes" || auto_login == "y" || auto_login == "t";
 }

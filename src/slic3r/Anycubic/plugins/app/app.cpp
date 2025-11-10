@@ -1,4 +1,4 @@
-#include "app_plugin.hpp"
+#include "detail/app_plugin.hpp"
 PLUGIN_EXPORT_GETINFO(, PLGUINS_NAME) {
   static PluginInfo info{0};
   info.plugin_api = 1;

@@ -44,6 +44,9 @@ int32_t TabBookPlugin::CreateTab(int idx, const std::string &title,
   if (panel == nullptr) {
     return -1;
   }
+  if (idx == -1) {
+    idx = static_cast<int>(tabbook->GetPageCount());
+  }
   auto ret = tabbook->InsertNewPage(size_t(idx), panel,
                                     wxString::FromUTF8(title), icon);
   if (ret)
@@ -55,6 +58,9 @@ int32_t TabBookPlugin::RemoveTab(int idx) {
   Tabbook *tabbook = dynamic_cast<Tabbook *>(host_->GetWindow("tabbook"));
   if (tabbook == nullptr) {
     return -1;
+  }
+  if (idx == -1) {
+    idx = static_cast<int>(tabbook->GetPageCount()) - 1;
   }
   tabbook->RemovePage(size_t(idx));
   return 0;
