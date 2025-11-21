@@ -24,7 +24,7 @@ while getopts ":dpa:snt:xbc:hug:" opt; do
         export OSX_DEPLOYMENT_TARGET="$OPTARG"
         ;;
     x )
-        export SLICER_CMAKE_GENERATOR="Ninja"
+        export SLICER_CMAKE_GENERATOR="Ninja Multi-Config"
         export SLICER_BUILD_TARGET="all"
         export DEPS_CMAKE_GENERATOR="Ninja"
         ;;
@@ -45,14 +45,13 @@ while getopts ":dpa:snt:xbc:hug:" opt; do
         ;;
     h ) echo "Usage: ./build_release_macos.sh [-d]"
         echo "   -d: Build deps only"
-        echo "   -a: Set ARCHITECTURE (arm64 or x86_64)"
+        echo "   -a: Set ARCHITECTURE (arm64 or x86_64 or universal)"
         echo "   -s: Build slicer only"
         echo "   -n: Nightly build"
         echo "   -t: Specify minimum version of the target platform, default is 11.3"
-        echo "   -x: Use Ninja CMake generator, default is Xcode"
+        echo "   -x: Use Ninja Multi-Config CMake generator, default is Xcode"
         echo "   -b: Build without reconfiguring CMake"
         echo "   -c: Set CMake build configuration, default is Release"
-        echo "   -u: Build universal binary (both arm64 and x86_64)"
         echo "   -1: Use single job for building"
         echo "   -g: Set GitHub proxy. default is null"
         exit 0
@@ -65,16 +64,8 @@ done
 # Set defaults
 
 if [ -z "$ARCH" ]; then
-  if [ "1." == "$BUILD_UNIVERSAL". ]; then
-    ARCH="universal"
-  else
     ARCH="$(uname -m)"
-  fi
-  export ARCH
-fi
-
-if [ "1." == "$BUILD_UNIVERSAL". ]; then
-  echo "Universal build enabled - will create a combined arm64/x86_64 binary"
+    export ARCH
 fi
 
 if [ -z "$BUILD_CONFIG" ]; then
@@ -128,12 +119,8 @@ DEPS_DIR="$PROJECT_DIR/deps"
 DEPS_BUILD_DIR="$DEPS_DIR/build_$ARCH"
 DEPS="$DEPS_BUILD_DIR/AnycubicSlicer_dep_$ARCH"
 
-# Fix for Multi-config generators
-if [ "$SLICER_CMAKE_GENERATOR" == "Xcode" ]; then
-    export BUILD_DIR_CONFIG_SUBDIR="/$BUILD_CONFIG"
-else
-    export BUILD_DIR_CONFIG_SUBDIR=""
-fi
+# For Multi-config generators like Ninja and Xcode
+export BUILD_DIR_CONFIG_SUBDIR="/$BUILD_CONFIG"
 
 function build_deps() {
     local DEPS="$1"
@@ -204,14 +191,14 @@ function build_slicer() {
         sh "$PROJECT_DIR/run_gettext.sh"
     )
 
-    # extract version
-    # export ver=$(grep '^#define SoftFever_VERSION' ../src/libslic3r/libslic3r_version.h | cut -d ' ' -f3)
-    # ver="_V${ver//\"}"
-    # echo $PWD
-    # if [ "1." != "$NIGHTLY_BUILD". ];
-    # then
-    #     ver=${ver}_dev
-    # fi
+        # extract version
+        # export ver=$(grep '^#define SoftFever_VERSION' ../src/libslic3r/libslic3r_version.h | cut -d ' ' -f3)
+        # ver="_V${ver//\"}"
+        # echo $PWD
+        # if [ "1." != "$NIGHTLY_BUILD". ];
+        # then
+        #     ver=${ver}_dev
+        # fi
 
     # zip -FSr AnycubicSlicer${ver}_Mac_${ARCH}.zip AnycubicSlicer.app
 }
@@ -294,6 +281,10 @@ case "${BUILD_TARGET}" in
         exit 1
         ;;
 esac
+
+if [ "$ARCH" = "universal" ] && [ "$BUILD_TARGET" != "deps" ]; then
+    build_universal
+fi
 
 if [ "1." == "$PACK_DEPS". ]; then
     pack_deps

@@ -1,17 +1,20 @@
 {
     "type": "filament",
-    "filament_id": "GFL99",
-    "setting_id": "GFSA04",
-    "from": "system",
-    "is_custom_defined": "0",
-    "instantiation": "true",
-    "version": "1.3.2411.18",
-
     "name": "Anycubic PLA @Anycubic Kobra 2 Max 0.4 nozzle",
-    "inherits": "Anycubic PLA @acbase",
-    "filament_vendor": [ "Anycubic" ],
-    "filament_settings_id": [ "Anycubic PLA @Anycubic Kobra 2 Max 0.4 nozzle" ],
-    "filament_type": [ "PLA" ],
+    "inherits": "Anycubic Generic PLA",
+    "from": "system",
+    "setting_id": "GFSA04",
+    "filament_id": "GFL92",
+    "instantiation": "true",
+    "filament_vendor": [
+        "Anycubic"
+    ],
+    "filament_settings_id": [
+        "Anycubic PLA @Anycubic Kobra 2 Max 0.4 nozzle"
+    ],
+    "filament_type": [
+        "PLA"
+    ],
     "filament_flow_ratio": [
         "0.95"
     ],
@@ -24,9 +27,6 @@
     "compatible_printers": [
         "Anycubic Kobra 2 Max 0.4 nozzle"
     ],
-
-
-
     "activate_air_filtration": [
         "0"
     ],
@@ -34,10 +34,10 @@
         "0"
     ],
     "additional_cooling_fan_speed": [
-        "0"
+        "70"
     ],
     "bed_type": [
-        "High Temp Plate"
+        "Cool Plate"
     ],
     "chamber_temperature": [
         "0"
@@ -85,13 +85,13 @@
         "80"
     ],
     "filament_cooling_final_speed": [
-        "0"
+        "3.4"
     ],
     "filament_cooling_initial_speed": [
-        "0"
+        "2.2"
     ],
     "filament_cooling_moves": [
-        "0"
+        "4"
     ],
     "filament_cost": [
         "20"
@@ -106,7 +106,7 @@
         "1.75"
     ],
     "filament_end_gcode": [
-        "; filament end gcode\n"
+        "; filament end gcode \n"
     ],
     "filament_is_support": [
         "0"
@@ -115,10 +115,10 @@
         "42"
     ],
     "filament_loading_speed": [
-        "0"
+        "28"
     ],
     "filament_loading_speed_start": [
-        "0"
+        "3"
     ],
     "filament_long_retractions_when_cut": [
         "nil"
@@ -130,10 +130,10 @@
         "0"
     ],
     "filament_multitool_ramming_flow": [
-        "0"
+        "10"
     ],
     "filament_multitool_ramming_volume": [
-        "0"
+        "10"
     ],
     "filament_notes": [
         ""
@@ -187,10 +187,10 @@
         "0"
     ],
     "filament_unloading_speed": [
-        "0"
+        "90"
     ],
     "filament_unloading_speed_start": [
-        "0"
+        "100"
     ],
     "filament_wipe": [
         "nil"
@@ -253,9 +253,9 @@
         "55"
     ],
     "textured_plate_temp": [
-        "60"
+        "55"
     ],
     "textured_plate_temp_initial_layer": [
-        "60"
+        "55"
     ]
 }

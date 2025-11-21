@@ -14,7 +14,7 @@ endif()
 
 
 # Note: The flatpak build builds wxwidgets separately due to CI size constraints.
-# ANY CHANGES MADE IN HERE MUST ALSO BE REFLECTED IN `flatpak/io.github.SoftFever.AnycubicSlicer.yml`.
+# ANY CHANGES MADE IN HERE MUST ALSO BE REFLECTED IN `scripts/flatpak/io.github.SoftFever.AnycubicSlicer.yml`.
 # ** THIS INCLUDES BUILD ARGS. **
 # ...if you can find a way around this size limitation, be my guest.
 
@@ -46,7 +46,7 @@ AnycubicSlicer_add_cmake_project(
         -DwxUSE_LIBPNG=sys
         -DwxUSE_ZLIB=sys
         -DwxUSE_LIBJPEG=sys
-        -DwxUSE_LIBTIFF=sys
+        -DwxUSE_LIBTIFF=OFF
         -DwxUSE_NANOSVG=OFF
         -DwxUSE_EXPAT=sys
 )

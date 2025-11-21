@@ -33,6 +33,51 @@ message("CMAKE_CONFIGURATION_TYPES == ${CMAKE_CONFIGURATION_TYPES}")
 message("CMAKE_PREFIX_PATH == ${CMAKE_PREFIX_PATH}")
 message("CMAKE_INSTALL_PREFIX == ${CMAKE_INSTALL_PREFIX}")
 
+# Verify that your CMake version is exactly 3.31.x series or lower on windows
+if ( ((MSVC) OR (WIN32)) AND (${CMAKE_VERSION} VERSION_GREATER_EQUAL "4.0") )
+    message(FATAL_ERROR "Only cmake versions between 3.13.x and 3.31.x is supported on windows. Detected version: ${CMAKE_VERSION}")
+endif()
+
+if (WIN32)
+    # Detect known CI environments
+    set(IS_CI FALSE)
+    if(DEFINED ENV{CI})
+        set(IS_CI TRUE)
+    elseif(DEFINED ENV{GITHUB_ACTIONS})
+        set(IS_CI TRUE)
+    elseif(DEFINED ENV{GITLAB_CI})
+        set(IS_CI TRUE)
+    elseif(DEFINED ENV{TF_BUILD})
+        set(IS_CI TRUE)
+    elseif(DEFINED ENV{BUILD_NUMBER}) # Jenkins
+        set(IS_CI TRUE)
+    endif()
+
+    # Detect common misconfiguration (Strawberry Perl in PATH before CMake)
+    # We use ENV to check the PATH order
+    string(REPLACE "\\" "/" ENV_PATH "$ENV{PATH}")
+    string(FIND "${ENV_PATH}" "Strawberry/c/bin" STRAWBERRY_POS)
+    string(FIND "${ENV_PATH}" "Program Files/CMake/bin" CMAKE_POS)
+
+    if (STRAWBERRY_POS GREATER -1 AND CMAKE_POS GREATER -1 AND STRAWBERRY_POS LESS CMAKE_POS)
+        set(_warning_text "
+#############################################################
+Detected Strawberry Perl's 'c/bin' appearing before CMake in PATH.
+This is known to cause CMake to misbehave (e.g., missing modules).
+Please adjust your PATH so that:
+C:\\Program Files\\CMake\\bin
+appears before:
+C:\\Strawberry\\c\\bin
+You can do this in Environment Variables settings.
+#############################################################
+        ")
+
+        if(NOT IS_CI)
+            message(FATAL_ERROR "${_warning_text}")
+        endif()
+    endif()
+endif ()
+
 if (APPLE)
     set(CMAKE_MACOSX_BUNDLE ON)
     set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED NO CACHE BOOL "Code Signing Allowed" FORCE)
@@ -100,6 +145,15 @@ set(OPENVDB_FIND_MODULE_PATH "" CACHE PATH "Path to OpenVDB installation's find 
 set(SLIC3R_GTK "2" CACHE STRING "GTK version to use with wxWidgets on Linux")
 
 set(IS_CROSS_COMPILE FALSE)
+
+option (COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." OFF)
+if (${COLORED_OUTPUT})
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        add_compile_options (-fdiagnostics-color=always)
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        add_compile_options (-fcolor-diagnostics)
+    endif ()
+endif ()
 if(NOT CMAKE_HOST_WIN32)
     set(CMAKE_SKIP_RPATH OFF)
     set(CMAKE_INSTALL_RPATH_USE_LINK_PATH OFF)
@@ -125,13 +179,13 @@ endif ()
 
 # Proposal for C++ unit tests and sandboxes
 option(SLIC3R_BUILD_SANDBOXES   "Build development sandboxes" OFF)
-option(SLIC3R_BUILD_TESTS       "Build unit tests" OFF)
+option(BUILD_TESTS       "Build unit tests" OFF)
 option(ANYCUBIC_TOOLS       "Build AnycubicSlicer tools" OFF)
 
 if (IS_CROSS_COMPILE)
     message("Detected cross compilation setup. Tests and encoding checks will be forcedly disabled!")
     set(SLIC3R_PERL_XS OFF CACHE BOOL "" FORCE)
-    set(SLIC3R_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
 endif ()
 
 # Print out the SLIC3R_* cache options
@@ -227,7 +281,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(NOT WIN32)
     # Add DEBUG flags to debug builds.
-    add_compile_options("$<$<CONFIG:DEBUG>:-DDEBUG>")
+    add_compile_definitions("$<IF:$<CONFIG:Debug>,DEBUG,NDEBUG>")
 endif()
 
 # To be able to link libslic3r with the Perl XS module.
@@ -264,7 +318,7 @@ if(WIN32)
     if(WIN10SDK_INCLUDE_PATH)
         message("Building with Win10 Netfabb STL fixing service support")
         add_definitions(-DHAS_WIN10SDK)
-        include_directories("${WIN10SDK_INCLUDE_PATH}")
+        include_directories(SYSTEM "${WIN10SDK_INCLUDE_PATH}")
     else()
         message("Building without Win10 Netfabb STL fixing service support")
     endif()
@@ -292,7 +346,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     find_package(Threads REQUIRED)
 
     find_package(DBus REQUIRED)
-    include_directories(${DBUS_INCLUDE_DIRS})
+    include_directories(SYSTEM ${DBUS_INCLUDE_DIRS})
 endif()
 
 if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUXX)
@@ -354,7 +408,7 @@ if (NOT MSVC AND ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMP
         add_compile_options(-Wno-unknown-pragmas)
     endif()
 
-    # Bit of a hack for flatpak building: compress the debug info with zstd to save space in CI 
+    # Bit of a hack for flatpak building: compress the debug info with zstd to save space in CI
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 13.0)
         add_compile_options(-gz=zstd)
     endif()
@@ -401,11 +455,11 @@ message(STATUS "LIBDIR: ${LIBDIR}")
 message(STATUS "LIBDIR_BIN: ${LIBDIR_BIN}")
 
 # For the bundled boost libraries (boost::nowide)
-include_directories(${LIBDIR})
+include_directories(SYSTEM ${LIBDIR})
 # For generated header files
-include_directories(${LIBDIR_BIN}/platform)
+include_directories(SYSTEM ${LIBDIR_BIN}/dev-utils/platform)
 # For ligigl
-include_directories(${LIBDIR}/libigl)
+include_directories(SYSTEM ${LIBDIR}/libigl)
 
 if(WIN32)
     add_definitions(-D_USE_MATH_DEFINES -D_WIN32 -D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
@@ -475,7 +529,7 @@ endif()
 # set(Boost_COMPILER "-mgw81")
 # boost::process was introduced first in version 1.64.0,
 # boost::beast::detail::base64 was introduced first in version 1.66.0
-find_package(Boost 1.66 CONFIG REQUIRED COMPONENTS system filesystem thread log log_setup locale regex chrono atomic date_time iostreams program_options)
+find_package(Boost 1.83.0 CONFIG REQUIRED COMPONENTS system filesystem thread log log_setup locale regex chrono atomic date_time iostreams program_options nowide)
 
 add_library(boost_libs INTERFACE)
 add_library(boost_headeronly INTERFACE)
@@ -493,7 +547,7 @@ function(slic3r_remap_configs targets to_Cfg from_Cfg)
     return()
     if(MSVC)
         string(TOUPPER ${from_Cfg} from_CFG)
-    
+
         foreach(tgt ${targets})
             if(TARGET ${tgt})
                 set_target_properties(${tgt} PROPERTIES MAP_IMPORTED_CONFIG_${from_CFG} ${to_Cfg})
@@ -502,7 +556,7 @@ function(slic3r_remap_configs targets to_Cfg from_Cfg)
     endif()
 endfunction()
 
-target_include_directories(boost_headeronly INTERFACE ${Boost_INCLUDE_DIRS})
+target_include_directories(boost_headeronly SYSTEM INTERFACE ${Boost_INCLUDE_DIRS})
 target_link_libraries(boost_libs INTERFACE boost_headeronly ${Boost_LIBRARIES})
 
 # Find and configure intel-tbb
@@ -512,7 +566,7 @@ endif()
 set(TBB_DEBUG 1)
 set(CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO RelWithDebInfo Release "")
 find_package(TBB REQUIRED)
-# include_directories(${TBB_INCLUDE_DIRS})
+# include_directories(SYSTEM ${TBB_INCLUDE_DIRS})
 # add_definitions(${TBB_DEFINITIONS})
 # if(MSVC)
 #     # Suppress implicit linking of the TBB libraries by the Visual Studio compiler.
@@ -523,6 +577,7 @@ find_package(TBB REQUIRED)
 
 find_package(OpenSSL REQUIRED)
 find_package(CURL REQUIRED)
+find_package(Freetype REQUIRED)
 
 
 add_library(libcurl INTERFACE)
@@ -554,7 +609,7 @@ if (SLIC3R_STATIC AND NOT SLIC3R_STATIC_EXCLUDE_CURL)
         find_package(OpenSSL REQUIRED)
         message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
         message("OpenSSL libraries: ${OPENSSL_LIBRARIES}")
-        target_include_directories(libcurl INTERFACE ${OPENSSL_INCLUDE_DIR})
+        target_include_directories(libcurl SYSTEM INTERFACE ${OPENSSL_INCLUDE_DIR})
         target_link_libraries(libcurl INTERFACE ${OPENSSL_LIBRARIES})
     endif()
 endif()
@@ -675,11 +730,9 @@ endif ()
 
 find_path(SPNAV_INCLUDE_DIR spnav.h)
 if (SPNAV_INCLUDE_DIR)
-    find_library(HAVE_SPNAV spnav)
-    if (HAVE_SPNAV)
+    find_library(SPNAV_LIB NAMES libspnav.a) # Force linking libspnav statically
+    if (SPNAV_LIB)
         add_definitions(-DHAVE_SPNAV)
-        add_library(libspnav SHARED IMPORTED)
-        target_link_libraries(libspnav INTERFACE spnav)
         message(STATUS "SPNAV library found")
     else()
         message(STATUS "SPNAV library NOT found, Spacenavd not supported")
@@ -690,10 +743,12 @@ endif()
 
 set(TOP_LEVEL_PROJECT_DIR ${PROJECT_SOURCE_DIR})
 function(AnycubicSlicer_copy_dlls target config postfix output_dlls)
-    if ("${CMAKE_SIZEOF_VOID_P}" STREQUAL "8")
-        set(_bits 64)
-    elseif ("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
-        set(_bits 32)
+    if ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "AMD64")
+        set(_arch "x64")
+    elseif ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "X86")
+        set(_arch "x86")
+    else ()
+        message(FATAL_ERROR "Unable to detect architecture")
     endif ()
 
 
@@ -710,8 +765,9 @@ function(AnycubicSlicer_copy_dlls target config postfix output_dlls)
         message ("set out_dir to CMAKE_CURRENT_BINARY_DIR: ${_out_dir}")
     endif ()
 
-    file(COPY ${TOP_LEVEL_PROJECT_DIR}/deps/GMP/gmp/lib/win${_bits}/libgmp-10.dll
-            ${TOP_LEVEL_PROJECT_DIR}/deps/MPFR/mpfr/lib/win${_bits}/libmpfr-4.dll
+    file(COPY ${TOP_LEVEL_PROJECT_DIR}/deps/GMP/gmp/lib/win-${_arch}/libgmp-10.dll
+            ${TOP_LEVEL_PROJECT_DIR}/deps/MPFR/mpfr/lib/win-${_arch}/libmpfr-4.dll
+            ${TOP_LEVEL_PROJECT_DIR}/deps/WebView2/lib/win-${_arch}/WebView2Loader.dll
         DESTINATION ${_out_dir})
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(POSTFIX "d")
@@ -782,11 +838,12 @@ function(AnycubicSlicer_copy_dlls target config postfix output_dlls)
 
         PARENT_SCOPE
     )
-    
+
 endfunction()
 
 
-# libslic3r, AnycubicSlicer GUI and the AnycubicSlicer executable.
+# libslic3r, OrcaSlicer GUI and the OrcaSlicer executable.
+add_subdirectory(deps_src)
 add_subdirectory(src)
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT AnycubicSlicer_app_gui)
 
@@ -803,18 +860,13 @@ if(SLIC3R_BUILD_SANDBOXES)
     add_subdirectory(sandboxes)
 endif()
 
-if(SLIC3R_BUILD_TESTS)
+if(BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 
 if (NOT WIN32 AND NOT APPLE)
     set(SLIC3R_APP_CMD "AnycubicSlicerNext")
-    configure_file(${LIBDIR}/platform/unix/build_appimage.sh.in ${CMAKE_CURRENT_BINARY_DIR}/build_appimage.sh @ONLY)
-endif()
-
-option(BUILD_BBS_TEST_TOOLS          "Build bbs test tools" OFF)
-if(BUILD_BBS_TEST_TOOLS)
-    add_subdirectory(bbs_test_tools)
+    configure_file(${LIBDIR}/dev-utils/platform/unix/build_appimage.sh.in ${CMAKE_CURRENT_BINARY_DIR}/build_appimage.sh USE_SOURCE_PERMISSIONS @ONLY)
 endif()
 
 
@@ -822,7 +874,7 @@ endif()
 if (WIN32)
     install(DIRECTORY "${SLIC3R_RESOURCES_DIR}/" DESTINATION "Resources")
     set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
-    include(InstallRequiredSystemLibraries) 
+    include(InstallRequiredSystemLibraries)
     install (PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION ".")
 elseif (SLIC3R_FHS)
     # CMAKE_INSTALL_FULL_DATAROOTDIR: read-only architecture-independent data root (share)
@@ -830,7 +882,7 @@ elseif (SLIC3R_FHS)
     install(DIRECTORY ${SLIC3R_RESOURCES_DIR}/ DESTINATION ${SLIC3R_FHS_RESOURCES}
         PATTERN "*/udev" EXCLUDE
     )
-    install(FILES src/platform/unix/AnycubicSlicer.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
+    install(FILES src/dev-utils/platform/unix/AnycubicSlicer.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
     foreach(SIZE 32 128 192)
         install(FILES ${SLIC3R_RESOURCES_DIR}/images/AnycubicSlicer_${SIZE}px.png
             DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/${SIZE}x${SIZE}/apps RENAME AnycubicSlicer.png
@@ -839,12 +891,12 @@ elseif (SLIC3R_FHS)
 elseif (CMAKE_MACOSX_BUNDLE)
     # install(DIRECTORY "${SLIC3R_RESOURCES_DIR}/" DESTINATION "${CMAKE_INSTALL_PREFIX}/AnycubicSlicer.app/Contents/resources")
 else ()
-    install(FILES src/platform/unix/AnycubicSlicer.desktop DESTINATION ${CMAKE_INSTALL_PREFIX}/resources/applications)
+    install(FILES src/dev-utils/platform/unix/AnycubicSlicer.desktop DESTINATION ${CMAKE_INSTALL_PREFIX}/resources/applications)
     install(DIRECTORY "${SLIC3R_RESOURCES_DIR}/" DESTINATION "${CMAKE_INSTALL_PREFIX}/resources")
 endif ()
 
 install(FILES ${CMAKE_SOURCE_DIR}/LICENSE.txt DESTINATION ".")
-configure_file(${LIBDIR}/platform/unix/fhs.hpp.in ${LIBDIR_BIN}/platform/unix/fhs.hpp)
+configure_file(${LIBDIR}/dev-utils/platform/unix/fhs.hpp.in ${LIBDIR_BIN}/dev-utils/platform/unix/fhs.hpp)
 
 set (CPACK_PACKAGE_NAME "AnycubicSlicer")
 set (CPACK_PACKAGE_VENDOR "SoftFever")

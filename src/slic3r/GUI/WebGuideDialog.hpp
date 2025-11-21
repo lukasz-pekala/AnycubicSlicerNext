@@ -5,8 +5,17 @@
 #include "wx/cmdline.h"
 #include "wx/notifmsg.h"
 #include "wx/settings.h"
-#include "webview/webview.h"
+#include "wx/webview.h"
 
+#if wxUSE_WEBVIEW_IE
+#include "wx/msw/webview_ie.h"
+#endif
+#if wxUSE_WEBVIEW_EDGE
+#include "wx/msw/webview_edge.h"
+#endif
+
+#include "wx/webviewarchivehandler.h"
+#include "wx/webviewfshandler.h"
 #include "wx/numdlg.h"
 #include "wx/infobar.h"
 #include "wx/filesys.h"
@@ -64,21 +73,20 @@ public:
     bool IsFirstUse();
 
     //Model - Machine - Filaments
-    private:
-    int LoadProfile();
-    public:
-    int LoadProfileFamily(std::string strVendor, std::string strFilePath,std::mutex*mtx);
+    int LoadProfileData();
+    int SaveProfileData();
+    int LoadProfileFamily(std::string strVendor, std::string strFilePath);
     int SaveProfile();
-    int GetFilamentInfo( std::string VendorDirectory,json & pFilaList, std::string filepath, std::string &sVendor, std::string &sType)const;
+    int GetFilamentInfo( std::string VendorDirectory,json & pFilaList, std::string filepath, std::string &sVendor, std::string &sType);
 
 
     bool apply_config(AppConfig *app_config, PresetBundle *preset_bundle, const PresetUpdater *updater, bool& apply_keeped_changes);
     bool run();
 
     void        StrReplace(std::string &strBase, std::string strSrc, std::string strDes);
-    static std::string w2s(wxString sSrc);
+    std::string w2s(wxString sSrc);
     void        GetStardardFilePath(std::string &FilePath);
-  
+    bool LoadFile(std::string jPath, std::string & sContent);
 
     // install plugin
     int DownloadPlugin();
@@ -100,6 +108,11 @@ private:
     boost::filesystem::path vendor_dir;
     boost::filesystem::path rsrc_vendor_dir;
 
+    //First Load
+    bool bFirstComplete{false};
+    bool m_destroy{false};
+    boost::thread* m_load_task{ nullptr };
+
     // User Config
     bool PrivacyUse;
     bool StealthMode;
@@ -111,7 +124,7 @@ private:
     json m_OrcaFilaList;
     std::string m_OrcaFilaLibPath;
 
-#if USE_WEBVIEW_IE
+#if wxUSE_WEBVIEW_IE
     wxMenuItem *m_script_object_el;
     wxMenuItem *m_script_date_el;
     wxMenuItem *m_script_array_el;

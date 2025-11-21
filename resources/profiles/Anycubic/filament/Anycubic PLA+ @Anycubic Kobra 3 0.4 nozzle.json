@@ -6,12 +6,17 @@
     "is_custom_defined": "0",
     "instantiation": "true",
     "version": "1.3.2506.05",
-
     "name": "Anycubic PLA+ @Anycubic Kobra 3 0.4 nozzle",
     "inherits": "Anycubic PLA @Anycubic Kobra 3 0.4 nozzle",
-    "filament_vendor": [ "Anycubic" ],
-    "filament_settings_id": [ "Anycubic PLA+ @Anycubic Kobra 3 0.4 nozzle" ],
-    "filament_type": [ "PLA" ],
+    "filament_vendor": [
+        "Anycubic"
+    ],
+    "filament_settings_id": [
+        "Anycubic PLA+ @Anycubic Kobra 3 0.4 nozzle"
+    ],
+    "filament_type": [
+        "PLA"
+    ],
     "filament_flow_ratio": [
         "1"
     ],
@@ -24,8 +29,6 @@
     "compatible_printers": [
         "Anycubic Kobra 3 0.4 nozzle"
     ],
-
-
     "enable_pressure_advance": [
         "1"
     ]

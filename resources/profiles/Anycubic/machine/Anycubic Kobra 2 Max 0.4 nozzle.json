@@ -1,21 +1,23 @@
 {
     "type": "machine",
+    "name": "Anycubic Kobra 2 Max 0.4 nozzle",
+    "inherits": "fdm_machine_common",
     "from": "system",
     "setting_id": "GM003",
-    "inherits": "fdm_machine_common",
     "instantiation": "true",
     "printer_technology": "FFF",
     "version": "1.3.2501.10",
-
     "printer_settings_id": "Anycubic Kobra 2 Max 0.4 nozzle",
     "printer_model": "Anycubic Kobra 2 Max",
     "printer_variant": "0.4",
-
     "name": "Anycubic Kobra 2 Max 0.4 nozzle",
-    "nozzle_diameter": [ "0.4" ],
+    "nozzle_diameter": [
+        "0.4"
+    ],
     "default_print_profile": "0.20mm Standard @Anycubic Kobra 2 Max 0.4 nozzle",
-    "default_filament_profile": [ "Anycubic PLA @Anycubic Kobra 2 Max 0.4 nozzle" ],
-
+    "default_filament_profile": [
+        "Anycubic PLA @Anycubic Kobra 2 Max 0.4 nozzle"
+    ],
     "disable_m73": "1",
     "gcode_flavor": "klipper",
     "printable_area": [
@@ -27,11 +29,6 @@
     "printable_height": "500",
     "thumbnails": "230x110/PNG",
     "thumbnails_format": "PNG",
-    
-    
-
-
-
     "adaptive_bed_mesh_margin": "0",
     "auxiliary_fan": "0",
     "bbl_use_printhost": "0",
@@ -167,7 +164,6 @@
     "parking_pos_retraction": "0",
     "pellet_modded_printer": "0",
     "preferred_orientation": "0",
-
     "printer_notes": "",
     "printer_structure": "i3",
     "printhost_authorization_type": "key",
@@ -217,7 +213,6 @@
     "support_chamber_temp_control": "0",
     "support_multi_bed_types": "1",
     "template_custom_gcode": "",
-
     "time_cost": "0",
     "time_lapse_gcode": "",
     "travel_slope": [

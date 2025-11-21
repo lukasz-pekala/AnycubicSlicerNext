@@ -1,5 +1,7 @@
 {
     "type": "machine",
+    "name": "Anycubic Kobra 2 Neo 0.4 nozzle",
+    "inherits": "fdm_machine_common",
     "from": "system",
     "setting_id": "GM005",
     "instantiation": "true",
@@ -10,11 +12,15 @@
     "printer_settings_id": "Anycubic Kobra 2 Neo 0.4 nozzle",
     "printer_model": "Anycubic Kobra 2 Neo",
     "printer_variant": "0.4",
-    "nozzle_diameter": ["0.4"],
+    "nozzle_diameter": [
+        "0.4"
+    ],
     "default_print_profile": "0.20mm Standard @Anycubic Kobra 2 Neo 0.4 nozzle",
-    "default_filament_profile": ["Anycubic PLA @Anycubic Kobra 2 Neo 0.4 nozzle"],
+    "default_filament_profile": [
+        "Anycubic PLA @Anycubic Kobra 2 Neo 0.4 nozzle"
+    ],
     "disable_m73": "1",
-    "gcode_flavor": "marlin",
+    "gcode_flavor": "marlin2",
     "printable_area": [
         "0x0",
         "220x0",
@@ -31,7 +37,9 @@
     "bbl_use_printhost": "0",
     "bed_custom_model": "",
     "bed_custom_texture": "",
-    "bed_exclude_area": ["0x0"],
+    "bed_exclude_area": [
+        "0x0"
+    ],
     "bed_mesh_max": "0,0",
     "bed_mesh_min": "0,0",
     "bed_mesh_probe_distance": "0,0",
@@ -41,7 +49,9 @@
     "change_filament_gcode": "",
     "cooling_tube_length": "0",
     "cooling_tube_retraction": "0",
-    "deretraction_speed": ["0"],
+    "deretraction_speed": [
+        "0"
+    ],
     "emit_machine_limits_to_gcode": "1",
     "enable_filament_ramming": "0",
     "enable_long_retraction_when_cut": "0",
@@ -49,17 +59,22 @@
     "extruder_clearance_height_to_lid": "20",
     "extruder_clearance_height_to_rod": "20",
     "extruder_clearance_radius": "20",
-    "extruder_colour": ["#FF4D4F"],
-    "extruder_offset": ["0x0"],
+    "extruder_colour": [
+        "#FF4D4F"
+    ],
+    "extruder_offset": [
+        "0x0"
+    ],
     "fan_kickstart": "0",
     "fan_speedup_overhangs": "1",
     "fan_speedup_time": "0",
     "head_wrap_detect_zone": [],
     "high_current_on_filament_swap": "0",
     "host_type": "octoprint",
-    "is_custom_defined": "0",
     "layer_change_gcode": "; AFTER_LAYER_CHANGE [layer_num] @ [layer_z]mm",
-    "long_retractions_when_cut": ["0"],
+    "long_retractions_when_cut": [
+        "0"
+    ],
     "machine_end_gcode": "M104 S0                                    ; Extruder off \nM140 S0                                    ; Heatbed off \nM107                                       ; Fan off \nG91                                        ; relative positioning \nG1 E-5 F3000  \nG1 Z+0.3 F3000                             ; lift print head \nG28 X0  F3000\nM84                    ",
     "machine_load_filament_time": "42",
     "machine_max_acceleration_e": [
@@ -135,8 +150,12 @@
     "machine_tool_change_time": "0",
     "machine_unload_filament_time": "0",
     "manual_filament_change": "0",
-    "max_layer_height": ["0.28"],
-    "min_layer_height": ["0.08"],
+    "max_layer_height": [
+        "0.28"
+    ],
+    "min_layer_height": [
+        "0.08"
+    ],
     "nozzle_height": "4",
     "nozzle_hrc": "0",
     "nozzle_type": "brass",
@@ -150,18 +169,42 @@
     "printhost_ssl_ignore_revoke": "0",
     "printing_by_object_gcode": "",
     "purge_in_prime_tower": "0",
-    "retract_before_wipe": ["70%"],
-    "retract_length_toolchange": ["0"],
-    "retract_lift_above": ["0.3"],
-    "retract_lift_below": ["258"],
-    "retract_lift_enforce": ["All Surfaces"],
-    "retract_restart_extra": ["0"],
-    "retract_restart_extra_toolchange": ["0"],
-    "retract_when_changing_layer": ["0"],
-    "retraction_distances_when_cut": ["18"],
-    "retraction_length": ["2.5"],
-    "retraction_minimum_travel": ["1"],
-    "retraction_speed": ["100"],
+    "retract_before_wipe": [
+        "70%"
+    ],
+    "retract_length_toolchange": [
+        "0"
+    ],
+    "retract_lift_above": [
+        "0.3"
+    ],
+    "retract_lift_below": [
+        "258"
+    ],
+    "retract_lift_enforce": [
+        "All Surfaces"
+    ],
+    "retract_restart_extra": [
+        "0"
+    ],
+    "retract_restart_extra_toolchange": [
+        "0"
+    ],
+    "retract_when_changing_layer": [
+        "0"
+    ],
+    "retraction_distances_when_cut": [
+        "18"
+    ],
+    "retraction_length": [
+        "2.5"
+    ],
+    "retraction_minimum_travel": [
+        "1"
+    ],
+    "retraction_speed": [
+        "100"
+    ],
     "scan_first_layer": "0",
     "silent_mode": "0",
     "single_extruder_multi_material": "1",
@@ -171,13 +214,23 @@
     "template_custom_gcode": "",
     "time_cost": "0",
     "time_lapse_gcode": "",
-    "travel_slope": ["3"],
+    "travel_slope": [
+        "3"
+    ],
     "upward_compatible_machine": [],
     "use_firmware_retraction": "0",
     "use_relative_e_distances": "1",
-    "wipe": ["0"],
-    "wipe_distance": ["1"],
-    "z_hop": ["0"],
-    "z_hop_types": ["Auto Lift"],
+    "wipe": [
+        "0"
+    ],
+    "wipe_distance": [
+        "1"
+    ],
+    "z_hop": [
+        "0"
+    ],
+    "z_hop_types": [
+        "Auto Lift"
+    ],
     "z_offset": "0"
 }
