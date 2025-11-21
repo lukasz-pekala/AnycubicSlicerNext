@@ -4,10 +4,12 @@
 #include "plugins/plugins_list.hpp"
 
 #include <utility/encrypt/aes.hxx>
+#include <utility/utils/filesystem.hxx>
 
 #include <slic3r/GUI/Widgets/WebView.hpp>
 
 #include <wx/base64.h>
+#include <wx/filename.h>
 #include <wx/tokenzr.h>
 
 #include <libslic3r/AppConfig.hpp>
@@ -215,17 +217,16 @@ bool AnycubicContext::PluginsIsLoaded() const {
 
 void AnycubicContext::OnInitByApp() {
   assert(impl_ != nullptr);
-
-  std::string current_dir = Slic3r::data_dir();
-  auto package = Slic3r::data_dir() + "/cache";
-  current_dir += "/plugins";
+  wxString current_dir = wxString::FromUTF8(Slic3r::data_dir());
+  auto package = Anycubic::utility::JoinPath(current_dir, "cache");
+  current_dir = Anycubic::utility::JoinPath(current_dir, "plugins");
 #ifndef NDEBUG
   if (auto dir = std::getenv("PLUGINS_DEBUG_DIR"); dir != nullptr) {
-    current_dir = dir;
-    LOG_INFO("PLUGINS_DEBUG_DIR: {}", current_dir);
+    current_dir = wxString::FromUTF8(dir);
+    LOG_INFO("PLUGINS_DEBUG_DIR: {}", current_dir.utf8_string());
   }
 #else
-  if (!::wxFileExists(wxString::FromUTF8(package))) {
+  if (!::wxFileExists(current_dir)) {
     LOG_WARN(
         "Plugins package does not exist, skipping loading plugins. Path: {}",
         package);
@@ -234,7 +235,8 @@ void AnycubicContext::OnInitByApp() {
 #endif // NDEBUG
 
 #ifdef __APPLE__
-  AnycubicContextPrivate::append_env("DYLD_LIBRARY_PATH", current_dir);
+  AnycubicContextPrivate::append_env("DYLD_LIBRARY_PATH",
+                                     current_dir.utf8_string());
   LOG_INFO("DYLD_LIBRARY_PATH after append: {}", getenv("DYLD_LIBRARY_PATH"));
 #elif defined(__linux__)
   AnycubicContextPrivate::append_env("LD_LIBRARY_PATH", current_dir);
