@@ -583,7 +583,7 @@ DPIFrame(NULL, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, BORDERLESS_FRAME_
         if (evt.CmdDown() && evt.GetKeyCode() == 'P')
 #endif
         {
-            // Anycubic: Use GUI_App::open_preferences instead of direct call so windows associations are updated on exit
+            // Orca: Use GUI_App::open_preferences instead of direct call so windows associations are updated on exit
             wxGetApp().open_preferences();
             plater()->get_current_canvas3D()->force_set_focus();
             return;
@@ -640,7 +640,7 @@ void MainFrame::bind_diff_dialog()
 
 #ifdef __WIN32__
 
-// Anycubic: Fix maximized window overlaps taskbar when taskbar auto hide is enabled (#8085)
+// Orca: Fix maximized window overlaps taskbar when taskbar auto hide is enabled (#8085)
 // Adopted from https://gist.github.com/MortenChristiansen/6463580
 static void AdjustWorkingAreaForAutoHide(const HWND hWnd, MINMAXINFO* mmi)
 {
@@ -1713,7 +1713,7 @@ wxBoxSizer* MainFrame::create_side_tools()
                 p->append_button(export_gcode_btn);
             }
             else {
-                //Anycubic Slicer Buttons
+                //Orca Slicer Buttons
                 SideButton* print_plate_btn = new SideButton(p, _L("Print plate"), "");
                 print_plate_btn->SetCornerRadius(0);
 
@@ -2218,7 +2218,7 @@ static wxMenu* generate_help_menu()
         });
 
     // Report a bug
-    //append_menu_item(helpMenu, wxID_ANY, _L("Report Bug(TODO)"), _L("Report a bug of AnycubicSlicer"),
+    //append_menu_item(helpMenu, wxID_ANY, _L("Report Bug(TODO)"), _L("Report a bug of OrcaSlicer"),
     //    [](wxCommandEvent&) {
     //        //TODO
     //    });
@@ -2759,7 +2759,7 @@ void MainFrame::init_menubar_as_editor()
 #ifdef __APPLE__
     wxWindowID bambu_studio_id_base = wxWindow::NewControlId(int(2));
     wxMenu* parent_menu = m_menubar->OSXGetAppleMenu();
-    //auto preference_item = new wxMenuItem(parent_menu, AnycubicSlicerMenuPreferences + bambu_studio_id_base, _L("Preferences") + "\tCtrl+,", "");
+    //auto preference_item = new wxMenuItem(parent_menu, OrcaSlicerMenuPreferences + bambu_studio_id_base, _L("Preferences") + "\t" + ctrl + ",", "");
 #else
     wxMenu* parent_menu = m_topbar->GetTopMenu();
     auto preference_item = new wxMenuItem(parent_menu, ConfigMenuPreferences + config_id_base, _L("Preferences") + "\t" + ctrl + "P", "");
@@ -2834,13 +2834,13 @@ void MainFrame::init_menubar_as_editor()
 
 #ifdef __APPLE__
     wxString about_title = wxString::Format(_L("&About %s"), SLIC3R_APP_FULL_NAME);
-    //auto about_item = new wxMenuItem(parent_menu, AnycubicSlicerMenuAbout + bambu_studio_id_base, about_title, "");
+    //auto about_item = new wxMenuItem(parent_menu, OrcaSlicerMenuAbout + bambu_studio_id_base, about_title, "");
         //parent_menu->Bind(wxEVT_MENU, [this, bambu_studio_id_base](wxEvent& event) {
         //    switch (event.GetId() - bambu_studio_id_base) {
-        //        case AnycubicSlicerMenuAbout:
+        //        case OrcaSlicerMenuAbout:
         //            Slic3r::GUI::about();
         //            break;
-        //        case AnycubicSlicerMenuPreferences:
+        //        case OrcaSlicerMenuPreferences:
         //            CallAfter([this] {
         //                PreferencesDialog dlg(this);
         //                dlg.ShowModal();
@@ -2891,7 +2891,7 @@ void MainFrame::init_menubar_as_editor()
     append_menu_item(
         m_topbar->GetTopMenu(), wxID_ANY, _L("Preferences") + "\t" + ctrl + "P", "",
         [this](wxCommandEvent &) {
-            // Anycubic: Use GUI_App::open_preferences instead of direct call so windows associations are updated on exit
+            // Orca: Use GUI_App::open_preferences instead of direct call so windows associations are updated on exit
             wxGetApp().open_preferences();
             plater()->get_current_canvas3D()->force_set_focus();
         },
@@ -2923,10 +2923,10 @@ void MainFrame::init_menubar_as_editor()
         [this](wxCommandEvent&) { if (m_plater) m_plater->calib_flowrate(false, 2); }, "", nullptr,
         [this]() {return m_plater->is_view3D_shown();; }, this);
     flowrate_menu->AppendSeparator();
-    append_menu_item(flowrate_menu, wxID_ANY, _L("YOLO (Recommended)"), _L("Anycubic YOLO flowrate calibration, 0.01 step"),
+    append_menu_item(flowrate_menu, wxID_ANY, _L("YOLO (Recommended)"), _L("Orca YOLO flowrate calibration, 0.01 step"),
         [this](wxCommandEvent&) { if (m_plater) m_plater->calib_flowrate(true, 1); }, "", nullptr,
         [this]() {return m_plater->is_view3D_shown();; }, this);
-    append_menu_item(flowrate_menu, wxID_ANY, _L("YOLO (perfectionist version)"), _L("Anycubic YOLO flowrate calibration, 0.005 step"),
+    append_menu_item(flowrate_menu, wxID_ANY, _L("YOLO (perfectionist version)"), _L("Orca YOLO flowrate calibration, 0.005 step"),
         [this](wxCommandEvent&) { if (m_plater) m_plater->calib_flowrate(true, 2); }, "", nullptr,
         [this]() {return m_plater->is_view3D_shown();; }, this);
     m_topbar->GetCalibMenu()->AppendSubMenu(flowrate_menu, _L("Flow rate"));
@@ -3005,10 +3005,10 @@ void MainFrame::init_menubar_as_editor()
     // help
     append_menu_item(m_topbar->GetCalibMenu(), wxID_ANY, _L("Tutorial"), _L("Calibration help"),
         [this](wxCommandEvent&) {
-            std::string url = "https://github.com/SoftFever/AnycubicSlicer/wiki/Calibration";
+            std::string url = "https://github.com/SoftFever/OrcaSlicer/wiki/Calibration";
             if (const std::string country_code = wxGetApp().app_config->get_country_code(); country_code == "CN") {
                 // Use gitee mirror for China users
-                url = "https://gitee.com/n0isyfox/anycubic-slicer-docs/wikis/%E6%A0%A1%E5%87%86/%E6%89%93%E5%8D%B0%E5%8F%82%E6%95%B0%E6%A0%A1%E5%87%86";
+                url = "https://gitee.com/n0isyfox/orca-slicer-docs/wikis/%E6%A0%A1%E5%87%86/%E6%89%93%E5%8D%B0%E5%8F%82%E6%95%B0%E6%A0%A1%E5%87%86";
             }
             wxLaunchDefaultBrowser(url, wxBROWSER_NEW_WINDOW);
         }, "", nullptr,
@@ -3046,10 +3046,10 @@ void MainFrame::init_menubar_as_editor()
     append_submenu(calib_menu,flowrate_menu,wxID_ANY,_L("Flow rate"),_L("Flow rate"),"",
                    [this]() {return m_plater->is_view3D_shown();; });
     flowrate_menu->AppendSeparator();
-    append_menu_item(flowrate_menu, wxID_ANY, _L("YOLO (Recommended)"), _L("Anycubic YOLO flowrate calibration, 0.01 step"),
+    append_menu_item(flowrate_menu, wxID_ANY, _L("YOLO (Recommended)"), _L("Orca YOLO flowrate calibration, 0.01 step"),
         [this](wxCommandEvent&) { if (m_plater) m_plater->calib_flowrate(true, 1); }, "", nullptr,
         [this]() {return m_plater->is_view3D_shown();; }, this);
-    append_menu_item(flowrate_menu, wxID_ANY, _L("YOLO (perfectionist version)"), _L("Anycubic YOLO flowrate calibration, 0.005 step"),
+    append_menu_item(flowrate_menu, wxID_ANY, _L("YOLO (perfectionist version)"), _L("Orca YOLO flowrate calibration, 0.005 step"),
         [this](wxCommandEvent&) { if (m_plater) m_plater->calib_flowrate(true, 2); }, "", nullptr,
         [this]() {return m_plater->is_view3D_shown();; }, this);
 
@@ -3078,8 +3078,13 @@ void MainFrame::init_menubar_as_editor()
                 m_vol_test_dlg = new MaxVolumetricSpeed_Test_Dlg((wxWindow*)this, wxID_ANY, m_plater);
             m_vol_test_dlg->ShowModal();
         }, "", nullptr,
+        [this]() {return m_plater->is_view3D_shown();; }, this);
+
+    // Cornering (with submenu)
+    auto cornering_menu = new wxMenu();
     append_menu_item(
         cornering_menu, wxID_ANY, _L("Junction Deviation"), _L("Junction Deviation calibration"),
+        [this](wxCommandEvent&) {
             if (!m_junction_deviation_calib_dlg)
                 m_junction_deviation_calib_dlg = new Junction_Deviation_Test_Dlg((wxWindow*)this, wxID_ANY, m_plater);
             m_junction_deviation_calib_dlg->ShowModal();
@@ -3120,7 +3125,7 @@ void MainFrame::init_menubar_as_editor()
         [this]() {return m_plater->is_view3D_shown();; }, this);
     // help
     append_menu_item(calib_menu, wxID_ANY, _L("Tutorial"), _L("Calibration help"),
-        [this](wxCommandEvent&) { wxLaunchDefaultBrowser("https://github.com/SoftFever/AnycubicSlicer/wiki/Calibration", wxBROWSER_NEW_WINDOW); }, "", nullptr,
+        [this](wxCommandEvent&) { wxLaunchDefaultBrowser("https://github.com/SoftFever/OrcaSlicer/wiki/Calibration", wxBROWSER_NEW_WINDOW); }, "", nullptr,
         [this]() {return m_plater->is_view3D_shown();; }, this);
 
     m_menubar->Append(calib_menu,wxString::Format("&%s", _L("Calibration")));

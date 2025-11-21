@@ -292,7 +292,7 @@ UpdateVersionDialog::UpdateVersionDialog(wxWindow *parent)
     m_vebview_release_note->Bind(wxEVT_WEBVIEW_NAVIGATING,[=](wxWebViewEvent& event){
         static bool load_url_first = false;
         if(load_url_first){
-            // Anycubic: not used in Anycubic Slicer
+            // Orca: not used in Orca Slicer
             // wxLaunchDefaultBrowser(url_line);
             event.Veto();
         }else{
@@ -497,7 +497,7 @@ void UpdateVersionDialog::update_version_info(wxString release_note, wxString ve
     //bbs check whether the web display is used
     bool use_web_link = false;
     url_line          = "";
-    // Anycubic: not used in Anycubic Slicer
+    // Orca: not used in Orca Slicer
     // auto split_array = splitWithStl(release_note.ToStdString(), "###");
     // if (split_array.size() >= 3) {
     //     for (auto i = 0; i < split_array.size(); i++) {
@@ -542,6 +542,11 @@ SecondaryCheckDialog::SecondaryCheckDialog(wxWindow* parent, wxWindowID id, cons
 {
     m_button_style = btn_style;
 
+    SetBackgroundColour(*wxWHITE);
+    m_sizer_main = new wxBoxSizer(wxVERTICAL);
+    auto        m_line_top = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(FromDIP(400), 1));
+    m_line_top->SetBackgroundColour(wxColour(166, 169, 170));
+    m_sizer_main->Add(m_line_top, 0, wxEXPAND, 0);
     m_sizer_main->Add(0, 0, 0, wxTOP, FromDIP(5));
 
     wxBoxSizer* m_sizer_right = new wxBoxSizer(wxVERTICAL);
@@ -854,6 +859,11 @@ void SecondaryCheckDialog::rescale()
 PrintErrorDialog::PrintErrorDialog(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
     :DPIFrame(parent, id, title, pos, size, style)
 {
+    SetBackgroundColour(*wxWHITE);
+
+    btn_bg_white = StateColor(std::pair<wxColour, int>(wxColour(206, 206, 206), StateColor::Pressed), std::pair<wxColour, int>(wxColour(238, 238, 238), StateColor::Hovered),
+        std::pair<wxColour, int>(*wxWHITE, StateColor::Normal));
+
     m_sizer_main = new wxBoxSizer(wxVERTICAL);
     auto        m_line_top = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(FromDIP(350), 1));
     m_line_top->SetBackgroundColour(wxColour(166, 169, 170));
@@ -1442,6 +1452,12 @@ InputIpAddressDialog::InputIpAddressDialog(wxWindow *parent)
                 wxDefaultSize,
                 wxCAPTION | wxCLOSE_BOX)
 {
+    SetBackgroundColour(*wxWHITE);
+    m_result                       = -1;
+    wxBoxSizer *m_sizer_body       = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *m_sizer_main       = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *m_sizer_main_left  = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *m_sizer_main_right = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer *m_sizer_msg        = new wxBoxSizer(wxHORIZONTAL);
     auto        m_line_top         = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(-1, 1));
     m_line_top->SetBackgroundColour(wxColour(166, 169, 170));

@@ -1933,11 +1933,9 @@ void DiffPresetDialog::create_buttons()
         if (e) e->Skip();
     };
 
-<<<<<<< HEAD
+    auto dlg_btns = new DialogButtons(this, {"OK", "Cancel"});
+
     // Transfer 
-    m_transfer_btn = new Button(this, L("Transfer"));
-    m_transfer_btn->SetBackgroundColor(btn_bg_green);
-    m_transfer_btn->SetBorderColor(wxColour(57, 134, 255));
     auto transfer_btn = dlg_btns->GetOK();
     transfer_btn->SetLabel(L("Transfer"));
     transfer_btn->Bind(wxEVT_BUTTON, [this](wxEvent&) { button_event(Action::Transfer);});

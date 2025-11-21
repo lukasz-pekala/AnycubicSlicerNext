@@ -197,7 +197,7 @@ void MsgDialog::apply_style(long style)
     if (style & wxCANCEL)   add_button(wxID_CANCEL, false, _L("Cancel"));
 
     logo->SetBitmap( create_scaled_bitmap(style & wxAPPLY        ? "completed" :
-                                          style & wxICON_WARNING        ? "exclamation" : // Anycubic "exclamation" used for dialogs "obj_warning" used for 16x16 areas
+                                          style & wxICON_WARNING        ? "exclamation" : // ORCA "exclamation" used for dialogs "obj_warning" used for 16x16 areas
                                           style & wxICON_INFORMATION    ? "info"        :
                                           style & wxICON_QUESTION       ? "question"    : "AnycubicSlicer", this, 64, style & wxICON_ERROR));
 }
@@ -486,6 +486,11 @@ DeleteConfirmDialog::DeleteConfirmDialog(wxWindow *parent, const wxString &title
     m_cancel_btn->Bind(wxEVT_BUTTON, [this](wxCommandEvent &e) { EndModal(wxID_CANCEL); });
 
     SetSizer(m_main_sizer);
+    Layout();
+    Fit();
+    wxGetApp().UpdateDlgDarkUI(this);
+}
+
 DeleteConfirmDialog::~DeleteConfirmDialog() {}
 
 
@@ -499,7 +504,6 @@ Newer3mfVersionDialog::Newer3mfVersionDialog(wxWindow *parent, const Semver *fil
     , m_new_keys(new_keys)
 {
     this->SetBackgroundColour(*wxWHITE);
-
 
     wxBoxSizer *main_sizer = new wxBoxSizer(wxVERTICAL);
     // top line
@@ -530,15 +534,16 @@ wxBoxSizer *Newer3mfVersionDialog::get_msg_sizer()
     wxBoxSizer *     horizontal_sizer = new wxBoxSizer(wxHORIZONTAL);
     wxString    msg_str;
     if (file_version_newer) { 
-<<<<<<< HEAD
-        text1 = new wxStaticText(this, wxID_ANY, _L("The 3mf file version is in Beta and it is newer than the current AnycubicSlicer  version."));
+        text1 = new wxStaticText(this, wxID_ANY, _L("The 3mf file version is in Beta and it is newer than the current AnycubicSlicer version."));
+        wxStaticText *   text2       = new wxStaticText(this, wxID_ANY, _L("If you would like to try AnycubicSlicer Beta, you may click to"));
+        //TODO: Add AnycubicSlicer Beta link
         wxHyperlinkCtrl *github_link = new wxHyperlinkCtrl(this, wxID_ANY, _L("Download Beta Version"), "https://github.com/bambulab/BambuStudio/releases");
         horizontal_sizer->Add(text2, 0, wxEXPAND, 0);
         horizontal_sizer->Add(github_link, 0, wxEXPAND | wxLEFT, 5);
         
     } else {
-        text1 = new wxStaticText(this, wxID_ANY, _L("The 3mf file version is newer than the current Anycubic Slicer version."));
-        wxStaticText *text2 = new wxStaticText(this, wxID_ANY, _L("Update your Anycubic Slicer could enable all functionality in the 3mf file."));
+        text1 = new wxStaticText(this, wxID_ANY, _L("The 3mf file version is newer than the current AnycubicSlicer version."));
+        wxStaticText *text2 = new wxStaticText(this, wxID_ANY, _L("Update your AnycubicSlicer could enable all functionality in the 3mf file."));
         horizontal_sizer->Add(text2, 0, wxEXPAND, 0);
     }
     Semver        app_version = *(Semver::parse(SLIC3R_VERSION));
@@ -562,14 +567,7 @@ wxBoxSizer *Newer3mfVersionDialog::get_btn_sizer()
 {
     wxBoxSizer *horizontal_sizer = new wxBoxSizer(wxHORIZONTAL);
     horizontal_sizer->Add(0, 0, 1, wxEXPAND, 0);
-<<<<<<< HEAD
-    StateColor btn_bg_green(std::pair<wxColour, int>(wxColour(204, 224, 254), StateColor::Pressed), std::pair<wxColour, int>(wxColour(105, 164, 255), StateColor::Hovered),
-                            std::pair<wxColour, int>(wxColour(57, 134, 255), StateColor::Normal));
-    StateColor btn_bg_white(std::pair<wxColour, int>(wxColour(206, 206, 206), StateColor::Pressed), std::pair<wxColour, int>(wxColour(238, 238, 238), StateColor::Hovered),
-                            std::pair<wxColour, int>(*wxWHITE, StateColor::Normal));
-=======
 
->>>>>>> origin/release/v2.3.1
     bool       file_version_newer = (*m_file_version) > (*m_cloud_version);
     if (!file_version_newer) {
         m_update_btn = new Button(this, _L("Update"));

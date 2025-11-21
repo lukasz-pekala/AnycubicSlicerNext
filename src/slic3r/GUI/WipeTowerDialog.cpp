@@ -295,6 +295,16 @@ WipingDialog::WipingDialog(wxWindow* parent, const std::vector<float>& matrix, c
                 _(L("Flushing volumes for filament change")),
                 wxDefaultPosition,
                 wxDefaultSize,
+                wxDEFAULT_DIALOG_STYLE /* | wxRESIZE_BORDER*/)
+{
+    auto m_line_top = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(-1, 1));
+    m_line_top->SetBackgroundColour(wxColour(166, 169, 170));
+
+    this->SetBackgroundColour(*wxWHITE);
+    this->SetMinSize(wxSize(MIN_WIPING_DIALOG_WIDTH, -1));
+    
+
+    m_panel_wiping = new WipingPanel(this, matrix, extruders, extruder_colours, nullptr, extra_flush_volume, flush_multiplier);
 
     auto main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->Add(m_line_top, 0, wxEXPAND, 0);

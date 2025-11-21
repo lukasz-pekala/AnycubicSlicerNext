@@ -506,29 +506,11 @@ MaxVolumetricSpeed_Test_Dlg::MaxVolumetricSpeed_Test_Dlg(wxWindow* parent, wxWin
     vol_step_sizer->Add(m_tiStep     , 0, wxALL | wxALIGN_CENTER_VERTICAL, FromDIP(2));
     settings_sizer->Add(vol_step_sizer, 0, wxLEFT, FromDIP(3));
 
-<<<<<<< HEAD
-    v_sizer->Add(settings_sizer);
-    v_sizer->Add(0, FromDIP(10), 0, wxEXPAND, 5);
-    m_btnStart = new Button(this, _L("OK"));
-    StateColor btn_bg_green(std::pair<wxColour, int>(wxColour(204, 224, 254), StateColor::Pressed),
-        std::pair<wxColour, int>(wxColour(105, 164, 255), StateColor::Hovered),
-        std::pair<wxColour, int>(wxColour(57, 134, 255), StateColor::Normal));
-
-    m_btnStart->SetBackgroundColor(btn_bg_green);
-    m_btnStart->SetBorderColor(wxColour(57, 134, 255));
-    m_btnStart->SetTextColor(wxColour("#FFFFFE"));
-    m_btnStart->SetSize(wxSize(FromDIP(48), FromDIP(24)));
-    m_btnStart->SetMinSize(wxSize(FromDIP(48), FromDIP(24)));
-    m_btnStart->SetCornerRadius(FromDIP(3));
-    m_btnStart->Bind(wxEVT_BUTTON, &MaxVolumetricSpeed_Test_Dlg::on_start, this);
-    v_sizer->Add(m_btnStart, 0, wxALL | wxALIGN_RIGHT, FromDIP(5));
-=======
     v_sizer->Add(settings_sizer, 0, wxTOP | wxRIGHT | wxLEFT | wxEXPAND, FromDIP(10));
     v_sizer->AddSpacer(FromDIP(5));
 
     auto dlg_btns = new DialogButtons(this, {"OK"});
     v_sizer->Add(dlg_btns , 0, wxEXPAND);
->>>>>>> origin/release/v2.3.1
 
     dlg_btns->GetOK()->Bind(wxEVT_BUTTON, &MaxVolumetricSpeed_Test_Dlg::on_start, this);
 
@@ -623,28 +605,10 @@ VFA_Test_Dlg::VFA_Test_Dlg(wxWindow* parent, wxWindowID id, Plater* plater)
     vol_step_sizer->Add(m_tiStep     , 0, wxALL | wxALIGN_CENTER_VERTICAL, FromDIP(2));
     settings_sizer->Add(vol_step_sizer, 0, wxLEFT, FromDIP(3));
 
-<<<<<<< HEAD
-    v_sizer->Add(settings_sizer);
-    v_sizer->Add(0, FromDIP(10), 0, wxEXPAND, 5);
-    m_btnStart = new Button(this, _L("OK"));
-    StateColor btn_bg_green(std::pair<wxColour, int>(wxColour(204, 224, 254), StateColor::Pressed),
-        std::pair<wxColour, int>(wxColour(105, 164, 255), StateColor::Hovered),
-        std::pair<wxColour, int>(wxColour(57, 134, 255), StateColor::Normal));
-
-    m_btnStart->SetBackgroundColor(btn_bg_green);
-    m_btnStart->SetBorderColor(wxColour(57, 134, 255));
-    m_btnStart->SetTextColor(wxColour("#FFFFFE"));
-    m_btnStart->SetSize(wxSize(FromDIP(48), FromDIP(24)));
-    m_btnStart->SetMinSize(wxSize(FromDIP(48), FromDIP(24)));
-    m_btnStart->SetCornerRadius(FromDIP(3));
-    m_btnStart->Bind(wxEVT_BUTTON, &VFA_Test_Dlg::on_start, this);
-    v_sizer->Add(m_btnStart, 0, wxALL | wxALIGN_RIGHT, FromDIP(5));
-=======
     settings_sizer->AddSpacer(FromDIP(5));
 
     v_sizer->Add(settings_sizer, 0, wxTOP | wxRIGHT | wxLEFT | wxEXPAND, FromDIP(10));
     v_sizer->AddSpacer(FromDIP(5));
->>>>>>> origin/release/v2.3.1
 
     auto dlg_btns = new DialogButtons(this, {"OK"});
     v_sizer->Add(dlg_btns , 0, wxEXPAND);
@@ -743,28 +707,10 @@ Retraction_Test_Dlg::Retraction_Test_Dlg(wxWindow* parent, wxWindowID id, Plater
     length_step_sizer->Add(m_tiStep        , 0, wxALL | wxALIGN_CENTER_VERTICAL, FromDIP(2));
     settings_sizer->Add(length_step_sizer, 0, wxLEFT, FromDIP(3));
 
-<<<<<<< HEAD
-    v_sizer->Add(settings_sizer);
-    v_sizer->Add(0, FromDIP(10), 0, wxEXPAND, 5);
-    m_btnStart = new Button(this, _L("OK"));
-    StateColor btn_bg_green(std::pair<wxColour, int>(wxColour(204, 224, 254), StateColor::Pressed),
-        std::pair<wxColour, int>(wxColour(105, 164, 255), StateColor::Hovered),
-        std::pair<wxColour, int>(wxColour(57, 134, 255), StateColor::Normal));
-
-    m_btnStart->SetBackgroundColor(btn_bg_green);
-    m_btnStart->SetBorderColor(wxColour(57, 134, 255));
-    m_btnStart->SetTextColor(wxColour("#FFFFFE"));
-    m_btnStart->SetSize(wxSize(FromDIP(48), FromDIP(24)));
-    m_btnStart->SetMinSize(wxSize(FromDIP(48), FromDIP(24)));
-    m_btnStart->SetCornerRadius(FromDIP(3));
-    m_btnStart->Bind(wxEVT_BUTTON, &Retraction_Test_Dlg::on_start, this);
-    v_sizer->Add(m_btnStart, 0, wxALL | wxALIGN_RIGHT, FromDIP(5));
-=======
     settings_sizer->AddSpacer(FromDIP(5));
 
     v_sizer->Add(settings_sizer, 0, wxTOP | wxRIGHT | wxLEFT | wxEXPAND, FromDIP(10));
     v_sizer->AddSpacer(FromDIP(5));
->>>>>>> origin/release/v2.3.1
 
     auto dlg_btns = new DialogButtons(this, {"OK"});
     v_sizer->Add(dlg_btns , 0, wxEXPAND);

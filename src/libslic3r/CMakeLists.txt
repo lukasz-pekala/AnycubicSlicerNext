@@ -587,12 +587,6 @@ target_link_libraries(libslic3r
     )
 
 if(NOT WIN32)
-    find_library(FREETYPE freetype)
-    if(FREETYPE)
-        target_link_libraries(libslic3r ${FREETYPE})
-    else()
-        target_link_libraries(libslic3r freetype$<$<CONFIG:Debug>:d>)
-    endif()
     # Link freetype for OCCT dependency (CAD operations need font rendering)
     target_link_libraries(libslic3r PRIVATE ${FREETYPE_LIBRARIES})
     target_link_libraries(libslic3r PRIVATE OpenSSL::Crypto)
