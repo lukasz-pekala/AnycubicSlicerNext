@@ -1941,7 +1941,23 @@ public:
                 return true;
         return false;
     }
-
+    
+    // anycubic: default_value is emun value, must translate to index
+    int default_enum_index(void) const{
+        assert(enum_keys_map != nullptr);
+        
+        int enum_numeric_value = default_value->getInt();
+        for(const auto& [key,value] : *enum_keys_map){
+            if(value == enum_numeric_value){
+                auto itr = std::find(enum_values.begin(), enum_values.end(), key);
+                assert(itr != enum_values.end());
+                return static_cast<int>(std::distance(enum_values.begin(), itr));
+            }
+        }
+        // flag: default_value is not in enum_values
+        assert(false);
+        return 0;
+    }
     // 0 is an invalid key.
     size_t 								serialization_key_ordinal = 0;
 

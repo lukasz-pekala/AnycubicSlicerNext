@@ -1436,8 +1436,8 @@ void Choice::set_selection()
     choice_ctrl* field = dynamic_cast<choice_ctrl*>(window);
 	switch (m_opt.type) {
 	case coEnum:{
-        field->SetSelection(m_opt.default_value->getInt());
-		break;
+        field->SetSelection(m_opt.default_enum_index());
+        break;
 	}
 	case coFloat:
 	case coPercent:	{
