@@ -124,6 +124,9 @@ private:
     }
     case 1: {
       auto val = app_config_->get(key.utf8_string());
+      if(val.empty()){
+        return false;
+      }
       value = wxString::FromUTF8(val);
       break;
     }

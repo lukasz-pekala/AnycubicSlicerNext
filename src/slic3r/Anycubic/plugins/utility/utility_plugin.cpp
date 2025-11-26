@@ -80,8 +80,8 @@ bool UtilityPlugin::is_auto_login(void) const {
 void UtilityPlugin::set_auto_login(bool auto_login) {
   host_->SetValue("user/auto_login", auto_login ? "true" : "false");
 }
-void UtilityPlugin::get_login_token(wxString *token) {
-  host_->GetEncryptValue("user/login_token", *token);
+bool UtilityPlugin::get_login_token(wxString *token) {
+    return  host_->GetEncryptValue("user/login_token", *token);
 }
 void UtilityPlugin::set_login_token(const wxString *token) {
   host_->SetEncryptValue("user/login_token", *token);

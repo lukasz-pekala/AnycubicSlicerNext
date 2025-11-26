@@ -31,7 +31,7 @@ private:
 
   bool is_auto_login(void) const;
   void set_auto_login(bool auto_login);
-  void get_login_token(wxString *token);
+  bool get_login_token(wxString *token);
   void set_login_token(const wxString *token);
   void get_user_info(wxString *username, wxString *password);
   void set_user_info(const wxString *username, const wxString *password);

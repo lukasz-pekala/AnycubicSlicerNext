@@ -121,7 +121,7 @@ wxString GetPCID(class AppConfig *app_config) {
 wxString GetMD5HexString(char *data, size_t length) {
   if (data == nullptr || length == 0)
     return wxEmptyString;
-  char buffer[+MD5LEN * 2 + 1] = {0};
+  char buffer[MD5LEN * 3 + 1] = {0};
   char *pmd5str = buffer + MD5LEN;
   md5Sum(data, length, buffer);
   bin2hex(pmd5str, buffer, MD5LEN);
