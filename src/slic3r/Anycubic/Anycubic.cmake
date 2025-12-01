@@ -193,14 +193,17 @@ endfunction()
 
 
 
-macro(anycubic_search_src directory)
+function(anycubic_search_src directory)
     file(GLOB_RECURSE SRC_G "${directory}/*.h*" "${directory}/*.c" "${directory}/*.cpp")
+    cmake_path(GET CMAKE_CURRENT_FUNCTION_LIST_DIR PARENT_PATH PARENT_DIR)
+    source_group(TREE ${PARENT_DIR} FILES ${SRC_G})
     list(APPEND ANYCUBIC_SUB_DIR_SOURCES ${SRC_G})
     if(CMAKE_HOST_APPLE)
         file(GLOB_RECURSE MM_G "${directory}/*.mm")
         list(APPEND ANYCUBIC_SUB_DIR_SOURCES ${MM_G})
     endif()
-endmacro()
+    set(ANYCUBIC_SUB_DIR_SOURCES ${ANYCUBIC_SUB_DIR_SOURCES} PARENT_SCOPE)
+endfunction()
 
 file(GLOB_RECURSE CMAKE_G "${CMAKE_CURRENT_LIST_DIR}/*.cmake")
 list(REMOVE_ITEM CMAKE_G "${CMAKE_CURRENT_LIST_DIR}/Anycubic.cmake")

@@ -7,7 +7,7 @@
 #include <wx/string.h>
 #include <wx/xrc/xmlres.h>
 
-#include <slic3r/GUI/Tabbook.hpp>
+#include <slic3r/GUI/Notebook.hpp>
 
 TabBookPlugin::TabBookPlugin(Anycubic::Plugins::PluginHost *host)
     : host_(host) {
@@ -30,59 +30,51 @@ TabBookPlugin::~TabBookPlugin() {}
 
 int32_t TabBookPlugin::CreateTab(int idx, const std::string &title,
                                  const std::string &icon,
-                                 const std::string &xrcName,
-                                 const std::string &xrc) {
+                                 wxWindow *panel) {
 
-  Tabbook *tabbook = dynamic_cast<Tabbook *>(host_->GetWindow("tabbook"));
+  Notebook *tabbook = dynamic_cast<Notebook *>(host_->GetWindow("tabpanel"));
   if (tabbook == nullptr) {
-    return -1;
-  }
-
-  wxString name = RandomString(16) + wxASCII_STR(".xrc");
-  host_->AddFS(name, wxString::FromUTF8(xrc));
-  auto pXRC = wxXmlResource::Get();
-  pXRC->Load(wxASCII_STR("memory://") + name);
-  host_->DelFS(name);
-
-  wxWindow *panel = pXRC->LoadPanel(tabbook, wxString::FromUTF8(xrcName));
-  if (panel == nullptr) {
     return -1;
   }
   if (idx == -1) {
     idx = static_cast<int>(tabbook->GetPageCount());
   }
-  auto ret = tabbook->InsertNewPage(size_t(idx), panel,
-                                    wxString::FromUTF8(title), icon);
+  auto ret = tabbook->InsertPage(size_t(idx), panel, wxString::FromUTF8(title), icon);
   if (ret)
     return 0;
   return -1;
 }
 
 int32_t TabBookPlugin::RemoveTab(int idx) {
-  Tabbook *tabbook = dynamic_cast<Tabbook *>(host_->GetWindow("tabbook"));
+  Notebook *tabbook = dynamic_cast<Notebook *>(host_->GetWindow("tabpanel"));
   if (tabbook == nullptr) {
     return -1;
   }
   if (idx == -1) {
     idx = static_cast<int>(tabbook->GetPageCount()) - 1;
   }
-  tabbook->RemovePage(size_t(idx));
+  auto win = tabbook->GetPage(size_t(idx));
+  if(tabbook->RemovePage(size_t(idx))&&win){
+      win->Destroy();
+  }
   return 0;
 }
 int32_t TabBookPlugin::GetTabCount(void) const {
-  Tabbook *tabbook = dynamic_cast<Tabbook *>(host_->GetWindow("tabbook"));
+  Notebook *tabbook = dynamic_cast<Notebook *>(host_->GetWindow("tabpanel"));
   if (tabbook == nullptr) {
     return -1;
   }
   return static_cast<int32_t>(tabbook->GetPageCount());
 }
 std::string TabBookPlugin::GetTabTitle(int idx) const {
-  Tabbook *tabbook = dynamic_cast<Tabbook *>(host_->GetWindow("tabbook"));
+  Notebook *tabbook = dynamic_cast<Notebook *>(host_->GetWindow("tabpanel"));
   if (tabbook == nullptr) {
     return std::string();
   }
   assert(idx >= 0 && idx < static_cast<int>(tabbook->GetPageCount()));
-  return tabbook->GetPageText(size_t(idx)).utf8_string();
+  auto title =  tabbook->GetPageText(size_t(idx));
+    
+  return title.Trim().Trim(false).utf8_string();
 }
 bool TabBookPlugin::AttachEvt(wxEvtHandler *) { return false; }
 
