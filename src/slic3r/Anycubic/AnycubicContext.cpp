@@ -245,9 +245,9 @@ void AnycubicContext::OnInitByApp() {
   AnycubicContextPrivate::append_env("LD_LIBRARY_PATH", current_dir);
   LOG_INFO("LD_LIBRARY_PATH after append: {}", getenv("LD_LIBRARY_PATH"));
 #endif
-
+  assert(current_dir.IsEmpty() == false);
   auto pm =
-      ::SetupPM(package.c_str(), WebView::CreateWebView, current_dir.c_str());
+      ::SetupPM(package.utf8_string().c_str(), WebView::CreateWebView,SLIC3R_APP_KEY, current_dir.utf8_string().c_str());
   if (pm != nullptr) {
     impl_->SetPM(pm);
   } else {
