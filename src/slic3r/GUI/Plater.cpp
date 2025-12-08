@@ -9448,7 +9448,13 @@ bool Plater::up_to_date(bool saved, bool backup)
     return p->model.objects.empty() || (p->up_to_date(saved, backup) &&
                                         !Slic3r::has_other_changes(backup));
 }
-
+wxString Plater::current_gcode_file(){
+    wxString tmp;
+    if(auto result = p->background_process.get_current_gcode_result(); result != nullptr){
+        tmp = wxString::FromUTF8(result->filename);
+    }
+    return tmp;
+}
 void Plater::add_model(bool imperial_units, std::string fname)
 {
     wxArrayString input_files;

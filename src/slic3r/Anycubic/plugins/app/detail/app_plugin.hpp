@@ -18,7 +18,8 @@ public:
   virtual ~AppPlugin();
 
 private:
-  int32_t import(int32_t import_type, const wxString *paths);
+  int32_t import(const wxString *paths);
+  bool current_gcode_file(wxString *path);
 
 private:
   // Anycubic::Plugins::Plugin
