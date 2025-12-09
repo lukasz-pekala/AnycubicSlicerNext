@@ -29,8 +29,7 @@ wxString RandomString(int length) {
 TabBookPlugin::~TabBookPlugin() {}
 
 int32_t TabBookPlugin::CreateTab(int idx, const std::string &title,
-                                 const std::string &icon,
-                                 wxWindow *panel) {
+                                 const std::string &icon, wxWindow *panel) {
 
   Notebook *tabbook = dynamic_cast<Notebook *>(host_->GetWindow("tabpanel"));
   if (tabbook == nullptr) {
@@ -39,7 +38,8 @@ int32_t TabBookPlugin::CreateTab(int idx, const std::string &title,
   if (idx == -1) {
     idx = static_cast<int>(tabbook->GetPageCount());
   }
-  auto ret = tabbook->InsertPage(size_t(idx), panel, wxString::FromUTF8(title), icon);
+  auto ret =
+      tabbook->InsertPage(size_t(idx), panel, wxString::FromUTF8(title), icon);
   if (ret)
     return 0;
   return -1;
@@ -54,8 +54,8 @@ int32_t TabBookPlugin::RemoveTab(int idx) {
     idx = static_cast<int>(tabbook->GetPageCount()) - 1;
   }
   auto win = tabbook->GetPage(size_t(idx));
-  if(tabbook->RemovePage(size_t(idx))&&win){
-      win->Destroy();
+  if (tabbook->RemovePage(size_t(idx)) && win) {
+    win->Destroy();
   }
   return 0;
 }
@@ -72,16 +72,16 @@ std::string TabBookPlugin::GetTabTitle(int idx) const {
     return std::string();
   }
   assert(idx >= 0 && idx < static_cast<int>(tabbook->GetPageCount()));
-  auto title =  tabbook->GetPageText(size_t(idx));
-    
+  auto title = tabbook->GetPageText(size_t(idx));
+
   return title.Trim().Trim(false).utf8_string();
 }
 bool TabBookPlugin::AttachEvt(wxEvtHandler *) { return false; }
 
 bool TabBookPlugin::DetachEvt(wxEvtHandler *) { return false; }
 
-bool TabBookPlugin::CreateDialog(wxDialog *dlg, wxWindow *parent,
-                                 wxString *bmp) {
+bool TabBookPlugin::CreatePanel(wxPanel *panel, wxWindow *parent,
+                                wxString *bmp) {
   return false;
 }
 

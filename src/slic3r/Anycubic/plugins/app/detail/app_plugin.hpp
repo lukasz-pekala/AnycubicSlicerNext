@@ -27,8 +27,8 @@ private:
   bool Start(void) override { return true; };
   bool AttachEvt(class wxEvtHandler *) override { return false; };
   bool DetachEvt(class wxEvtHandler *) override { return false; };
-  bool CreateDialog(class wxDialog *dlg, class wxWindow *parent = nullptr,
-                    class wxString *bmp = nullptr) override {
+  bool CreatePanel(class wxPanel *panel, class wxWindow *parent = nullptr,
+                   class wxString *bmp = nullptr) override {
     return false;
   }
   bool CreateWebview(class wxWebView *view, class wxWindow *parent = nullptr,

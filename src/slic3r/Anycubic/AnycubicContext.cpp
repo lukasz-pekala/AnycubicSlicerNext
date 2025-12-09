@@ -243,7 +243,7 @@ bool AnycubicContext::CheckUpdatePlugins(const PluginUpdateCallback &callback) {
   assert(callback != nullptr);
   using Anycubic::utility::make_range;
   wxString path;
-  for (auto index : make_range(impl_->GetPM()->Package())) {
+  for (auto index : make_range(static_cast<int>(impl_->GetPM()->Package()))) {
     if (impl_->GetPM()->PackagePath(index, path)) {
       PluginsPackageInfo info = {0};
       if (GetPluginsPackageInfo(path.utf8_string().c_str(), &info)) {

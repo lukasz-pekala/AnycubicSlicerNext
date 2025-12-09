@@ -81,7 +81,7 @@ void UtilityPlugin::set_auto_login(bool auto_login) {
   host_->SetValue("user/auto_login", auto_login ? "true" : "false");
 }
 bool UtilityPlugin::get_login_token(wxString *token) {
-    return  host_->GetEncryptValue("user/login_token", *token);
+  return host_->GetEncryptValue("user/login_token", *token);
 }
 void UtilityPlugin::set_login_token(const wxString *token) {
   host_->SetEncryptValue("user/login_token", *token);
@@ -100,8 +100,8 @@ bool UtilityPlugin::AttachEvt(wxEvtHandler *) { return false; }
 
 bool UtilityPlugin::DetachEvt(wxEvtHandler *) { return false; }
 
-bool UtilityPlugin::CreateDialog(wxDialog *dlg, wxWindow *parent,
-                                 wxString *bmp) {
+bool UtilityPlugin::CreatePanel(wxPanel *panel, wxWindow *parent,
+                                wxString *bmp) {
   return false;
 }
 
