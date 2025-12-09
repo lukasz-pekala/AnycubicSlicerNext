@@ -279,7 +279,7 @@ void AnycubicContext::OnInitByApp() {
   if (!::wxFileExists(current_dir)) {
     LOG_WARN(
         "Plugins package does not exist, skipping loading plugins. Path: {}",
-        package);
+        package.utf8_string());
     return;
   }
 #endif // NDEBUG

@@ -6335,13 +6335,13 @@ wxString GUI_App::filter_string(wxString str)
 
     return wxString::FromUTF8(result);
 }
-
+#if wxUSE_EXCEPTIONS
 bool GUI_App::OnExceptionInMainLoop()
 {
     generic_exception_handle();
     return false;
 }
-
+#endif
 #ifdef __APPLE__
 // This callback is called from wxEntry()->wxApp::CallOnInit()->NSApplication run
 // that is, before GUI_App::OnInit(), so we have a chance to switch GUI_App
