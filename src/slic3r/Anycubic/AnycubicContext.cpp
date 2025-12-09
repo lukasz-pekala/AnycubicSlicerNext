@@ -5,6 +5,7 @@
 
 #include <utility/encrypt/aes.hxx>
 #include <utility/utils/filesystem.hxx>
+#include <utility/utils/range.hxx>
 
 #include <slic3r/GUI/Widgets/WebView.hpp>
 
@@ -54,9 +55,15 @@ struct EmptyPM : public PluginsManager {
   bool SetConfig(class PMConfig *config) override { return false; }
   void EmitEvent(EventType event) override { return; }
   size_t Plugins(void) const override { return 0; }
+  size_t Package(void) const override { return 0; };
+  bool PackagePath(size_t index, wxString &path) override { return false; }
 };
 
 class AnycubicContextPrivate : public PMConfig {
+
+#define URL_SWITCH(name, cn, cn_test, en, en_test)                             \
+  static const char *name[] = {cn, cn_test, en, en_test};
+
 public:
   explicit AnycubicContextPrivate(AppConfig *app_config)
       : app_config_(app_config) {
@@ -73,6 +80,7 @@ public:
     pm_ = pm;
     pm_->SetConfig(this);
   }
+  PluginsManager *GetPM() { return pm_; }
   bool PluginsIsLoaded() const { return pm_ != nullptr; }
 
 public:
@@ -124,7 +132,7 @@ private:
     }
     case 1: {
       auto val = app_config_->get(key.utf8_string());
-      if(val.empty()){
+      if (val.empty()) {
         return false;
       }
       value = wxString::FromUTF8(val);
@@ -195,6 +203,19 @@ private:
     return ::wxBase64Encode(static_cast<const void *>(ret.data()), ret.size());
   }
 
+public:
+  void CheckUpdatePlugin(int64_t version, const char *name,
+                         const PluginUpdateCallback &callback) {
+
+    // 检查插件更新
+  }
+  std::string GetPluginUpdateUrl(const wxString &name, int64_t version) {
+
+    return std::string();
+  }
+
+  int get_url_index() { return 0; }
+
 private:
   std::map<wxString, wxString> config_;
   AppConfig *app_config_{nullptr};
@@ -218,11 +239,37 @@ bool AnycubicContext::PluginsIsLoaded() const {
   return impl_->PluginsIsLoaded();
 }
 
+bool AnycubicContext::CheckUpdatePlugins(const PluginUpdateCallback &callback) {
+  assert(callback != nullptr);
+  using Anycubic::utility::make_range;
+  wxString path;
+  for (auto index : make_range(impl_->GetPM()->Package())) {
+    if (impl_->GetPM()->PackagePath(index, path)) {
+      PluginsPackageInfo info = {0};
+      if (GetPluginsPackageInfo(path.utf8_string().c_str(), &info)) {
+        impl_->CheckUpdatePlugin(info.version, info.name, callback);
+        FreePluginsPackageInfo(&info);
+      }
+    }
+  }
+
+  return false;
+}
+
+bool AnycubicContext::HasPlugin() const {
+  auto pm = impl_->GetPM();
+  if (pm == nullptr) {
+    return false;
+  }
+  return pm->Package() > 0;
+}
+
 void AnycubicContext::OnInitByApp() {
   assert(impl_ != nullptr);
   wxString current_dir = wxString::FromUTF8(Slic3r::data_dir());
-  auto package = Anycubic::utility::JoinPath(current_dir, "cache");
-  current_dir = Anycubic::utility::JoinPath(current_dir, "plugins");
+  auto package =
+      Anycubic::utility::JoinPath(current_dir, "cache"); // 插件缓存目录
+  current_dir = Anycubic::utility::JoinPath(current_dir, "plugins"); // 插件目录
 #ifndef NDEBUG
   if (auto dir = std::getenv("PLUGINS_DEBUG_DIR"); dir != nullptr) {
     current_dir = wxString::FromUTF8(dir);
@@ -246,8 +293,8 @@ void AnycubicContext::OnInitByApp() {
   LOG_INFO("LD_LIBRARY_PATH after append: {}", getenv("LD_LIBRARY_PATH"));
 #endif
   assert(current_dir.IsEmpty() == false);
-  auto pm =
-      ::SetupPM(package.utf8_string().c_str(), WebView::CreateWebView,SLIC3R_APP_KEY, current_dir.utf8_string().c_str());
+  auto pm = ::SetupPM(package.utf8_string().c_str(), WebView::CreateWebView,
+                      SLIC3R_APP_KEY, current_dir.utf8_string().c_str());
   if (pm != nullptr) {
     impl_->SetPM(pm);
   } else {
