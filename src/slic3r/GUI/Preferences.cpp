@@ -1021,8 +1021,27 @@ wxBoxSizer* PreferencesDialog::create_item_link_association(wxWindow* parent, wx
 PreferencesDialog::PreferencesDialog(wxWindow *parent, wxWindowID id, const wxString &title, const wxPoint &pos, const wxSize &size, long style)
     : DPIDialog(parent, id, _L("Preferences"), pos, size, style)
 {
+    
     SetBackgroundColour(*wxWHITE);
-    create();
+
+    init();
+
+    int screen_height = wxDisplay(m_parent).GetClientArea().GetHeight();
+    if (this->GetSize().GetY() > screen_height)
+        this->SetSize(this->GetSize().GetX() + FromDIP(40), screen_height * 4 / 5);
+
+    CenterOnParent();
+    wxPoint start_pos = this->GetPosition();
+    if (start_pos.y < 0) {
+        this->SetPosition(wxPoint(start_pos.x, 0));
+    }
+
+    // select first
+    auto event = wxCommandEvent(EVT_PREFERENCES_SELECT_TAB);
+    event.SetInt(0);
+    event.SetEventObject(this);
+    wxPostEvent(this, event);
+
     wxGetApp().UpdateDlgDarkUI(this);
     Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent& event) {
         try {
@@ -1039,18 +1058,65 @@ PreferencesDialog::PreferencesDialog(wxWindow *parent, wxWindowID id, const wxSt
         } catch(...) {}
         event.Skip();
         });
+    wxGetApp().add_anycubic_window("Preferences", this);
 }
 
-void PreferencesDialog::create()
+
+void PreferencesDialog::init() 
 {
+    //wxBoxSizer* side_tools = create_side_tools();
+
+    m_preferencesTabpanel = new Notebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, nullptr,wxNB_TOP | wxTAB_TRAVERSAL | wxNB_NOPAGETHEME);
+    m_preferencesTabpanel->SetBackgroundColour(*wxWHITE);
+
+#ifndef __WXOSX__ // Don't call SetFont under OSX to avoid name cutting in ObjectList
+    m_preferencesTabpanel->SetFont(Slic3r::GUI::wxGetApp().normal_font());
+#endif
+
+#ifdef __WXMSW__
+    m_preferencesTabpanel->Bind(wxEVT_BOOKCTRL_PAGE_CHANGED, [this](wxBookCtrlEvent& e) {
+#else
+    m_preferencesTabpanel->Bind(wxEVT_NOTEBOOK_PAGE_CHANGED, [this](wxBookCtrlEvent& e) {
+#endif
+        // BBS
+        wxWindow* panel = m_preferencesTabpanel->GetCurrentPage();
+        int       sel   = m_preferencesTabpanel->GetSelection();
+        
+
+        if (panel)
+            panel->SetFocus();
+
+        
+    });
+
+
+    
+    m_preferencesTabpanel->AddPage(create_default(m_preferencesTabpanel), _L("General"), "tab_home_active", "tab_home_active", false);
+
+    m_preferencesTabpanel->SetSelection(0);
+    
+    wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
+    main_sizer->Add(m_preferencesTabpanel, 1, wxEXPAND);
+
+    SetSizer(main_sizer);
+    main_sizer->Layout();
+    Fit();
+
+}
+
+wxPanel* PreferencesDialog::create_default(wxWindow* parent)
+{
+    wxPanel*    panel      = new wxPanel(parent);
+    wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
+
+
     app_config             = get_app_config();
     m_backup_interval_time = app_config->get("backup_interval");
 
     SetSizeHints(wxDefaultSize, wxDefaultSize);
 
-    auto main_sizer = new wxBoxSizer(wxVERTICAL);
 
-    m_scrolledWindow = new MyscrolledWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL);
+    m_scrolledWindow = new MyscrolledWindow(panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL);
     m_scrolledWindow->SetScrollRate(5, 5);
 
     m_sizer_body = new wxBoxSizer(wxVERTICAL);
@@ -1075,22 +1141,10 @@ void PreferencesDialog::create()
 
     main_sizer->Add(m_scrolledWindow, 1, wxEXPAND);
 
-    SetSizer(main_sizer);
-    Layout();
-    Fit();
-    int screen_height = wxDisplay(m_parent).GetClientArea().GetHeight();
-    if (this->GetSize().GetY() > screen_height)
-        this->SetSize(this->GetSize().GetX() + FromDIP(40), screen_height * 4 / 5);
-
-    CenterOnParent();
-    wxPoint start_pos = this->GetPosition();
-    if (start_pos.y < 0) { this->SetPosition(wxPoint(start_pos.x, 0)); }
-
-    //select first
-    auto event = wxCommandEvent(EVT_PREFERENCES_SELECT_TAB);
-    event.SetInt(0);
-    event.SetEventObject(this);
-    wxPostEvent(this, event);
+    panel->SetSizer(main_sizer);
+    main_sizer->Layout();
+    panel->Fit();
+    return panel;
 }
 
 PreferencesDialog::~PreferencesDialog()
@@ -1622,6 +1676,20 @@ void PreferencesDialog::OnSelectRadio(wxMouseEvent &event)
         if (rs->m_groupid == groupid && rs->m_radiobox->GetId() != event.GetId()) rs->m_radiobox->SetValue(false);
         it = it->GetNext();
     }
+}
+
+bool PreferencesDialog::InsertPanel(wxString tabName, wxPanel* panel, int index, wxString icoName) 
+{ 
+    bool result = false;
+    int  childSize    = m_preferencesTabpanel->GetChildren().size();
+    bool contentIndex = index == -1 ? childSize : index;
+    if (contentIndex > childSize)
+        contentIndex = childSize;
+
+
+    result = m_preferencesTabpanel->InsertPage(contentIndex, panel, tabName, icoName.utf8_string(), icoName.utf8_string(), false);
+
+    return result;
 }
 
 

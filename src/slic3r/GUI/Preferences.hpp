@@ -13,6 +13,7 @@
 #include "Widgets/ComboBox.hpp"
 #include "Widgets/CheckBox.hpp"
 #include "Widgets/TextInput.hpp"
+#include "Notebook.hpp"
 
 namespace Slic3r { namespace GUI {
 
@@ -59,6 +60,7 @@ class PreferencesDialog : public DPIDialog
 {
 private:
     AppConfig *app_config;
+    Notebook*  m_preferencesTabpanel{nullptr};
 
 protected:
     wxBoxSizer *  m_sizer_body;
@@ -85,7 +87,8 @@ public:
 
     wxString m_backup_interval_time;
 
-    void      create();
+    void      init();
+    wxPanel*  create_default(wxWindow* parent);
     wxWindow *create_tab_button(int id, wxString text);
 
     // debug mode
@@ -139,6 +142,7 @@ public:
 
     void Split(const std::string &src, const std::string &separator, std::vector<wxString> &dest);
     int m_current_language_selected = {0};
+    bool InsertPanel(wxString tabName, wxPanel* panel, int index=-1, wxString icoName=wxEmptyString);
 
 protected:
     void OnSelectTabel(wxCommandEvent &event);
