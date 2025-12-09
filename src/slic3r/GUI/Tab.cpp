@@ -61,7 +61,11 @@ namespace GUI {
 
 #define DISABLE_UNDO_SYS
 
-static const std::vector<std::string> plate_keys = { "curr_bed_type", "skirt_start_angle", "first_layer_print_sequence", "first_layer_sequence_choice", "other_layers_print_sequence", "other_layers_sequence_choice", "print_sequence", "spiral_mode"};
+static const std::vector<std::string> plate_keys =  []() {
+    std::vector<std::string> keys ={ "curr_bed_type", "skirt_start_angle", "first_layer_print_sequence", "first_layer_sequence_choice", "other_layers_print_sequence", "other_layers_sequence_choice", "print_sequence", "spiral_mode"};
+    std::sort(keys.begin(), keys.end());
+    return keys;
+}();
 
 void Tab::Highlighter::set_timer_owner(wxEvtHandler* owner, int timerid/* = wxID_ANY*/)
 {
@@ -2654,6 +2658,8 @@ static std::vector<std::string> intersect(std::vector<std::string> const& l, std
 
 static std::vector<std::string> concat(std::vector<std::string> const& l, std::vector<std::string> const& r)
 {
+    assert(std::is_sorted(l.begin(),l.end()));
+    assert(std::is_sorted(r.begin(),r.end()));
     std::vector<std::string> t;
     std::set_union(l.begin(), l.end(), r.begin(), r.end(), std::back_inserter(t));
     return t;

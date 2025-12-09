@@ -5224,10 +5224,11 @@ void Plater::priv::scale_selection_to_fit_print_volume()
 void Plater::priv::schedule_background_process()
 {
     delayed_error_message.clear();
-    // Trigger the timer event after 0.5s
-    this->background_process_timer.Start(500, wxTIMER_ONE_SHOT);
+   
     // Notify the Canvas3D that something has changed, so it may invalidate some of the layer editing stuff.
     this->view3D->get_canvas3d()->set_config(this->config);
+     // Trigger the timer event after 0.5s
+    this->background_process_timer.Start(5000, wxTIMER_ONE_SHOT);
 }
 
 void Plater::priv::update_print_volume_state()

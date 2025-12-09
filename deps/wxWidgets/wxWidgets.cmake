@@ -12,7 +12,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 endif()
 
 
-
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(EXCEPTIONS OFF)
+else()
+    set(EXCEPTIONS ON)
+endif()
 # Note: The flatpak build builds wxwidgets separately due to CI size constraints.
 # ANY CHANGES MADE IN HERE MUST ALSO BE REFLECTED IN `scripts/flatpak/io.github.SoftFever.AnycubicSlicer.yml`.
 # ** THIS INCLUDES BUILD ARGS. **
@@ -34,6 +38,7 @@ AnycubicSlicer_add_cmake_project(
         -DwxUSE_DETECT_SM=OFF
         -DwxUSE_UNICODE=ON
         ${_wx_private_font}
+        -DwxUSE_EXCEPTIONS:BOOL=${EXCEPTIONS}
         -DwxUSE_OPENGL=ON
         -DwxUSE_WEBREQUEST=ON
         -DwxUSE_WEBVIEW=OFF

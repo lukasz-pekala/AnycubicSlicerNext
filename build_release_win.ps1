@@ -195,9 +195,9 @@ function Build_Slicer {
     }
     
     Write-Host "Verify localization with gettext..."
-    Push-Location $PROJECT_DIR
+    Push-Location $PROJECT_DIR/scripts
     try {
-        & "$PROJECT_DIR/run_gettext.bat"
+        & "$PROJECT_DIR/scripts/run_gettext.bat"
         
         # Check if script execution was successful
         if ($LASTEXITCODE -ne 0) {
