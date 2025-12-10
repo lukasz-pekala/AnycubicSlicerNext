@@ -14,7 +14,10 @@ PreferencesPlugin::PreferencesPlugin(Anycubic::Plugins::PluginHost *host)
   host_->WatchWindow("Preferences", this, [](void *ctx, wxWindow *wnd) {
     assert(wxIsMainThread());
     PreferencesPlugin *p = reinterpret_cast<PreferencesPlugin *>(ctx);
+    assert(p != nullptr && wnd != nullptr);
     p->CreateTabs(wnd);
+
+    return false; // 标记不存储处理
   });
 }
 
