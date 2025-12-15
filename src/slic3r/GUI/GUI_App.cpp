@@ -7176,6 +7176,10 @@ void GUI_App::disassociate_url(std::wstring url_prefix)
 
 void GUI_App::start_download(std::string url)
 {
+    if(m_anycubic_context && m_anycubic_context->StartDownload(wxString::FromUTF8(url))){
+        BOOST_LOG_TRIVIAL(info) << "Downloader started by AnycubicContext::StartDownload()";
+        return;
+    }
     if (!plater_) {
         BOOST_LOG_TRIVIAL(error) << "Could not start URL download: plater is nullptr.";
         return;

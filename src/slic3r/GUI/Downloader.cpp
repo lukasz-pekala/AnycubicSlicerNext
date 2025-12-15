@@ -71,15 +71,24 @@ std::string filename_from_url(const std::string& url)
 	return url.substr(slash + 1, url.size() - slash + 1);
 }
 }
-
-Download::Download(int ID, std::string url, wxEvtHandler* evt_handler, const boost::filesystem::path& dest_folder)
-    : m_id(ID)
-	, m_filename(filename_from_url(url))
+Download::Download(int ID, std::string url, wxEvtHandler* evt_handler,const std::string&filename, const boost::filesystem::path& dest_folder) : m_id(ID)
+	, m_filename(filename)
 	, m_dest_folder(dest_folder)
 {
+	if(m_filename.empty())
+		m_filename = filename_from_url(url);
+	if(m_filename.empty()){
+		// if filename is empty, use default name
+		m_filename = "download_" + std::to_string(ID);
+	}
 	assert(boost::filesystem::is_directory(dest_folder));
 	m_final_path = dest_folder / m_filename;
     m_file_get = std::make_shared<FileGet>(ID, std::move(url), m_filename, evt_handler, dest_folder);
+}
+Download::Download(int ID, std::string url, wxEvtHandler* evt_handler, const boost::filesystem::path& dest_folder)
+    : Download(ID,url,evt_handler,filename_from_url(url),dest_folder)
+	
+{
 }
 
 void Download::start()
@@ -131,7 +140,7 @@ void Downloader::start_download(const std::string& full_url)
 {
 	assert(m_initialized);
 
-    // Anycubic: Move to the 3D view
+    // Orca: Move to the 3D view
     MainFrame* mainframe = wxGetApp().mainframe;
     Plater* plater = wxGetApp().plater();
 
@@ -142,15 +151,15 @@ void Downloader::start_download(const std::string& full_url)
     plater->get_current_canvas3D()->zoom_to_bed();
     mainframe->Thaw();
 
-    // Anycubic: Replace PS workaround for "mysterious slash" with a more dynamic approach
+    // Orca: Replace PS workaround for "mysterious slash" with a more dynamic approach
     // Windows seems to have fixed the issue and this provides backwards compatability for those it still affects
-	boost::regex re(R"(^(AnycubicSlicer|orcaslicer|prusaslicer|bambustudio|cura):\/\/open[\/]?\?file=)", boost::regbase::icase);
+	boost::regex re(R"(^(orcaslicer|prusaslicer|bambustudio|cura):\/\/open[\/]?\?file=)", boost::regbase::icase);
 	boost::regex re2(R"(^(bambustudioopen):\/\/)", boost::regex::icase);
     boost::smatch results;
 
 	if (!boost::regex_search(full_url, results, re) && !boost::regex_search(full_url, results, re2)) {
 		BOOST_LOG_TRIVIAL(error) << "Could not start download due to wrong URL: " << full_url;
-        // Anycubic: show error
+        // Orca: show error
         NotificationManager* ntf_mngr = wxGetApp().notification_manager();
         ntf_mngr->push_notification(NotificationType::CustomNotification, NotificationManager::NotificationLevel::ErrorNotificationLevel,
                                     "Could not start download due to malformed URL");

@@ -22,6 +22,7 @@ public:
   bool
   CheckUpdatePlugins(const PluginUpdateCallback &callback); ///< 检查插件更新
   bool HasPlugin() const;                                   ///< 是否存在插件
+  bool StartDownload(const wxString &url);                  ///< 启动下载
   void OnInitByApp();     ///< 在 new MainFrame 之前调用
   void OnInitByGui();     ///< 在 new MainFrame 构造时调用
   void OnFinishedByGui(); ///< GUI初始化完成后调用

@@ -7,6 +7,11 @@
 #include <utility/utils/filesystem.hxx>
 #include <utility/utils/range.hxx>
 
+#include <plugins_base/funcation.hxx>
+
+#include <slic3r/GUI/GUI_App.hpp>
+#include <slic3r/GUI/MainFrame.hpp>
+#include <slic3r/GUI/Plater.hpp>
 #include <slic3r/GUI/Widgets/WebView.hpp>
 
 #include <wx/base64.h>
@@ -57,6 +62,11 @@ struct EmptyPM : public PluginsManager {
   size_t Plugins(void) const override { return 0; }
   size_t Package(void) const override { return 0; };
   bool PackagePath(size_t index, wxString &path) override { return false; }
+  bool ExecuteFunction(const char *plugin, const char *fname,
+                       Anycubic::Plugins::IStream *data,
+                       Anycubic::Plugins::OStream *result) override {
+    return false;
+  }
 };
 
 class AnycubicContextPrivate : public PMConfig {
@@ -82,6 +92,23 @@ public:
   }
   PluginsManager *GetPM() { return pm_; }
   bool PluginsIsLoaded() const { return pm_ != nullptr; }
+
+  bool StartDownload(const wxString &url) {
+    static auto call = [](void *ctx, int32_t download_id, int32_t status,
+                          const wxString &filename) {
+      if (status == 0) {
+        // 下载成功
+        LOG_INFO("download success: {}", filename.utf8_string());
+        // NOTE: 加载模型文件
+        wxArrayString filenames;
+        filenames.Add(filename);
+        Slic3r::GUI::wxGetApp().plater()->load_files(filenames);
+        Slic3r::GUI::wxGetApp().mainframe->update_title();
+      }
+    };
+    return Anycubic::Plugins::dispatch_call<bool>(
+        pm_, "downloader", "start_download", url, &call, nullptr);
+  }
 
 public:
   static bool append_env(const std::string &env_name, const std::string &path) {
@@ -263,7 +290,9 @@ bool AnycubicContext::HasPlugin() const {
   }
   return pm->Package() > 0;
 }
-
+bool AnycubicContext::StartDownload(const wxString &url) {
+  return impl_->StartDownload(url);
+}
 void AnycubicContext::OnInitByApp() {
   assert(impl_ != nullptr);
   wxString current_dir = wxString::FromUTF8(Slic3r::data_dir());
