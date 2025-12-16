@@ -1,5 +1,8 @@
 #include "xrc_pluigns.hpp"
 #include "handlers/xh_button.hpp"
+#include "handlers/xh_checkbox.hpp"
+#include "handlers/xh_combobox.hpp"
+#include "handlers/xh_text_input.hpp"
 
 namespace Slic3r::GUI {
 template <typename T, typename... Args> void AddHandler(Args &&...args) {
@@ -14,6 +17,9 @@ template <typename T, typename... Args> void AddHandler(Args &&...args) {
 
 XrcPlugin::XrcPlugin(Anycubic::Plugins::PluginHost *host) {
   AddHandler<ButtonResourceHandler>();
+  AddHandler<CheckBoxResourceHandler>();
+  AddHandler<ComboBoxResourceHandler>();
+  AddHandler<TextInputResourceHandler>();
 }
 XrcPlugin::~XrcPlugin() {}
 } // namespace Slic3r::GUI

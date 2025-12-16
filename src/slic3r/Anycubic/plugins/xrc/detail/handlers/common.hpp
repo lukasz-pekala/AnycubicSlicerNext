@@ -28,3 +28,12 @@
     BOOST_PP_SEQ_FOR_EACH(STYLE_APPLY, (value, str),                           \
                           BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))               \
   } while (false)
+
+#define XRC_MAKE_INSTANCE_PARAMS(variable, classname, ...)                     \
+  classname *variable = nullptr;                                               \
+  if (m_instance)                                                              \
+    variable = wxStaticCast(m_instance, classname);                            \
+  if (!variable)                                                               \
+    variable = new classname(__VA_ARGS__);                                     \
+  if (GetBool(wxT("hidden"), 0) == 1)                                          \
+    variable->Hide();
