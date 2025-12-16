@@ -6,24 +6,53 @@
 
 #include "plugins_base/plugins.hxx"
 #include "plugins_base/plugins_base.hxx"
-
+#include <wx/event.h>
 #include <vector>
 
-#define PLGUINS_NAME preferences
+#define PLGUINS_NAME home_dialog
 #define PLUGIN_NAME_STR BOOST_PP_STRINGIZE(PLGUINS_NAME)
 
-class PreferencesPlugin : public Anycubic::Plugins::Plugin {
+
+wxDECLARE_EVENT(EVT_THREAD_CHANGE_TO_MAIN, wxCommandEvent);
+
+
+struct parmObj
+{
+    wxString plugin_name;
+    wxString title;
+    wxString icon;
+    wxString xrcName;
+    wxString xrc;
+    wxSize panelSize;
+    bool    isShowModal;
+};
+
+class HomeDialog : public Anycubic::Plugins::Plugin,public wxEvtHandler
+{
 public:
-  PreferencesPlugin(Anycubic::Plugins::PluginHost *host);
-  virtual ~PreferencesPlugin() {}
+    HomeDialog(Anycubic::Plugins::PluginHost* host);
+    virtual ~HomeDialog() {}
+    
 
 public:
-  void CreateTabs(wxWindow *parent);
+  wxWindow* GetTopParentWindow();
+
 
 private:
-  bool register_tab(const wxString &plugin_name, const wxString &title,
+    wxString        m_plugin_name;
+    wxString        m_title;
+    wxString        m_icon;
+    wxString        m_xrcName;
+    wxString        m_xrc;
+    wxSize          m_panelSize;
+    bool            m_isShowModal;
+
+
+  bool is_test_env(void) const;
+  bool show_dialog(const wxString& plugin_name, const wxString& title,
                     const wxString &icon, const wxString &xrcName,
-                    const wxString *xrc);
+                    const wxString *xrc,wxSize *panelSize,bool isShowModal);
+  void create_dialog(wxCommandEvent& evt);
 
 private:
   // Anycubic::Plugins::Plugin interface

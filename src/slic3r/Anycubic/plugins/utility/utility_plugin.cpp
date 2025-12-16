@@ -100,7 +100,7 @@ bool UtilityPlugin::AttachEvt(wxEvtHandler *) { return false; }
 
 bool UtilityPlugin::DetachEvt(wxEvtHandler *) { return false; }
 
-bool UtilityPlugin::CreatePanel(wxPanel *panel, wxWindow *parent,
+bool UtilityPlugin::BindEvt(wxPanel* panel, wxWindow* parent,
                                 wxString *bmp) {
   return false;
 }

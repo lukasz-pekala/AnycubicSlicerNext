@@ -30,7 +30,7 @@ void PreferencesPlugin::CreateTabs(wxWindow *parent) {
     assert(panel != nullptr);
     auto p = host_->GetPlugin(tab.pluginName.utf8_string().c_str());
     assert(p != nullptr);
-    p->CreatePanel(panel);
+    p->BindEvt(panel);
     // 写入tab到parent
     auto result = dialog->InsertPanel(tab.title, panel, -1, tab.iconName);
 

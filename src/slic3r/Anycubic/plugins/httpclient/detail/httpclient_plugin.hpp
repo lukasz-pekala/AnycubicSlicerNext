@@ -49,7 +49,7 @@ private:
   bool Start(void) override;
   bool AttachEvt(wxEvtHandler *evt) override { return false; }
   bool DetachEvt(wxEvtHandler *evt) override { return false; }
-  bool CreatePanel(class wxPanel *panel, wxWindow *parent = nullptr,
+  bool BindEvt(class wxPanel* panel, wxWindow* parent = nullptr,
                    wxString *bmp = nullptr) override {
     return false;
   }
