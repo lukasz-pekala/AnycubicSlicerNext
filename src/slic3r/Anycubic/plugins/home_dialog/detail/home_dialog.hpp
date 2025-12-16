@@ -39,13 +39,7 @@ public:
 
 
 private:
-    wxString        m_plugin_name;
-    wxString        m_title;
-    wxString        m_icon;
-    wxString        m_xrcName;
-    wxString        m_xrc;
-    wxSize          m_panelSize;
-    bool            m_isShowModal;
+
 
 
   bool is_test_env(void) const;
