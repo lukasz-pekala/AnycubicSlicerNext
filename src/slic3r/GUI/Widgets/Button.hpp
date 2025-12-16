@@ -40,6 +40,8 @@ class Button : public StaticBox
     bool m_selected  = true;
     bool canFocus  = true;
     bool isCenter = true;
+    bool showUnderline = false;
+    StateColor   underline_color;
 
     static const int buttonWidth = 200;
     static const int buttonHeight = 50;
@@ -68,10 +70,14 @@ public:
     void SetTextColor(StateColor const &color);
 
     void SetTextColorNormal(wxColor const &color);
+    
+    void SetUnderlineColor(StateColor const &color);
 
     void SetSelected(bool selected = true) { m_selected = selected; }
 
     bool Enable(bool enable = true) override;
+
+    bool SetEnable(bool enable = true) { return Enable(enable); };
 
     void SetCanFocus(bool canFocus) override;
 
@@ -82,6 +88,9 @@ public:
     void SetCenter(bool isCenter);
 
     void Rescale();
+
+    void SetShowUnderline(bool s) { showUnderline = s; showUnderline ? SetTextColorNormal(wxColour(57, 134, 255)) : SetTextColorNormal(wxColour(20, 28, 41)); }
+	bool GetShowUnderline() { return showUnderline; }
 
 protected:
 #ifdef __WIN32__

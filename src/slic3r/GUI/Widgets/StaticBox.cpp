@@ -219,3 +219,84 @@ void StaticBox::doRender(wxDC& dc)
         }
     }
 }
+
+
+SplitLine::SplitLine(wxWindow* parent, SplitDir dir, int lineLen, int lineWidth, long style)
+{
+    Create(parent, dir, lineLen, lineWidth, style);
+}
+
+bool SplitLine::Create(wxWindow* parent, SplitDir dir, int lineLen, int lineWidth, long style)
+{
+    StaticBox::Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, style);
+
+    m_splitDir = dir;
+    m_lineLen = lineLen;
+    m_lineWidth = lineWidth;
+
+    messureSize();
+
+    return true;
+}
+
+void SplitLine::sys_color_changed()
+{
+    // AC : TODO
+}
+
+
+void SplitLine::Rescale()
+{
+    messureSize();
+}
+
+void SplitLine::render(wxDC& dc)
+{
+    StaticBox::render(dc);
+
+    wxPen pen = dc.GetPen();
+    pen.SetWidth(m_lineWidth);
+    pen.SetColour(m_lineColour);
+    dc.SetPen(pen);
+
+    if (m_splitDir == wxHORIZONTAL) {
+        dc.DrawLine(wxPoint(m_padding+1, 0), wxPoint(m_padding+1, m_lineLen));
+    } else {
+        dc.DrawLine(wxPoint(0, m_padding+1), wxPoint(m_lineLen, m_padding+1));
+    }
+}
+//
+void SplitLine::setLineColour(const wxColour& c)
+{
+    m_lineColour = c;
+    Refresh();
+}
+void SplitLine::setLinePadding(int padding)
+{
+    m_padding = padding;
+    messureSize();
+    Refresh();
+}
+
+void SplitLine::messureSize()
+{
+    wxSize oldSize = GetSize();
+
+    wxSize minSize;
+    
+    if (m_splitDir == wxHORIZONTAL) {
+        minSize.x = m_padding*2 + m_lineWidth;
+        minSize.y = m_lineLen;
+    } else {
+        minSize.y = m_padding*2 + m_lineWidth;
+        minSize.x = m_lineLen;
+    }
+
+    wxSize curSize = GetSize();
+    SetMinSize(minSize);
+
+    if (curSize.x < minSize.x || curSize.y < minSize.y)
+        SetSize(std::max(curSize.x, minSize.x), std::max(curSize.y, minSize.y));
+}
+
+

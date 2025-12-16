@@ -31,6 +31,10 @@
 static const int wxID_SKIP = 32000;
 
 namespace Slic3r { namespace GUI {
+
+wxDEFINE_EVENT(EVT_UPDATE_PROGRESSDIALOG_GUI_EVENT, wxCommandEvent);
+
+
 void ProgressDialog::Init()
 {
     // we may disappear at any moment, let the others know about it
@@ -77,6 +81,11 @@ ProgressDialog::ProgressDialog(const wxString &title, const wxString &message, i
     Create(title, message, maximum, parent, style);
     Bind(wxEVT_PAINT, &ProgressDialog::OnPaint, this);
     Bind(wxEVT_CLOSE_WINDOW, &ProgressDialog::OnClose, this);
+    Bind(EVT_UPDATE_PROGRESSDIALOG_GUI_EVENT, [this](wxCommandEvent& evt) {
+        int value = evt.GetInt();
+        wxString str   = evt.GetString();
+        Update(value, str);
+    });
 }
 
 void ProgressDialog::OnPaint(wxPaintEvent &evt) {}
@@ -243,7 +252,9 @@ bool ProgressDialog::Create(const wxString &title, const wxString &message, int 
 
     if (HasPDFlag(wxPD_CAN_ABORT)) {
         m_button_cancel = new Button(this, _L("Cancel"));
-        m_button_cancel->SetStyle(ButtonStyle::Regular, ButtonType::Choice);
+        m_button_cancel->SetTextColor(PROGRESSDIALOG_GREY_700);
+        m_button_cancel->SetMinSize(PROGRESSDIALOG_CANCEL_BUTTON_SIZE);
+        m_button_cancel->SetCornerRadius(PROGRESSDIALOG_CANCEL_BUTTON_SIZE.y / 2);
         m_button_cancel->Bind(wxEVT_LEFT_DOWN, [this](wxMouseEvent &event) {
             if (m_state == Finished) {
                 event.Skip();
@@ -508,8 +519,33 @@ wxStaticText *ProgressDialog::CreateLabel(const wxString &text, wxSizer *sizer)
 // ProgressDialog operations
 // ----------------------------------------------------------------------------
 
-bool ProgressDialog::Update(int value, const wxString &newmsg, bool *skip)
+bool ProgressDialog::UpdateCommandEvent(int value, const wxString& newmsg)
+{ 
+    if (m_gauge->GetValue() == value) {
+        return true;
+    }
+    if (m_state == Canceled)
+        return false;
+    
+    if (value == m_maximum && m_state == Finished) {
+        return true;
+        
+    }
+
+    wxCommandEvent *evt = new wxCommandEvent(EVT_UPDATE_PROGRESSDIALOG_GUI_EVENT);
+    evt->SetInt(value);
+    evt->SetString(newmsg);
+    wxQueueEvent(this,evt);
+    wxSafeYield(this);
+    return true;
+}
+
+bool ProgressDialog::Update(int value, const wxString& newmsg, bool* skip)
 {
+    if (m_gauge->GetValue() == value) {
+        return true;
+    }
+
     if (!DoBeforeUpdate(skip)) return false;
 
     wxCHECK_MSG(m_msg || m_gauge, false, "dialog should be fully created");
@@ -620,7 +656,9 @@ bool ProgressDialog::DoBeforeUpdate(bool *skip)
     // also to process the clicks on the cancel and skip buttons
     // NOTE: using YieldFor() this call shouldn't give re-entrancy problems
     //       for event handlers not interested to UI/user-input events.
-    wxEventLoopBase::GetActive()->YieldFor(wxEVT_CATEGORY_UI | wxEVT_CATEGORY_USER_INPUT);
+    auto loop = wxEventLoopBase::GetActive();
+    if (loop)
+        loop->YieldFor(wxEVT_CATEGORY_UI | wxEVT_CATEGORY_USER_INPUT);
 
     Update();
 

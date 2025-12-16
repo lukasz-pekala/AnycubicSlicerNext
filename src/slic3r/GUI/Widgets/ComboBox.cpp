@@ -80,11 +80,40 @@ ComboBox::ComboBox(wxWindow *parent,
         drop_down = false;
         wxCommandEvent e(wxEVT_COMBOBOX_CLOSEUP);
         GetEventHandler()->ProcessEvent(e);
+        SetShowTextIco();
     });
     for (int i = 0; i < n; ++i) Append(choices[i]);
 }
 
 int ComboBox::GetSelection() const { return drop.GetSelection(); }
+
+
+void ComboBox::SetShowTextIco(bool show) 
+{
+
+    wxString icon_path = show ? "drop_down_white" : "drop_down";
+    auto        bitmap       = ScalableBitmap(this, icon_path.ToStdString(), 12).bmp();
+    TextInput::SetIcon(bitmap);
+
+    if (show) {
+        TextInput::SetBorderColor(0x3986FF);
+        //TextInput::SetBackgroundColor(0x254030);
+    } else {
+        TextInput::SetBorderColor( StateColor(std::make_pair(0xDBDBDB, (int) StateColor::Disabled), std::make_pair(0x437DFF, (int) StateColor::Hovered),
+                       std::make_pair(0xDBDBDB, (int) StateColor::Normal), std::make_pair(0xEFF5FF, (int) StateColor::Focused)));
+        /*TextInput::SetBackgroundColor(
+            StateColor(std::make_pair(0xF0F0F1, (int) StateColor::Disabled), std::make_pair(0xEFF5FF, (int) StateColor::Focused),
+                       std::make_pair(0xFFFFFF, (int) StateColor::Normal), std::make_pair(0xFFFFFF, (int) StateColor::Pressed)));*/
+    }
+    
+
+
+
+
+
+
+    TextInput::Refresh();
+}
 
 void ComboBox::SetSelection(int n)
 {
@@ -261,11 +290,14 @@ void ComboBox::mouseDown(wxMouseEvent &event)
     if (drop_down) {
         drop.Hide();
     } else if (drop.HasDismissLongTime()) {
-        drop.autoPosition();
-        drop_down = true;
-        drop.Popup(&drop);
-        wxCommandEvent e(wxEVT_COMBOBOX_DROPDOWN);
-        GetEventHandler()->ProcessEvent(e);
+        if (GetCount() > 0)   {// [AC:1019270 @2024-06-20] FIX：空的下拉框，闪退
+            drop.autoPosition();
+            drop_down = true;
+            drop.Popup(&drop);
+            SetShowTextIco(true);
+            wxCommandEvent e(wxEVT_COMBOBOX_DROPDOWN);
+            GetEventHandler()->ProcessEvent(e);
+        }
     }
 }
 
@@ -292,6 +324,7 @@ void ComboBox::keyDown(wxKeyEvent& event)
                 drop.autoPosition();
                 drop_down = true;
                 drop.Popup();
+                SetShowTextIco(true);
                 wxCommandEvent e(wxEVT_COMBOBOX_DROPDOWN);
                 GetEventHandler()->ProcessEvent(e);
             }

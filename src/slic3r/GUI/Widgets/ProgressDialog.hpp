@@ -24,7 +24,9 @@ class WXDLLIMPEXP_FWD_CORE wxWindowDisabler;
 
 namespace Slic3r { namespace GUI {
 
-class  ProgressDialog : public wxDialog
+wxDECLARE_EVENT(EVT_UPDATE_PROGRESSDIALOG_GUI_EVENT, wxCommandEvent);
+
+class ProgressDialog : public wxDialog
 {
 public:
     ProgressDialog();
@@ -35,7 +37,7 @@ public:
 
     virtual void DoSetSize(int x, int y, int width, int height, int sizeFlags = wxSIZE_AUTO) override;
     bool Create(const wxString &title, const wxString &message, int maximum = 100, wxWindow *parent = NULL, int style = wxPD_APP_MODAL | wxPD_AUTO_HIDE);
-
+    bool         UpdateCommandEvent(int value, const wxString& newmsg = wxEmptyString);
     virtual bool Update(int value, const wxString &newmsg = wxEmptyString, bool *skip = NULL);
     virtual bool Pulse(const wxString &newmsg = wxEmptyString, bool *skip = NULL);
     bool         WasCanceled() const;

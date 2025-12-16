@@ -43,6 +43,10 @@ class DropDown : public PopupWindow
     boost::posix_time::ptime dismissTime;
     wxPoint                  offset; // x not used
     wxPoint                  dragStart;
+    bool                     m_isShowBar{false};
+    bool                     m_isRightBar{false};
+    wxTimer*                 m_timer{nullptr};
+    int                      m_timerIndex{-1};
 
 public:
     DropDown(std::vector<wxString> &texts,
@@ -54,6 +58,7 @@ public:
              std::vector<wxString> &tips,
              std::vector<wxBitmap> &icons,
              long           style     = 0);
+    ~DropDown();
     
     void Create(wxWindow *     parent,
              long           style     = 0);
@@ -83,6 +88,9 @@ public:
 
     void SetAlignIcon(bool align);
     
+    void OnTimer(wxTimerEvent& event);
+    void CloseTimerObj();
+
 public:
     void Rescale();
 
@@ -92,11 +100,15 @@ protected:
     void OnDismiss() override;
 
 private:
+    void SetShowBar();
+
     void paintEvent(wxPaintEvent& evt);
     void paintNow();
 
     void render(wxDC& dc);
 
+    void calculateSize(wxRect& rcContent, const int barSize, wxDC& dc);
+    void calculateBarEvent(const int& hover, const wxPoint& now_point, const wxSize& winSize,bool isWheelMouse=false);
     friend class ComboBox;
     void messureSize();
     void autoPosition();

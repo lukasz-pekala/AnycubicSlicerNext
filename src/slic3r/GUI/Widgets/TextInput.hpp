@@ -58,6 +58,7 @@ public:
 
     wxTextCtrl const *GetTextCtrl() const { return text_ctrl; }
 
+    wxString GetValue() const { return text_ctrl->GetValue(); }
 protected:
     virtual void OnEdit() {}
 

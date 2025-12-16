@@ -28,7 +28,7 @@ static std::map<wxColour, wxColour> gDarkColors{
     {"#437DFF", "#3985FF"},
     {"#EFF5FF", "#4068BE"},
     {"#3986FF", "#3986FF"},
-    {"#3986FF", "#00675b"}, // rgb(57, 134, 255)    Anycubic color
+    {"#009688", "#00675b"}, // rgb(0, 150, 136)    ORCA color
     {"#1F8EEA", "#2778D2"}, // rgb(31, 142, 234)   ???
     {"#FF6F00", "#D15B00"}, // rgb(255, 111, 0)    Secondary color
     {"#D01B1B", "#BB2A3A"}, // rgb(208, 27, 27)    ???
@@ -54,6 +54,7 @@ static std::map<wxColour, wxColour> gDarkColors{
     {"#DBDBDB", "#4A4A51"}, // rgb(219, 219, 219)  Input/Combo Box Border Color
     {"#EDFAF2", "#283232"}, // rgb(229, 240, 238)  Not Used anymore // Was used for BBS Combo / Dropdown focused background color
     {"#323A3C", "#E5E5E6"}, // rgb(50, 58, 60)     Text color used on search list | 
+    {"#6B6B6A", "#B3B3B5"}, // rgb(107, 107, 106)  Button Dimmed text | Input box side text 
     {"#303A3C", "#E5E5E5"}, // rgb(48, 58, 60)     Object Table > Column header text color | StaticBox Border Color
     {"#FEFFFF", "#242428"}, // rgb(254, 255, 255)  Side Tabbar bg | 
     {"#A6A9AA", "#2D2D29"}, // rgb(166, 169, 170)  Seperator color

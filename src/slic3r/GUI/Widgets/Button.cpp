@@ -122,6 +122,13 @@ void Button::SetTextColorNormal(wxColor const &color)
     Refresh();
 }
 
+void Button::SetUnderlineColor(StateColor const& color)
+{
+    underline_color = color;
+    state_handler.update_binds();
+    Refresh();
+}
+
 bool Button::Enable(bool enable)
 {
     bool result = wxWindow::Enable(enable);
@@ -313,6 +320,11 @@ void Button::render(wxDC& dc)
 #endif
         dc.DrawText(text, pt);
     }
+
+    if (showUnderline) {
+        dc.SetPen(wxPen(underline_color.colorForStates(states), 2));
+	    dc.DrawLine(wxPoint(0, size.y - 1), wxPoint(size.x, size.y - 1));
+    }
 }
 
 void Button::messureSize()
@@ -364,8 +376,11 @@ void Button::mouseReleased(wxMouseEvent& event)
 
 void Button::mouseCaptureLost(wxMouseCaptureLostEvent &event)
 {
-    wxMouseEvent evt;
-    mouseReleased(evt);
+    /*wxMouseEvent evt;
+    mouseReleased(evt);*/
+    wxMouseEvent evt(wxEVT_LEFT_UP);
+    event.SetEventObject(this);
+    GetEventHandler()->ProcessEvent(evt);
 }
 
 void Button::keyDownUp(wxKeyEvent &event)

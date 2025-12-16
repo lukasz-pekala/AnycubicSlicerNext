@@ -58,7 +58,7 @@ void TextInput::Create(wxWindow *     parent,
     style &= ~wxRIGHT;
     state_handler.attach({&label_color, & text_color});
     state_handler.update_binds();
-    text_ctrl = new TextCtrl(this, wxID_ANY, text, {4, 4}, wxDefaultSize, style | wxBORDER_NONE | wxTE_PROCESS_ENTER);
+    text_ctrl = new TextCtrl(this, wxID_ANY, text, {14, 4}, wxDefaultSize, style | wxBORDER_NONE | wxTE_PROCESS_ENTER);
     text_ctrl->SetFont(Label::Body_14);
     text_ctrl->SetInitialSize(text_ctrl->GetBestSize());
     text_ctrl->SetBackgroundColour(background_color.colorForStates(state_handler.states()));
@@ -77,7 +77,7 @@ void TextInput::Create(wxWindow *     parent,
     });
     text_ctrl->Bind(wxEVT_RIGHT_DOWN, [this](auto &e) {}); // disable context menu
     if (!icon.IsEmpty()) {
-        this->icon = ScalableBitmap(this, icon.ToStdString(), 16);
+        this->icon = ScalableBitmap(this, icon.ToStdString(), 12);
     }
     messureSize();
 }

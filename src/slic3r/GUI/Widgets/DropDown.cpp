@@ -65,16 +65,53 @@ void DropDown::Create(wxWindow *     parent,
     state_handler.attach({&border_color, &text_color, &selector_border_color, &selector_background_color});
     state_handler.update_binds();
     if ((style & DD_NO_CHECK_ICON) == 0)
-        check_bitmap = ScalableBitmap(this, "checked", 16);
+        check_bitmap = ScalableBitmap(this, "checked", 12);
     text_off = style & DD_NO_TEXT;
 
     // BBS set default font
-    SetFont(Label::Body_14);
+    SetFont(Label::Body_13);
 #ifdef __WXOSX__
     // PopupWindow releases mouse on idle, which may cause various problems,
     //  such as losting mouse move, and dismissing soon on first LEFT_DOWN event.
     Bind(wxEVT_IDLE, [] (wxIdleEvent & evt) {});
 #endif
+    if (m_timer == nullptr) {
+        m_timer = new wxTimer(this, wxID_ANY);
+        this->Bind(wxEVT_TIMER, &DropDown::OnTimer, this, m_timer->GetId());
+        m_timer->Start(500);
+    }
+}
+
+DropDown::~DropDown() 
+{ 
+    CloseTimerObj();
+}
+
+void DropDown::OnTimer(wxTimerEvent& event) 
+{ 
+    if (m_isShowBar) {
+
+        if (m_timerIndex > 0) {
+
+            m_isShowBar = false;
+            m_timerIndex = 0;
+            paintNow();
+
+        }
+        if (!m_isRightBar)
+            m_timerIndex++;
+    }
+
+}
+
+void DropDown::CloseTimerObj() 
+{
+    if (m_timer != nullptr) {
+        if (m_timer->IsRunning())
+            m_timer->Stop();
+        delete m_timer;
+        m_timer = nullptr;
+    }
 }
 
 void DropDown::Invalidate(bool clear)
@@ -89,7 +126,7 @@ void DropDown::Invalidate(bool clear)
 
 void DropDown::SetSelection(int n)
 {
-    assert(n < (int) texts.size());
+    //assert(n < (int) texts.size());
     if (n >= (int) texts.size())
         n = -1;
     if (selection == n) return;
@@ -202,6 +239,47 @@ static wxSize GetBmpSize(wxBitmap & bmp)
 #endif
 }
 
+void DropDown::SetShowBar() 
+{ 
+    m_isShowBar = true;
+    m_timerIndex = 0;
+    paintNow();
+}
+
+void DropDown::calculateBarEvent(const int& hover, const wxPoint& now_point, const wxSize& winSize, bool isWheelMouse)
+{ 
+    if (isWheelMouse) {
+        SetShowBar();
+    } else if (hover > -1) {
+        int  gap_index    = winSize.x - now_point.x;
+        bool now_itemShow = gap_index < 20 && gap_index > 0;
+        m_isRightBar      = now_itemShow;
+
+        if (now_itemShow) {
+            SetShowBar();
+        }
+    }
+}
+
+
+void DropDown::calculateSize(wxRect& rcContent, const int barSize, wxDC& dc)
+{
+    //rcContent.Deflate(barSize, 1);// x =0 y=170 w=536 h=34  x =15 y=171 w=506 h=32
+    rcContent.x = 4;
+    rcContent.y += 1;
+    rcContent.width -= (barSize + 8);
+    rcContent.height -= 2;
+    dc.DrawRectangle(rcContent);
+    //rcContent.Inflate(barSize, 1);
+    rcContent.x = 0;
+    rcContent.y -= 1;
+    rcContent.width += (barSize + 8);
+    rcContent.height += 2;
+
+    
+
+}
+
 /*
  * Here we do the actual rendering. I put it in a separate
  * method so that it can work no matter what type of DC
@@ -215,6 +293,10 @@ void DropDown::render(wxDC &dc)
     dc.SetBrush(wxBrush(StateColor::darkModeColorFor(GetBackgroundColour())));
     // if (GetWindowStyle() & wxBORDER_NONE)
     //    dc.SetPen(wxNullPen);
+
+    int barSize      = m_isShowBar?FromDIP(10):0;
+    int bar_Gap_Size = FromDIP(2);
+
 
     // draw background
     wxSize size = GetSize();
@@ -231,21 +313,18 @@ void DropDown::render(wxDC &dc)
             if (selection == hover_item)
                 dc.SetBrush(wxBrush(selector_background_color.colorForStates(states | StateColor::Checked)));
             dc.SetPen(wxPen(selector_border_color.colorForStates(states)));
-            rcContent.Deflate(4, 1);
-            dc.DrawRectangle(rcContent);
-            rcContent.Inflate(4, 1);
+            calculateSize(rcContent, barSize, dc);
         }
         rcContent.y = offset.y;
     }
+    
     // draw checked rectangle
     if (selection >= 0 && (selection != hover_item || (states & StateColor::Hovered) == 0)) {
         rcContent.y += rowSize.y * selection;
         if (rcContent.GetBottom() > 0 && rcContent.y < size.y) {
             dc.SetBrush(wxBrush(selector_background_color.colorForStates(states | StateColor::Checked)));
             dc.SetPen(wxPen(selector_background_color.colorForStates(states)));
-            rcContent.Deflate(4, 1);
-            dc.DrawRectangle(rcContent);
-            rcContent.Inflate(4, 1);
+            calculateSize(rcContent, barSize, dc);
         }
         rcContent.y = offset.y;
     }
@@ -258,28 +337,30 @@ void DropDown::render(wxDC &dc)
     // draw position bar
     if (rowSize.y * texts.size() > size.y) {
         int    height = rowSize.y * texts.size();
-        wxRect rect = {size.x - 6, -offset.y * size.y / height, 4,
+        wxRect rect   = {size.x - (barSize + bar_Gap_Size), -offset.y * size.y / height, barSize,
                        size.y * size.y / height};
         dc.SetPen(wxPen(border_color.defaultColor()));
         dc.SetBrush(wxBrush(*wxLIGHT_GREY));
-        dc.DrawRoundedRectangle(rect, 2);
-        rcContent.width -= 6;
+        dc.DrawRoundedRectangle(rect, FromDIP(6));
+        rcContent.width -= (barSize + bar_Gap_Size);
     }
 
     // draw check icon
     rcContent.x += 5;
     rcContent.width -= 5;
     if (check_bitmap.bmp().IsOk()) {
+        int  letfGap = FromDIP(8);
         auto szBmp = check_bitmap.GetBmpSize();
         if (selection >= 0) {
             wxPoint pt = rcContent.GetLeftTop();
             pt.y += (rcContent.height - szBmp.y) / 2;
             pt.y += rowSize.y * selection;
+            pt.x += letfGap;
             if (pt.y + szBmp.y > 0 && pt.y < size.y)
                 dc.DrawBitmap(check_bitmap.bmp(), pt);
         }
-        rcContent.x += szBmp.x + 5;
-        rcContent.width -= szBmp.x + 5;
+        rcContent.x += szBmp.x + 5 + letfGap;
+        rcContent.width -= szBmp.x + 5 + letfGap;
     }
     // draw texts & icons
     dc.SetTextForeground(text_color.colorForStates(states));
@@ -426,7 +507,7 @@ void DropDown::mouseReleased(wxMouseEvent& event)
         pressedDown = false;
         if (HasCapture())
             ReleaseMouse();
-        if (hover_item >= 0) { // not moved
+        if (hover_item >= 0 && !m_isRightBar) { // not moved
             sendDropDownEvent();
             DismissAndNotify();
         }
@@ -435,30 +516,45 @@ void DropDown::mouseReleased(wxMouseEvent& event)
 
 void DropDown::mouseCaptureLost(wxMouseCaptureLostEvent &event)
 {
-    wxMouseEvent evt;
-    mouseReleased(evt);
+    /*wxMouseEvent evt;
+    mouseReleased(evt);*/
+    wxMouseEvent evt(wxEVT_LEFT_UP);
+    event.SetEventObject(this);
+    GetEventHandler()->ProcessEvent(evt);
 }
 
 void DropDown::mouseMove(wxMouseEvent &event)
 {
-    wxPoint pt  = event.GetPosition();
+    wxPoint pt = event.GetPosition();
     if (pressedDown) {
-        wxPoint pt2 = offset + pt - dragStart;
-        wxSize  size = GetSize();
-        dragStart    = pt;
+        int     dir   = m_isRightBar ? -1 : 1;
+        wxPoint delta = pt - dragStart;
+        delta.x *= dir;
+        delta.y *= dir;
+
+        wxPoint pt2 = offset + delta;
+
+        dragStart = pt;
+
+        int contentHeight = rowSize.y * int(texts.size());
+        int minOffset     = std::min(0, GetSize().y - contentHeight);
         if (pt2.y > 0)
             pt2.y = 0;
-        else if (pt2.y + rowSize.y * int(texts.size()) < size.y)
-            pt2.y = size.y - rowSize.y * int(texts.size());
+        else if (pt2.y < minOffset)
+            pt2.y = minOffset;
+
         if (pt2.y != offset.y) {
-            offset = pt2;
-            hover_item = -1; // moved
+            offset     = pt2;
+            hover_item = -1;
         } else {
             return;
         }
     }
+
+
     if (!pressedDown || hover_item >= 0) {
         int hover = (pt.y - offset.y) / rowSize.y;
+        calculateBarEvent(hover,pt, rowSize);
         if (hover >= (int) texts.size()) hover = -1;
         if (hover == hover_item) return;
         hover_item = hover;
@@ -469,6 +565,7 @@ void DropDown::mouseMove(wxMouseEvent &event)
 
 void DropDown::mouseWheelMoved(wxMouseEvent &event)
 {
+    bool    isReturn = false;
     auto delta = event.GetWheelRotation();
     wxSize  size  = GetSize();
     wxPoint pt2   = offset + wxPoint{0, delta};
@@ -479,9 +576,12 @@ void DropDown::mouseWheelMoved(wxMouseEvent &event)
     if (pt2.y != offset.y) {
         offset = pt2;
     } else {
+        calculateBarEvent(0, wxPoint(0,0), rowSize, true);
         return;
     }
-    int hover = (event.GetPosition().y - offset.y) / rowSize.y;
+    wxPoint pt    = event.GetPosition();
+    int     hover = (pt.y - offset.y) / rowSize.y;
+    calculateBarEvent(hover,pt, rowSize,true);
     if (hover >= (int) texts.size()) hover = -1;
     if (hover != hover_item) {
         hover_item = hover;
@@ -502,8 +602,19 @@ void DropDown::sendDropDownEvent()
 
 void DropDown::OnDismiss()
 {
+    if (HasCapture())
+        ReleaseMouse();
+    this->Unbind(wxEVT_LEFT_UP, &DropDown::mouseReleased, this);
+    this->Unbind(wxEVT_LEFT_DOWN, &DropDown::mouseDown, this);
+    this->Unbind(wxEVT_MOUSE_CAPTURE_LOST, &DropDown::mouseCaptureLost, this);
+    this->Unbind(wxEVT_MOTION, &DropDown::mouseMove, this);
+    this->Unbind(wxEVT_MOUSEWHEEL, &DropDown::mouseWheelMoved, this);
+    this->Unbind(wxEVT_PAINT, &DropDown::paintEvent, this);
     dismissTime = boost::posix_time::microsec_clock::universal_time();
     hover_item  = -1;
     wxCommandEvent e(EVT_DISMISS);
     GetEventHandler()->ProcessEvent(e);
+    m_isShowBar = false;
+    m_isRightBar = false;
+    m_timerIndex = -1;
 }
