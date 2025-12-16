@@ -4,4 +4,6 @@
     GIT_TAG "main"
     GIT_SHALLOW ON
     DEPENDS ${WXWIDGETS_PKG} ${OPENSSL_PKG} dep_Boost ${CURL_PKG}
+    CMAKE_ARGS
+        -DENABLE_I18N=OFF
 )
