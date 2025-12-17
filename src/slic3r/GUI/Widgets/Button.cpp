@@ -1,6 +1,6 @@
 #include "Button.hpp"
 #include "Label.hpp"
-
+#include <plugins_sdk/event/detail/program_color.hxx>
 #include <wx/dcgraph.h>
 
 BEGIN_EVENT_TABLE(Button, StaticBox)
@@ -326,6 +326,80 @@ void Button::render(wxDC& dc)
 	    dc.DrawLine(wxPoint(0, size.y - 1), wxPoint(size.x, size.y - 1));
     }
 }
+
+
+
+void Button::SetBtnStyleColor(int state)
+{
+    StateColor bgColor;
+    StateColor bdColor;
+    StateColor fgColor;
+
+    switch (state) {
+    case 0:
+        SetBorderWidth(0);
+        bgColor.append(COLOR_Blue_05, StateColor::Disabled);
+        bgColor.append(COLOR_Blue_03, StateColor::Pressed);
+        bgColor.append(COLOR_Blue_08, StateColor::Hovered);
+        bgColor.append(COLOR_Blue_03, StateColor::Normal);
+
+        bdColor.append(COLOR_Neutral_01, StateColor::Disabled);
+        bdColor.append(COLOR_Neutral_01, StateColor::Pressed);
+        bdColor.append(COLOR_Neutral_01, StateColor::Hovered);
+        bdColor.append(COLOR_Neutral_01, StateColor::Normal);
+
+        fgColor.append(COLOR_BLUE_BUTTON_TEXT, StateColor::Disabled);
+        fgColor.append(COLOR_BLUE_BUTTON_TEXT, StateColor::Normal);
+        break;
+    case 1:
+        SetBorderWidth(0);
+        bdColor.append(COLOR_Neutral_01, StateColor::Disabled);
+        bdColor.append(COLOR_Neutral_01, StateColor::Pressed);
+        bdColor.append(COLOR_Neutral_01, StateColor::Hovered);
+        bdColor.append(COLOR_Neutral_01, StateColor::Normal);
+
+        break;
+    case 2:
+
+        bgColor.append(COLOR_Neutral_01, StateColor::Disabled);
+        bgColor.append(COLOR_Neutral_01, StateColor::Pressed);
+        bgColor.append(COLOR_Btn_Bg_Hover, StateColor::Hovered);
+        bgColor.append(COLOR_Neutral_01, StateColor::Normal);
+
+        bdColor.append(COLOR_Neutral_05, StateColor::Disabled);
+        bdColor.append(COLOR_Btn_Bd_Normal, StateColor::Normal);
+
+        fgColor.append(COLOR_Neutral_05, StateColor::Disabled);
+        fgColor.append(COLOR_Btn_Bd_Normal, StateColor::Normal);
+        break;
+    case 3:
+        SetBorderWidth(0);
+        bgColor.append(COLOR_Blue_01, StateColor::Disabled);
+        bgColor.append(COLOR_Blue_01, StateColor::Pressed);
+        bgColor.append(COLOR_Blue_01, StateColor::Hovered);
+        bgColor.append(COLOR_Blue_01, StateColor::Normal);
+
+        bdColor.append(COLOR_Neutral_01, StateColor::Disabled);
+        bdColor.append(COLOR_Neutral_01, StateColor::Pressed);
+        bdColor.append(COLOR_Neutral_01, StateColor::Hovered);
+        bdColor.append(COLOR_Neutral_01, StateColor::Normal);
+
+        fgColor.append(COLOR_Blue_05, StateColor::Disabled);
+        fgColor.append(COLOR_Blue_HOVER, StateColor::Hovered);
+        fgColor.append(COLOR_Blue_06, StateColor::Pressed);
+        fgColor.append(COLOR_Blue_06, StateColor::Normal);
+
+        break;
+    default: break;
+    }
+    bgColor.setTakeFocusedAsHovered(false);
+    fgColor.setTakeFocusedAsHovered(false);
+    bdColor.setTakeFocusedAsHovered(false);
+    SetBackgroundColor(bgColor);
+    SetBorderColor(bdColor);
+    SetTextColor(fgColor);
+}
+
 
 void Button::messureSize()
 {

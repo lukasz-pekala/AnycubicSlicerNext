@@ -1,14 +1,14 @@
 #pragma once
 
 #include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/preprocessor/stringize.hpp>
+#include <boost/preprocessor/wstringize.hpp>
 #include <boost/preprocessor/tuple.hpp>
 #include <boost/preprocessor/variadic/to_seq.hpp>
 
 #define STYLE_APPLY(r, data, elem)                                             \
   {                                                                            \
     using StyleType = std::decay_t<decltype(BOOST_PP_TUPLE_ELEM(0, data))>;    \
-    if (BOOST_PP_TUPLE_ELEM(1, data) == wxT(BOOST_PP_STRINGIZE(elem))) {       \
+    if (BOOST_PP_TUPLE_ELEM(1, data) == BOOST_PP_WSTRINGIZE(elem)) {       \
       if constexpr (std::is_enum_v<StyleType>) {                               \
         BOOST_PP_TUPLE_ELEM(0, data) = StyleType::elem;                        \
       }                                                                        \

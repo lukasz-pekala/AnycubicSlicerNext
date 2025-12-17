@@ -1,4 +1,4 @@
 ﻿list(APPEND PLUGINS_LIST xrc)
 set(PLUGINS_LIST ${PLUGINS_LIST} PARENT_SCOPE)
-anycubic_search_src(${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/detail ${CMAKE_CURRENT_LIST_DIR}/detail/handlers)
+anycubic_search_src(${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/detail ${CMAKE_CURRENT_LIST_DIR}/detail/handlers ${CMAKE_CURRENT_LIST_DIR}/detail/widgets)
 

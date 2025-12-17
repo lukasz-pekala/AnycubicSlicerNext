@@ -91,6 +91,7 @@ public:
 
     void SetShowUnderline(bool s) { showUnderline = s; showUnderline ? SetTextColorNormal(wxColour(57, 134, 255)) : SetTextColorNormal(wxColour(20, 28, 41)); }
 	bool GetShowUnderline() { return showUnderline; }
+    void SetBtnStyleColor(int state);
 
 protected:
 #ifdef __WIN32__
