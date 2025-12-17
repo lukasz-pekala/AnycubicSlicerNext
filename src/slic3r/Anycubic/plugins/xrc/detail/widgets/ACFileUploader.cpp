@@ -20,7 +20,7 @@ static constexpr uint64_t MAX_SINGLE_UPLOAD_FILE_SIZE = 100000ull;
 
 static void set_auth(Http& http, const std::string& access_token) { 
     http.header("Content-Type", "multipart/form-data"); 
-    http.header("X-File-Length", wxGetApp().m_remoteManger->GetNowUploadFileSizer());
+    http.header("X-File-Length", "");
 }
 
 ACFileUploader::ACFileUploader()

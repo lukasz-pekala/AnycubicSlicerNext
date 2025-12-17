@@ -1,7 +1,7 @@
 #include "ACCustomComboBox.hpp"
 #include "slic3r/GUI/Widgets/Label.hpp"
 
-#include "slic3r/GUI/Defines.h"
+#include <plugins_sdk/event/detail/program_color.hxx>
 
 #include <wx/dcgraph.h>
 

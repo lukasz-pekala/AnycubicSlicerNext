@@ -5,7 +5,7 @@
 
 #include <wx/dcgraph.h>
 
-#include "slic3r/GUI/Defines.h"
+#include <plugins_sdk/event/detail/program_color.hxx>
 
 BEGIN_EVENT_TABLE(ACButton, ACStaticBox)
 
