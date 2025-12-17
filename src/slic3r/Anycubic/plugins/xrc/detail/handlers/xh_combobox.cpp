@@ -6,11 +6,11 @@
 #include "wx/xml/xml.h"
 
 wxObject *ComboBoxResourceHandler::DoCreateResource() {
-  if (m_class == wxT("wxComboBox")) {
+  if (m_class == wxT("ComboBox")) {
     m_insideBox = true;
     CreateChildrenPrivately(nullptr, GetParamNode(wxT("content")));
     XRC_MAKE_INSTANCE_PARAMS(control, ComboBox, m_parentAsWindow, GetID());
-    int selection = GetLong(wxT("selection"), -1);
+    int selection = static_cast<int>(GetLong(wxT("selection"), -1));
     if (selection != -1) {
       control->SetSelection(selection);
     }
