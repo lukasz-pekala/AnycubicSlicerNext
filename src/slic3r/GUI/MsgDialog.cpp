@@ -534,7 +534,7 @@ wxBoxSizer *Newer3mfVersionDialog::get_msg_sizer()
     wxBoxSizer *     horizontal_sizer = new wxBoxSizer(wxHORIZONTAL);
     wxString    msg_str;
     if (file_version_newer) { 
-        text1 = new wxStaticText(this, wxID_ANY, _L("The 3mf file version is in Beta and it is newer than the current AnycubicSlicer version."));
+        text1 = new wxStaticText(this, wxID_ANY, _L("The 3mf file version is in Beta and it is newer than the current AnycubicSlicerNext version."));
         wxStaticText *   text2       = new wxStaticText(this, wxID_ANY, _L("If you would like to try AnycubicSlicer Beta, you may click to"));
         //TODO: Add AnycubicSlicer Beta link
         wxHyperlinkCtrl *github_link = new wxHyperlinkCtrl(this, wxID_ANY, _L("Download Beta Version"), "https://github.com/bambulab/BambuStudio/releases");
@@ -542,8 +542,8 @@ wxBoxSizer *Newer3mfVersionDialog::get_msg_sizer()
         horizontal_sizer->Add(github_link, 0, wxEXPAND | wxLEFT, 5);
         
     } else {
-        text1 = new wxStaticText(this, wxID_ANY, _L("The 3mf file version is newer than the current AnycubicSlicer version."));
-        wxStaticText *text2 = new wxStaticText(this, wxID_ANY, _L("Update your AnycubicSlicer could enable all functionality in the 3mf file."));
+        text1 = new wxStaticText(this, wxID_ANY, _L("The 3mf file version is newer than the current AnycubicSlicerNext version."));
+        wxStaticText *text2 = new wxStaticText(this, wxID_ANY, _L("Update your AnycubicSlicerNext could enable all functionality in the 3mf file."));
         horizontal_sizer->Add(text2, 0, wxEXPAND, 0);
     }
     Semver        app_version = *(Semver::parse(SLIC3R_VERSION));
@@ -580,7 +580,7 @@ wxBoxSizer *Newer3mfVersionDialog::get_btn_sizer()
                 std::string download_url = wxGetApp().app_config->get("app", "cloud_software_url");
                 wxLaunchDefaultBrowser(download_url);
             } else {
-                BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << "Bambu Studio conf has no cloud_software_url and file_version: " << m_file_version->to_string()
+                BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << "AnycubicSlicerNext conf has no cloud_software_url and file_version: " << m_file_version->to_string()
                                         << " and cloud_version: " << m_cloud_version->to_string();
             }
         });
