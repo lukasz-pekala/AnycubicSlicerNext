@@ -28,6 +28,9 @@ UtilityPlugin::UtilityPlugin(Anycubic::Plugins::PluginHost *host)
   router->REGISTER_FUNCATION(UtilityPlugin, set_login_token);
   router->REGISTER_FUNCATION(UtilityPlugin, get_user_info);
   router->REGISTER_FUNCATION(UtilityPlugin, set_user_info);
+  router->REGISTER_FUNCATION(UtilityPlugin, get_slic3r_version);
+  router->REGISTER_FUNCATION(UtilityPlugin, get_app_version);
+  router->REGISTER_FUNCATION(UtilityPlugin, get_app_version_code);
 }
 
 UtilityPlugin::~UtilityPlugin() {}
@@ -95,6 +98,10 @@ void UtilityPlugin::set_user_info(const wxString *username,
   host_->SetEncryptValue("user/username", *username);
   host_->SetEncryptValue("user/password", *password);
 }
+
+std::string UtilityPlugin::get_slic3r_version(void) const { return SLIC3R_VERSION; }
+std::string UtilityPlugin::get_app_version(void) const { return SoftFever_VERSION; }
+int32_t UtilityPlugin::get_app_version_code(void) const { return VERSION_CODE; }
 
 bool UtilityPlugin::AttachEvt(wxEvtHandler *) { return false; }
 

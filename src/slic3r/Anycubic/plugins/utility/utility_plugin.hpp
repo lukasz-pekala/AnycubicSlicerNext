@@ -36,6 +36,9 @@ private:
   void get_user_info(wxString *username, wxString *password);
   void set_user_info(const wxString *username, const wxString *password);
 
+  std::string get_slic3r_version(void) const;
+  std::string get_app_version(void) const;
+  int32_t get_app_version_code(void)const;
 private:
   // Anycubic::Plugins::Plugin
   const char *Name(void) override { return PLUGIN_NAME_STR; };

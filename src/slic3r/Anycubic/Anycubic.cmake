@@ -1,7 +1,7 @@
 ﻿
 macro(anycubic_target_link link_to_target OUT_SDK_DLLS)
     include(${CMAKE_CURRENT_LIST_DIR}/LIBRARY_CONFIG.cmake OPTIONAL)
-    string(REPLACE "." "" VERSION_CODE ${SLIC3R_VERSION})
+    string(REPLACE "." "" VERSION_CODE ${SoftFever_VERSION})
     
     target_compile_definitions(${link_to_target} PRIVATE VERSION_CODE=${VERSION_CODE} ENABLE_LOG_CHECK_ARGS=1 ENABLE_STRACE=1 FMT_HEADER_ONLY=1)
     find_package(OpenPlugins CONFIG REQUIRED COMPONENTS ACWebView plugins_manager plugins_base easy_log utility)

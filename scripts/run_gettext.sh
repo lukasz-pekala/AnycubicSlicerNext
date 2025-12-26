@@ -31,7 +31,7 @@ do
             msgmerge -N -o "$dir/AnycubicSlicer_${lang}.po" "$dir/AnycubicSlicer_${lang}.po" "$pot_file"
         fi
         mkdir -p "resources/i18n/${lang}"
-        if ! msgfmt --check-format -o "resources/i18n/${lang}/AnycubicSlicer.mo" "$dir/AnycubicSlicer_${lang}.po"; then
+        if ! msgfmt --check-format -o "resources/i18n/${lang}/AnycubicSlicerNext.mo" "$dir/AnycubicSlicer_${lang}.po"; then
             echo "Error encountered with msgfmt command for language ${lang}."
             exit 1  # Exit the script with an error status
         fi

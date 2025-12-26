@@ -17045,8 +17045,8 @@ msgid ""
 "beloved calibration solution in AnycubicSlicer."
 msgstr ""
 "校准\n"
-"您知道吗？校准您的打印机可以带来奇迹？在AnycubicSlicerNext中查看我们的备受欢迎的校准"
-"解决方案。"
+"您知道吗？校准您的打印机可以带来奇迹？在AnycubicSlicerNext中查看我们的备受欢"
+"迎的校准解决方案。"
 
 #: resources/data/hints.ini: [hint:Auxiliary fan]
 msgid ""
