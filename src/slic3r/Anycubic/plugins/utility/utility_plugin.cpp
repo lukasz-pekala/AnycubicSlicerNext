@@ -44,9 +44,16 @@ bool UtilityPlugin::is_test_env(void) const {
   return developer_mode == "1";
 }
 bool UtilityPlugin::is_china_env(void) const {
-  // TODO: 获取真实现的区域信息
-  return language() == "zh_CN";
+  // 获取真实现的区域信息
+  return region() == "china";
 }
+
+std::string UtilityPlugin::region(void) const {
+  wxString region;
+  host_->GetValue("region", region);
+  return region.utf8_string();
+}
+
 std::string UtilityPlugin::language(void) const {
   wxString developer_mode;
   host_->GetValue("language", developer_mode);
