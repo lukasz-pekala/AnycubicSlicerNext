@@ -22,7 +22,13 @@ public:
 
     void Init(wxSize panelSize);
     void ReplacePanel(wxPanel* panel);
-    
+    void OnDialogReturn(int code);
+    void EndModal(int retCode) override
+    {
+        OnDialogReturn(retCode);
+        wxDialog::EndModal(retCode);
+    }    
+
 protected:
     void msw_rescale();
     void on_dpi_changed(const wxRect& suggested_rect) override { msw_rescale(); }

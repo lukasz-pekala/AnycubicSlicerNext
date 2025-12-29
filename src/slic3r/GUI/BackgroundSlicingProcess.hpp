@@ -187,6 +187,10 @@ public:
     bool    finished() const { return m_print->finished() && !m_gcode_result->moves.empty(); }
     bool    is_internal_cancelled() { return m_internal_cancelled; }
 
+
+	wxString ac_upload_Gcode_file(std::string uploadFileName = "");
+    void     ac_copy_Gcode(std::string output_path, std::string export_path);
+
     //BBS: add Plater to friend class
     //need to call stop_internal in ui thread
     friend class GUI::Plater;

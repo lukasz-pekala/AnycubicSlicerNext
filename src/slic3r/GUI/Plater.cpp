@@ -11665,6 +11665,23 @@ void Plater::apply_cut_object_to_model(size_t obj_idx, const ModelObjectPtrs& ne
     // w.wait_for_idle();
 }
 
+wxString Plater::GetdefaultGcodeFileNmae()
+{
+    if (p->model.objects.empty()) {
+        if (!p->get_project_name().empty()) {
+            return p->background_process.ac_upload_Gcode_file(p->get_project_name().utf8_string());
+        }
+    }
+    try {
+        std::string info = this->p->background_process.output_filepath_for_project(into_path(""));
+        return p->background_process.ac_upload_Gcode_file(info);
+    } catch (const std::exception& ex) {
+        show_error(this, ex.what(), false);
+    }
+    return "";
+}
+
+
 void Plater::export_gcode(bool prefer_removable)
 {
     if (p->model.objects.empty())
@@ -11768,6 +11785,66 @@ void Plater::send_to_printer(bool isall)
 {
     p->on_action_send_to_printer(isall);
 }
+
+
+std::string Plater::autoExport_gcode3mf(const std::string& fileIndex, bool export_all)
+{
+    std::string zipDirName = "ACGcode3mf";
+    if (p->model.objects.empty())
+        return "";
+
+    if (p->process_completed_with_error == p->partplate_list.get_curr_plate_index())
+        return "";
+
+    fs::path    default_output_file;
+    AppConfig&  appconfig = *wxGetApp().app_config;
+    std::string start_dir;
+    try {
+        unsigned int state = this->p->update_restart_background_process(false, false);
+        if (state & priv::UPDATE_BACKGROUND_PROCESS_INVALID)
+            return "";
+        default_output_file = this->p->background_process.output_filepath_for_project("");
+    } catch (const Slic3r::PlaceholderParserError& ex) {
+        show_error(this, ex.what(), true);
+        return "";
+    } catch (const std::exception& ex) {
+        show_error(this, ex.what(), false);
+        return "";
+    }
+    default_output_file.replace_extension(".gcode.3mf");
+    default_output_file = fs::path(Slic3r::fold_utf8_to_ascii(default_output_file.filename().string()));
+
+    wxString temp_zipDir     = wxString::Format("%s/%s", wxStandardPaths::Get().GetTempDir(), zipDirName);
+    wxString temp_zipDir_sub = wxString::Format("%s/%s", temp_zipDir, fileIndex);
+    if (!wxDirExists(temp_zipDir)) {
+        if (!wxFileName::Mkdir(temp_zipDir, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL)) {
+            return "";
+        }
+    }
+    if (!wxDirExists(temp_zipDir_sub)) {
+        if (!wxFileName::Mkdir(temp_zipDir_sub, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL)) {
+            return "";
+        }
+    }
+
+    // start_dir = wxStandardPaths::Get().GetTempDir().utf8_str().data();
+
+    boost::filesystem::path temp_path(temp_zipDir_sub.utf8_str().data());
+    temp_path /= (boost::format("%1%") % default_output_file.string()).str();
+    std::string output_path = temp_path.string();
+
+    int plate_idx = get_partplate_list().get_curr_plate_index();
+    if (export_all)
+        plate_idx = PLATE_ALL_IDX;
+
+    int resultIndex = export_3mf(output_path, SaveStrategy::Silence | SaveStrategy::SplitModel | SaveStrategy::WithGcode | SaveStrategy::SkipModel, plate_idx);
+    if (resultIndex != -1) {
+        return output_path;
+    }
+    return "";
+}
+
+
 
 //BBS export gcode 3mf to file
 void Plater::export_gcode_3mf(bool export_all)

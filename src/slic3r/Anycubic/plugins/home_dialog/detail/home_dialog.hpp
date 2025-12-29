@@ -40,20 +40,26 @@ public:
 
 private:
 
-
-
   bool is_test_env(void) const;
   bool show_dialog(const wxString& plugin_name, const wxString& title,
                     const wxString &icon, const wxString &xrcName,
                     const wxString *xrc,wxSize *panelSize,bool isShowModal);
   void create_dialog(wxCommandEvent& evt);
 
-private:
+  void show_message_dialog(wxWindow* parent, const wxString& message, const wxString& caption = wxEmptyString, long style = wxOK);
+
+  void show_rich_message_dialog(wxWindow* parent, const wxString& message, const wxString& caption = wxEmptyString, long style = wxOK);
+  void show_error_dialog(wxWindow* parent, const wxString& msg, bool courier_font);
+
+
+  void OnCloudMqttEvent(wxCommandEvent& event);
+
+ private:
   // Anycubic::Plugins::Plugin interface
   const char *Name(void) override { return PLUGIN_NAME_STR; }
   bool Start(void) override { return true; }
-  bool AttachEvt(wxEvtHandler *evt) override { return false; }
-  bool DetachEvt(wxEvtHandler *evt) override { return false; }
+  bool        AttachEvt(wxEvtHandler* evt) override;
+  bool        DetachEvt(wxEvtHandler* evt) override;
   bool BindEvt(class wxPanel* panel, wxWindow* parent = nullptr,
                    wxString *bmp = nullptr) override {
     return false;
@@ -74,4 +80,7 @@ private:
     wxString xrc;
   };
   std::vector<Tab> tabs_;
+
+  std::vector<wxEvtHandler*> m_evt_list;
+  std::mutex                 mtx_;
 };

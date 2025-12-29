@@ -5,7 +5,8 @@
 #include "xh_panel.hpp"
 
 #ifndef WX_PRECOMP
-#include <wx/frame.h>
+    #include "wx/panel.h"
+    #include "wx/frame.h"
 #endif
 
 wxIMPLEMENT_DYNAMIC_CLASS(ACPanelResourceHandler, wxXmlResourceHandler);
@@ -14,7 +15,6 @@ ACPanelResourceHandler::ACPanelResourceHandler()
 {
     XRC_ADD_STYLE(wxTAB_TRAVERSAL);
     XRC_ADD_STYLE(wxWS_EX_VALIDATE_RECURSIVELY);
-
     AddWindowStyles();
 }
 

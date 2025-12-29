@@ -409,8 +409,10 @@ public:
     void apply_cut_object_to_model(size_t init_obj_idx, const ModelObjectPtrs& cut_objects);
     void merge(size_t obj_idx, std::vector<int> &vol_indeces);
 
+    wxString GetdefaultGcodeFileNmae();
     void send_to_printer(bool isall = false);
     void export_gcode(bool prefer_removable);
+    std::string         autoExport_gcode3mf(const std::string& fileIndex, bool export_all = false);
     void export_gcode_3mf(bool export_all = false);
     void send_gcode_finish(wxString name);
     void export_core_3mf();

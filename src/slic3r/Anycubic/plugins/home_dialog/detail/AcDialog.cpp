@@ -3,6 +3,7 @@
 #include <plugins_base/funcation.hxx>
 
 #include <slic3r/GUI/GUI_App.hpp>
+#include <plugins_sdk/event/detail/plugin_custom_event.hxx>
 
 #ifdef __WXMSW__
 #define DEFAULT_STYLE (wxCAPTION | wxCLOSE_BOX | wxNO_BORDER)
@@ -30,6 +31,7 @@ ACShowDialog::ACShowDialog(wxWindow* parent, bool isTestEnv, wxSize panelSize)
     :Slic3r::GUI::DPIDialog(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, dialog_style(isTestEnv)), m_size(panelSize)
 {
     Init(panelSize);
+    
 }
 
 
@@ -47,6 +49,15 @@ void ACShowDialog::Init(wxSize panelSize)
     SetSize(panelSize);
 #endif
     Slic3r::GUI::wxGetApp().UpdateDlgDarkUI(this);
+
+
+    this->Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent& evt) {
+        int  returnCode = GetReturnCode();
+        wxCommandEvent close_evt(EVT_DIALOG_CLOSE_EVENT);
+        close_evt.SetInt(returnCode);
+        this->ProcessEvent(close_evt);
+        Destroy();
+    });
 
 }
 
@@ -76,4 +87,12 @@ void ACShowDialog::msw_rescale()
     this->Layout();
 
     Refresh();
+}
+
+void ACShowDialog::OnDialogReturn(int code) 
+{ 
+    wxCommandEvent closeEvt(wxEVT_CLOSE_WINDOW);
+    this->SetReturnCode(code);
+    this->ProcessEvent(closeEvt);
+
 }
