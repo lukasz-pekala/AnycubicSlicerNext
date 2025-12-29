@@ -25,7 +25,6 @@ private:
   wxString    get_preset_filament(std::string filament_type);
   bool check_is_all_plates_selected();
   void        send_upload_file_cloud_event(wxString constr);
-  void        http_get(wxString url);
 
 
   std::string pcid(void) const;

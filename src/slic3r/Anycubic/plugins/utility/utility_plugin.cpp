@@ -46,7 +46,6 @@ UtilityPlugin::UtilityPlugin(Anycubic::Plugins::PluginHost *host)
   router->REGISTER_FUNCATION(UtilityPlugin, get_preset_filament);
   router->REGISTER_FUNCATION(UtilityPlugin, check_is_all_plates_selected);
   router->REGISTER_FUNCATION(UtilityPlugin, send_upload_file_cloud_event);
-  router->REGISTER_FUNCATION(UtilityPlugin, http_get);
 }
 
 UtilityPlugin::~UtilityPlugin() {}
@@ -59,53 +58,6 @@ wxString GetFileNameFromUrl(const wxString& url)
         return url.Mid(pos + 1);
     }
     return wxEmptyString;
-}
-
-void UtilityPlugin::http_get(wxString url) 
-{
-
-    Slic3r::Http http = Slic3r::Http::get(url.ToStdString());
-    http.timeout_max(60 * 5);
-    BOOST_LOG_TRIVIAL(trace) << __FUNCTION__ << ", DownParamEvent = " + url;
-
-    http.on_progress([this](Slic3r::Http::Progress p, bool& cancel_http) {
-
-        })
-        .on_complete([this, url](std::string body, unsigned size) {
-            BOOST_LOG_TRIVIAL(warning)<<__FUNCTION__ << "http.on_complete";
-
-            try {
-                auto savePath = wxStandardPaths::Get().GetTempDir();
-
-                std::string fileName = Slic3r::GUI::format(GetFileNameFromUrl(url));
-                if (fileName.empty())
-                    fileName = "paramInfo.zip";
-
-                std::string m_downloadFileName = Slic3r::GUI::format(wxString::Format("%s%s%s", savePath, wxString(wxFileName::GetPathSeparator()),
-                                                                          Slic3r::GUI::format_wxstr(fileName.data())));
-
-                fs::fstream file(m_downloadFileName, std::ios::out | std::ios::binary | std::ios::trunc);
-                if (!file.is_open()) {
-                    throw std::runtime_error("Failed to open file for writing: " + m_downloadFileName);
-                }
-                file.write(body.c_str(), body.size());
-                if (!file) {
-                    throw std::runtime_error("Failed to write to file: " + m_downloadFileName);
-                }
-                BOOST_LOG_TRIVIAL(warning)<<__FUNCTION__ << " Downloaded file: " << m_downloadFileName;
-
-                Anycubic::Plugins::SDK::wxPluginEvent evt_1(EVT_POST_SHOW_NEW_VERSIONPAR_EVENT);
-                evt_1.SetString(Slic3r::GUI::format_wxstr(m_downloadFileName));
-                OnCloudMqttEvent(evt_1);
-            } catch (const std::exception& e) {
-                BOOST_LOG_TRIVIAL(error)<<__FUNCTION__ << ", Exception: " << e.what();
-            }
-        })
-        .on_error([&](std::string body, std::string error, unsigned status) {
-            BOOST_LOG_TRIVIAL(error)<<__FUNCTION__ << boost::format(", status=%1%, error=%2%, body=%3%") % status % error % body;
-        })
-        .perform();
-
 }
 
 void UtilityPlugin::send_upload_file_cloud_event(wxString constr) 
@@ -267,7 +219,8 @@ void UtilityPlugin::OnCloudMqttEvent(Anycubic::Plugins::SDK::wxPluginEvent& even
 bool UtilityPlugin::AttachEvt(wxEvtHandler* evt)
 {
     std::lock_guard<std::mutex> lock(mtx_);
-    assert(wxIsMainThread() && std::ranges::none_of(m_evt_list, [evt](auto& e) { return e == evt; }));
+    if (std::find(m_evt_list.begin(), m_evt_list.end(), evt) != m_evt_list.end())
+        return false;
     m_evt_list.push_back(evt);
     return true;
 }
@@ -276,7 +229,7 @@ bool UtilityPlugin::DetachEvt(wxEvtHandler* evt)
 {
     std::lock_guard<std::mutex> lock(mtx_);
 
-    auto it = std::remove(m_evt_list.begin(), m_evt_list.end(), evt);
+    auto it = std::find(m_evt_list.begin(), m_evt_list.end(), evt);
     if (it == m_evt_list.end())
         return false;
     m_evt_list.erase(it, m_evt_list.end());
