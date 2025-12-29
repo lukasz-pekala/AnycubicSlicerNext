@@ -12,6 +12,7 @@ UtilityPlugin::UtilityPlugin(Anycubic::Plugins::PluginHost *host):host_(host) {
   router->REGISTER_FUNCATION(UtilityPlugin, pcid);
   router->REGISTER_FUNCATION(UtilityPlugin, is_test_env);
   router->REGISTER_FUNCATION(UtilityPlugin, is_china_env);
+  router->REGISTER_FUNCATION(UtilityPlugin, region);
   router->REGISTER_FUNCATION(UtilityPlugin, language);
   router->REGISTER_FUNCATION(UtilityPlugin, get_temp_path);
   router->REGISTER_FUNCATION(UtilityPlugin, get_download_path);
@@ -45,7 +46,7 @@ bool UtilityPlugin::is_test_env(void) const {
 }
 bool UtilityPlugin::is_china_env(void) const {
   // 获取真实现的区域信息
-  return region() == "china";
+  return region() != "Global"; 
 }
 
 std::string UtilityPlugin::region(void) const {
@@ -57,7 +58,7 @@ std::string UtilityPlugin::region(void) const {
 std::string UtilityPlugin::language(void) const {
   wxString developer_mode;
   host_->GetValue("language", developer_mode);
-  return developer_mode.utf8_string();
+  return developer_mode.utf8_string(); 
 }
 std::string UtilityPlugin::get_temp_path(void) const {
   wxStandardPaths &standardPaths = wxStandardPaths::Get();

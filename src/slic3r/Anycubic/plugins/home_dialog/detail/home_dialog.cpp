@@ -51,8 +51,11 @@ void HomeDialog::show_message_dialog(wxWindow* parent, const wxString& message, 
 
 bool HomeDialog::is_test_env(void) const
 {
-    
+#ifndef NDEBUG
+    return true;
+#else
     return Anycubic::Plugins::dispatch_call<bool>(host_, "utility", "is_test_env");
+#endif
 }
 
 wxWindow* HomeDialog::GetTopParentWindow()

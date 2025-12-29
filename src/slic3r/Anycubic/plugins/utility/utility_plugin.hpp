@@ -41,7 +41,7 @@ private:
   std::string get_app_version(void) const;
   int32_t get_app_version_code(void)const;
 private:
-  private:
+private:
   // Anycubic::Plugins::Plugin
   const char *Name(void) override { return PLUGIN_NAME_STR; };
   bool Start(void) override { return true; };
