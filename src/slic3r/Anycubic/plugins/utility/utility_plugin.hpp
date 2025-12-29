@@ -2,7 +2,6 @@
 #include "plugins_manager/plugins_manager.hxx"
 
 #include <boost/preprocessor/cat.hpp>
-#include <plugins_sdk/event/plugin_event.hxx>
 #include "plugins_base/plugins.hxx"
 #include "plugins_base/plugins_base.hxx"
 
@@ -18,14 +17,6 @@ public:
   virtual ~UtilityPlugin();
 
 private:
-  wxString get_default_gcode_file_name();
-  std::string get_curr_plate_printer_model_name();
-  std::string autoExport_gcode3mf(const std::string& fileIndex, bool export_all = false);
-  int         get_curr_plate_Index();
-  wxString    get_preset_filament(std::string filament_type);
-  bool check_is_all_plates_selected();
-  void        send_upload_file_cloud_event(wxString constr);
-
 
   std::string pcid(void) const;
   bool is_test_env(void) const;
@@ -50,14 +41,12 @@ private:
   std::string get_app_version(void) const;
   int32_t get_app_version_code(void)const;
 private:
-  void OnCloudMqttEvent(Anycubic::Plugins::SDK::wxPluginEvent& event);
-
   private:
   // Anycubic::Plugins::Plugin
   const char *Name(void) override { return PLUGIN_NAME_STR; };
   bool Start(void) override { return true; };
-  bool AttachEvt(class wxEvtHandler *) override;
-  bool DetachEvt(class wxEvtHandler *) override;
+  bool        AttachEvt(class wxEvtHandler*) override { return false; }
+  bool        DetachEvt(class wxEvtHandler*) override { return false; }
   bool BindEvt(class wxPanel* panel, class wxWindow* parent = nullptr,
                    class wxString *bmp = nullptr) override;
   bool CreateWebview(class wxWebView *view, class wxWindow *parent = nullptr,

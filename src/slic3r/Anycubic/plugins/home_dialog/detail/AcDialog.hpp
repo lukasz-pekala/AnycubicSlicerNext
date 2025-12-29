@@ -5,12 +5,16 @@
 
 #include <wx/wx.h>
 
+wxDECLARE_EVENT(EVT_DIALOG_CLOSE_CHILD_EVENT, wxCommandEvent);
+
 class ACShowDialog: public Slic3r::GUI::DPIDialog
 {
 private:
     wxSize m_size;
     wxBoxSizer* m_mainSizer{nullptr};
     wxPanel* m_panel{nullptr};
+    bool        m_isEndModel{false};
+    bool        m_deleteIndex{false};
 
 public:
     explicit ACShowDialog(wxWindow* parent, bool isTestEnv, wxSize panelSize);
@@ -25,6 +29,7 @@ public:
     void OnDialogReturn(int code);
     void EndModal(int retCode) override
     {
+        m_isEndModel = true;
         OnDialogReturn(retCode);
         wxDialog::EndModal(retCode);
     }    
