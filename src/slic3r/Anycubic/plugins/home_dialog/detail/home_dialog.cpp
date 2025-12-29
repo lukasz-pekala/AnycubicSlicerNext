@@ -131,7 +131,9 @@ bool HomeDialog::show_dialog(const wxString &plugin_name,const wxString &title,c
 bool HomeDialog::AttachEvt(wxEvtHandler* evt)
 {
     std::lock_guard<std::mutex> lock(mtx_);
-    assert(std::ranges::none_of(m_evt_list, [evt](auto& e) { return e == evt; }));
+
+    if (std::find(m_evt_list.begin(), m_evt_list.end(), evt) != m_evt_list.end())
+        return false; 
     m_evt_list.push_back(evt);
     return true;
 }
@@ -140,7 +142,7 @@ bool HomeDialog::DetachEvt(wxEvtHandler* evt)
 {
     std::lock_guard<std::mutex> lock(mtx_);
 
-    auto it = std::remove(m_evt_list.begin(), m_evt_list.end(), evt);
+    auto it = std::find(m_evt_list.begin(), m_evt_list.end(), evt);
     if (it == m_evt_list.end())
         return false;
     m_evt_list.erase(it, m_evt_list.end());
