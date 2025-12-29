@@ -255,7 +255,6 @@ std::string UtilityPlugin::get_slic3r_version(void) const { return SLIC3R_VERSIO
 std::string UtilityPlugin::get_app_version(void) const { return SoftFever_VERSION; }
 int32_t UtilityPlugin::get_app_version_code(void) const { return VERSION_CODE; }
 
-bool UtilityPlugin::AttachEvt(wxEvtHandler *) { return false; }
 void UtilityPlugin::OnCloudMqttEvent(Anycubic::Plugins::SDK::wxPluginEvent& event)
 {
     wxPropagationDisabler       disablePropagation(event);
