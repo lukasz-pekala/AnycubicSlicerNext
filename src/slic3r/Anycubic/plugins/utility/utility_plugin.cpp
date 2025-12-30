@@ -103,6 +103,7 @@ bool UtilityPlugin::get_login_token(wxString *token) {
 }
 void UtilityPlugin::set_login_token(const wxString *token) {
   host_->SetEncryptValue("user/login_token", *token);
+  set_auto_login(true);
 }
 void UtilityPlugin::get_user_info(wxString *username, wxString *password) {
   host_->GetEncryptValue("user/username", *username);
@@ -112,6 +113,7 @@ void UtilityPlugin::set_user_info(const wxString *username,
                                   const wxString *password) {
   host_->SetEncryptValue("user/username", *username);
   host_->SetEncryptValue("user/password", *password);
+  set_auto_login(true);
 }
 
 std::string UtilityPlugin::get_slic3r_version(void) const { return SLIC3R_VERSION; }

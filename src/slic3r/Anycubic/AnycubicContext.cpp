@@ -41,7 +41,7 @@ namespace Slic3r {
 namespace GUI {
 // 定义白名单
 const std::set<wxString> SECTION_NAME_WHITELIST = {
-    "anycubic_remote_printing", "anycubic_presets", "anycubic_cloud", "app"
+    "anycubic_remote_printing", "anycubic_presets", "anycubic_cloud", "app","user"
     // 可以根据需要添加更多允许的section_name
 };
 
@@ -143,7 +143,7 @@ private:
       return true;
     }
 
-    wxStringTokenizer tokenizer(key, ",. ");
+    wxStringTokenizer tokenizer(key, ",./ ");
     auto tokens = tokenizer.CountTokens();
     switch (tokens) {
     case 2: {
@@ -176,7 +176,7 @@ private:
   bool SetValue(const class wxString &key, const class wxString &value,
                 bool persistent = true) override {
     if (persistent) {
-      wxStringTokenizer tokenizer(key, ",. ");
+      wxStringTokenizer tokenizer(key, ",./ ");
       switch (tokenizer.CountTokens()) {
       case 2: {
         auto section_name = tokenizer.GetNextToken();
