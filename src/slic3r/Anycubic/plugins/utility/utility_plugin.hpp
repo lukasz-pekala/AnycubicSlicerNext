@@ -21,6 +21,7 @@ private:
   std::string pcid(void) const;
   bool is_test_env(void) const;
   bool is_china_env(void) const;
+  bool dark_mode(void) const;
   std::string region(void) const;
   std::string language(void) const;
   std::string get_temp_path(void) const;

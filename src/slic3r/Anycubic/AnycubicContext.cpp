@@ -184,12 +184,21 @@ private:
           return false; // 不在白名单中，丢弃处理
         }
         auto config_name = tokenizer.GetNextToken();
-        app_config_->set_str(section_name.utf8_string(),
+        if(value.IsEmpty()){
+          app_config_->erase(section_name.utf8_string(),
+                             config_name.utf8_string());
+        }else{
+          app_config_->set_str(section_name.utf8_string(),
                              config_name.utf8_string(), value.utf8_string());
+        }
         break;
       }
       case 1: {
-        app_config_->set(key.utf8_string(), value.utf8_string());
+        if(value.IsEmpty()){
+          app_config_->erase("app", key.utf8_string());
+        }else{
+          app_config_->set(key.utf8_string(), value.utf8_string());
+        }
         break;
       }
       default:

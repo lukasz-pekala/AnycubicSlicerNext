@@ -1,7 +1,10 @@
 #include "utility_plugin.hpp"
+
 #include "slic3r/Anycubic/detail/anonymous.hpp"
 
+#include <slic3r/GUI/GUI_App.hpp>
 #include <libslic3r/AppConfig.hpp>
+
 #include <plugins_base/funcation.hxx>
 #include <string>
 
@@ -12,6 +15,7 @@ UtilityPlugin::UtilityPlugin(Anycubic::Plugins::PluginHost *host):host_(host) {
   router->REGISTER_FUNCATION(UtilityPlugin, pcid);
   router->REGISTER_FUNCATION(UtilityPlugin, is_test_env);
   router->REGISTER_FUNCATION(UtilityPlugin, is_china_env);
+  router->REGISTER_FUNCATION(UtilityPlugin, dark_mode);
   router->REGISTER_FUNCATION(UtilityPlugin, region);
   router->REGISTER_FUNCATION(UtilityPlugin, language);
   router->REGISTER_FUNCATION(UtilityPlugin, get_temp_path);
@@ -47,6 +51,9 @@ bool UtilityPlugin::is_test_env(void) const {
 bool UtilityPlugin::is_china_env(void) const {
   // 获取真实现的区域信息
   return region() != "Global"; 
+}
+bool UtilityPlugin::dark_mode(void) const {
+  return Slic3r::GUI::wxGetApp().dark_mode();
 }
 
 std::string UtilityPlugin::region(void) const {
