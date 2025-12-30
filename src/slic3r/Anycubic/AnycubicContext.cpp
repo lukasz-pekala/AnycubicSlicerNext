@@ -6,6 +6,7 @@
 #include <utility/encrypt/aes.hxx>
 #include <utility/utils/filesystem.hxx>
 #include <utility/utils/range.hxx>
+#include <utility/codec/base64.hxx>
 
 #include <plugins_base/funcation.hxx>
 
@@ -226,17 +227,16 @@ private:
   }
 
   wxString Decrypt(const wxString &value) {
-    wxMemoryBuffer decoded_data = ::wxBase64Decode(value);
-    auto ret = ::aesDecrypt(GetPCID(app_config_).utf8_string(),
-                            std::string_view((char *)decoded_data.GetData(),
-                                             decoded_data.GetDataLen()));
+    auto decoded_data = ::base64Decode(value.utf8_string());
+    auto ret = ::aesDecrypt(std::string_view((char *)decoded_data.data(),
+                                             decoded_data.size()),GetPCID(app_config_).utf8_string());
     return wxString::FromUTF8(ret);
   }
 
   wxString Encrypt(const wxString &value) {
     auto ret =
-        ::aesEncrypt(GetPCID(app_config_).utf8_string(), value.utf8_string());
-    return ::wxBase64Encode(static_cast<const void *>(ret.data()), ret.size());
+        ::aesEncrypt( value.utf8_string(),GetPCID(app_config_).utf8_string());
+    return wxString::FromUTF8(::base64Encode(ret));
   }
 
 public:
