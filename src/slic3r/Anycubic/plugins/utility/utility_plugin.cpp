@@ -90,10 +90,12 @@ void UtilityPlugin::set_access_token(const std::string &token) {
 }
 bool UtilityPlugin::is_auto_login(void) const {
   wxString auto_login;
-  host_->GetValue("user/auto_login", auto_login);
-  auto_login.Lower();
-  return auto_login == "true" || auto_login == "1" || auto_login == "on" ||
-         auto_login == "yes" || auto_login == "y" || auto_login == "t";
+  if(host_->GetValue("user/auto_login", auto_login)){
+    auto_login.Lower();
+    return auto_login == "true" || auto_login == "1" || auto_login == "on" ||
+          auto_login == "yes" || auto_login == "y" || auto_login == "t";
+  }
+  return false;
 }
 void UtilityPlugin::set_auto_login(bool auto_login) {
   host_->SetValue("user/auto_login", auto_login ? "true" : "false");

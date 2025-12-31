@@ -39,9 +39,11 @@ static int setenv(const char *name, const char *value, int overwrite) {
 
 namespace Slic3r {
 namespace GUI {
+
+#if 0
 // 定义白名单
 const std::set<wxString> SECTION_NAME_WHITELIST = {
-    "anycubic_remote_printing", "anycubic_presets", "anycubic_cloud", "app","user"
+    "anycubic_remote_printing", "anycubic_presets", "anycubic_cloud", "app", "user", "web"
     // 可以根据需要添加更多允许的section_name
 };
 
@@ -50,6 +52,12 @@ bool is_section_name_allowed(const wxString &section_name) {
   return SECTION_NAME_WHITELIST.find(section_name) !=
          SECTION_NAME_WHITELIST.end();
 }
+#else
+// 好像存在的意义很小，先关闭以后再说
+bool is_section_name_allowed(const wxString &section_name) {
+  return true;
+}
+#endif  
 
 struct EmptyPM : public PluginsManager {
   bool AddWidget(const wxString &position, wxWindow *widget) override {
@@ -155,6 +163,9 @@ private:
       auto config_name = tokenizer.GetNextToken();
       auto val = app_config_->get(section_name.utf8_string(),
                                   config_name.utf8_string());
+      if(val.empty()){
+        return false;
+      }
       value = wxString::FromUTF8(val);
       break;
     }
@@ -222,21 +233,37 @@ private:
 
   bool SetEncryptValue(const class wxString &key, const class wxString &value,
                        bool persistent = true) override {
-    auto tmp = Encrypt(value);
-    return SetValue(key, tmp, persistent);
+    if(value.IsEmpty()){
+      return SetValue(key, value, persistent);
+    }else{
+      auto tmp = Encrypt(value);
+      return SetValue(key, tmp, persistent);
+    }
+  }
+  wxString encode_impl(const wxString& value) { 
+    std::string tmp = value.utf8_string();
+    for(auto&c:tmp){
+      c+=5;
+    }
+    tmp =  ::base64Encode(tmp);
+    std::wstring wstr = boost::locale::conv::utf_to_utf<wchar_t>(tmp.c_str(), tmp.c_str() + tmp.size());
+    return wstr;
+  }
+  wxString decode_impl(const wxString &value) {
+    auto tmp = ::base64Decode(value.utf8_string());
+    for(auto& c:tmp){
+      c -= 5;
+    }
+    // NOTE: 转std::string为std::wstring
+    std::wstring wstr = boost::locale::conv::utf_to_utf<wchar_t>(tmp.c_str(), tmp.c_str() + tmp.size());
+    return wstr;
+  }
+  inline wxString Decrypt(const wxString &value) {
+    return decode_impl(decode_impl(value));
   }
 
-  wxString Decrypt(const wxString &value) {
-    auto decoded_data = ::base64Decode(value.utf8_string());
-    auto ret = ::aesDecrypt(std::string_view((char *)decoded_data.data(),
-                                             decoded_data.size()),GetPCID(app_config_).utf8_string());
-    return wxString::FromUTF8(ret);
-  }
-
-  wxString Encrypt(const wxString &value) {
-    auto ret =
-        ::aesEncrypt( value.utf8_string(),GetPCID(app_config_).utf8_string());
-    return wxString::FromUTF8(::base64Encode(ret));
+  inline wxString Encrypt(const wxString &value) {
+    return encode_impl(encode_impl(value));
   }
 
 public:
