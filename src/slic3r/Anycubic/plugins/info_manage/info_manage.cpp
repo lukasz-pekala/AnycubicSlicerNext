@@ -11,4 +11,4 @@ PLUGIN_EXPORT_GETINFO(, PLGUINS_NAME) {
   info.version = 1;
   return &info;
 }
-PLUGIN_EXPORT_SETUP(, PLGUINS_NAME) { return new UtilityPlugin(host); }
+PLUGIN_EXPORT_SETUP(, PLGUINS_NAME) { return new InfoManage(host); }

@@ -20,6 +20,7 @@ private:
   // Anycubic::Plugins::Plugin
   const char *Name(void) override { return PLUGIN_NAME_STR; };
   bool Start(void) override { return true; };
+  void Stop(void) override {}
   bool AttachEvt(class wxEvtHandler *) override { return false; }
   bool DetachEvt(class wxEvtHandler *) override { return false; }
   bool BindEvt(class wxPanel *panel, class wxWindow *parent = nullptr,
