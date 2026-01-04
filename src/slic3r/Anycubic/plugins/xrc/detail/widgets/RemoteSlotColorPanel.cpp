@@ -28,7 +28,6 @@ RemoteSlotColorPanel::RemoteSlotColorPanel(wxWindow* parent, wxVector<AmsSlotObj
 
 RemoteSlotColorPanel::~RemoteSlotColorPanel() 
 {
-    m_colorPanelProvider->UnreginsterCloudEvent(this);
 }
 
 void RemoteSlotColorPanel::BindEvent(bool showSingle)
@@ -67,7 +66,6 @@ void RemoteSlotColorPanel::init()
 
     wxWindow::SetMinSize(m_winSize);
     Refresh();
-    m_colorPanelProvider->ReginsterCloudEvent(this);
 }
 
 void RemoteSlotColorPanel::paintEvent(wxPaintEvent& evt)

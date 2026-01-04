@@ -9,8 +9,7 @@
 #include <wx/base64.h>
 #include "slic3r/GUI/GUI_App.hpp"
 #include <plugins_sdk/event/detail/plugin_custom_event.hxx>
-#include <plugins_sdk/event/detail/custom_struct_manger.hxx>
-#include <plugins_sdk/event/detail/idata_provider_manger.hxx>
+#include "custom_struct_manger.hxx"
 
 BEGIN_EVENT_TABLE(FarmPrinterImageObj, StaticBox)
 
@@ -20,7 +19,6 @@ END_EVENT_TABLE()
 
 FarmPrinterImageObj::~FarmPrinterImageObj() 
 { 
-    m_printerImageProvider->UnreginsterCloudEvent(this);
 
 }
 
@@ -47,7 +45,6 @@ void FarmPrinterImageObj::init()
         imageChangeEvent(baseImg64);
         Refresh();
     });
-    m_printerImageProvider->ReginsterCloudEvent(this);
 }
 
 

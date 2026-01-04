@@ -6,8 +6,7 @@
 #include <wx/wx.h>
 #include "RemotePrintingAmsDialog.hpp"
 #include <plugins_sdk/event/detail/plugin_custom_event.hxx>
-#include <plugins_sdk/event/detail/custom_struct_manger.hxx>
-#include <plugins_sdk/event/detail/idata_provider_manger.hxx>
+#include "custom_struct_manger.hxx"
 
 
 class AmsButton : public wxNavigationEnabled<StaticBox>
@@ -74,13 +73,6 @@ private:
     ColorAMSBoxDialog* m_amsPop{nullptr};
     std::string                     m_printerType{""};
 
-private:
-    IDataProvider_AmsButton* m_amsButtonProvider;
-
-public:
-    void IDataProvider_RegisterAmsButton(IDataProvider_AmsButton* view) { m_amsButtonProvider = view; }
-
-    void IDataProvider_UnregisterAmsButton() { m_amsButtonProvider = nullptr; }
 
 };
 

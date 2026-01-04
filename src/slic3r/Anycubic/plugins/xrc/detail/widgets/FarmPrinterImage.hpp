@@ -5,7 +5,6 @@
 #include "slic3r/GUI/Widgets/StaticBox.hpp"
 #include <wx/event.h>
 #include <wx/wx.h>
-#include <plugins_sdk/event/detail/idata_provider_manger.hxx>
 
 class FarmPrinterImageObj : public wxNavigationEnabled<StaticBox>
 {
@@ -33,13 +32,6 @@ private:
     wxBitmap       m_modeImage;
     wxSize         m_modeImageSize;
 
-private:
-    IDataProvider_printerImage* m_printerImageProvider;
-
-public:
-    void IDataProvider_RegisterprinterImage(IDataProvider_printerImage* view) { m_printerImageProvider = view; }
-
-    void IDataProvider_UnregisterprinterImage() { m_printerImageProvider = nullptr; }
 };
 
 

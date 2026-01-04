@@ -99,7 +99,7 @@ void AmsButton::OnChangeEvent(wxPluginEvent& event)
     SetSlotShowNumber(showSlotNum);
 
 
-    wxVector<AmsBoxObj>      infoList = m_amsButtonProvider->GetPrinterKeyAmsInfoMap(m_nowDeviceID);
+    wxVector<AmsBoxObj>      infoList;
     wxVector<AmsSlotObjInfo> slotInfoList;
     
     for (int i = 0; i < infoList.size(); i++) {
@@ -126,7 +126,6 @@ void AmsButton::OnChangeEvent(wxPluginEvent& event)
     wxPostEvent(m_parent, evt_ams);
 
 
-    m_amsButtonProvider->SendFilamentSlotChangeEvent();
 
     OpAmsChange* amsChangeObj     = new OpAmsChange;
     amsChangeObj->deviceID    = wxString(m_nowDeviceID);
@@ -136,7 +135,6 @@ void AmsButton::OnChangeEvent(wxPluginEvent& event)
 
     wxPluginEvent* evt = new wxPluginEvent(EVT_REMOTE_OP_AMS_CHANGE_INFO_MANGER);
     evt->SetSharedData(amsChangeObj, nullptr, [](void*, void* a) { delete (OpAmsChange*)a; });
-    m_amsButtonProvider->BroadcastCloudEvent(evt);
 
 }
 
@@ -163,7 +161,7 @@ void AmsButton::init()
         SetSlotShowColor(m_slotColor);
     }
 
-    wxVector<AmsBoxObj>      infoList = m_amsButtonProvider->GetPrinterKeyAmsInfoMap(m_nowDeviceID);
+    wxVector<AmsBoxObj>      infoList;
     wxVector<AmsSlotObjInfo> slotInfoList;
 
     for (int i = 0; i < infoList.size(); i++) {
@@ -412,8 +410,8 @@ void AmsButton::mouseDown(wxMouseEvent& event)
 {
     wxPoint now_mousePos =  event.GetPosition();
     if (m_downRect.Contains(now_mousePos) /*&& !m_isEmpty*/ && !m_nowDeviceID.empty()) {
-        wxVector<PrinterObj>    printerInfo   = m_amsButtonProvider->GetPrinterList(m_printerType);
-        wxVector<AmsBoxObj>     amsBoxLists   = m_amsButtonProvider->GetPrinterKeyAmsInfoMap(m_nowDeviceID);
+        wxVector<PrinterObj>   printerInfo;
+        wxVector<AmsBoxObj>     amsBoxLists  ;
         bool                                 isInclude     = false;
         for (PrinterObj obj : printerInfo) {
             if (obj.deviceID == m_nowDeviceID && obj.machine_type >= 3 && !amsBoxLists.empty()) {

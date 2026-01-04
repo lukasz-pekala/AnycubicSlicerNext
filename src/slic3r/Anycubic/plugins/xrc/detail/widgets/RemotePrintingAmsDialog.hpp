@@ -12,10 +12,8 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <plugins_sdk/event/detail/plugin_custom_event.hxx>
-#include <plugins_sdk/event/detail/custom_struct_manger.hxx>
-#include <plugins_sdk/event/detail/idata_provider_manger.hxx>
 
-
+#include "custom_struct_manger.hxx"
 
 
 
@@ -97,13 +95,6 @@ public:
     virtual void OnDismiss() wxOVERRIDE;
     bool         HasDismissLongTime();
 
-private:
-    IDataProvider_AsmDialog* m_amsDialogProvider;
-
-public:
-    void IDataProvider_RegisterAmsDialog(IDataProvider_AsmDialog* view) { m_amsDialogProvider = view; }
-
-    void IDataProvider_UnregisterDialog() { m_amsDialogProvider = nullptr; }
 
 
 

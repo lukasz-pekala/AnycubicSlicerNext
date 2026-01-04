@@ -16,7 +16,7 @@ EVT_PAINT(PrinterImageObj::paintEvent)
 
 END_EVENT_TABLE()
 
-PrinterImageObj::~PrinterImageObj() { m_printerImageProvider->UnreginsterCloudEvent(this); }
+PrinterImageObj::~PrinterImageObj() {  }
 
 PrinterImageObj::PrinterImageObj(wxWindow* parent,
                                  wxString  imgBase64,
@@ -68,7 +68,6 @@ void PrinterImageObj::init()
         imageChangeEvent(baseImg64);
         Refresh();
     });
-    m_printerImageProvider->ReginsterCloudEvent(this);
 }
 
 void PrinterImageObj::imageChangeEvent(const wxString& imgBase64) 

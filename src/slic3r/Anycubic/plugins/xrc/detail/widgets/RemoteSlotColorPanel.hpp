@@ -7,9 +7,7 @@
 #include <wx/event.h>
 #include <wx/wx.h>
 #include <plugins_sdk/event/detail/plugin_custom_event.hxx>
-#include <plugins_sdk/event/detail/custom_struct_manger.hxx>
-#include <plugins_sdk/event/detail/idata_provider_manger.hxx>
-
+#include "custom_struct_manger.hxx"
 
 
 class RemoteSlotColorPanel : public wxNavigationEnabled<StaticBox>
@@ -39,13 +37,6 @@ private:
     wxVector<AmsSlotObjInfo> m_sltInfo;
 
 
-private:
-    IDataProvider_colorPanel* m_colorPanelProvider;
-
-public:
-    void IDataProvider_RegisterColorPanel(IDataProvider_colorPanel* view) { m_colorPanelProvider = view; }
-
-    void IDataProvider_UnregisterColorPanel() { m_colorPanelProvider = nullptr; }
 
 };
 

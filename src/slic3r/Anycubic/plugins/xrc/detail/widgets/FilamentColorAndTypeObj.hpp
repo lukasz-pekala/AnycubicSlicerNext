@@ -7,10 +7,8 @@
 #include "slic3r/GUI/GUI_Utils.hpp"
 #include <wx/dcbuffer.h>
 #include <plugins_sdk/event/detail/plugin_custom_event.hxx>
-#include <plugins_sdk/event/detail/custom_struct_manger.hxx>
-#include <plugins_sdk/event/detail/idata_provider_manger.hxx>
 
-
+#include "custom_struct_manger.hxx"
 
 
 struct FilamentTypeAndColorInfoObj

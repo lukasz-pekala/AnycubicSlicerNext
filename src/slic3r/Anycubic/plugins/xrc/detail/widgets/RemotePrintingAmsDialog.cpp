@@ -72,7 +72,7 @@ static wxColour Imvec4ToWxColour(ImVec4 color)
 
 void ColorAMSBoxDialog::Init()
 {
-    wxVector<AmsBoxObj>      infoList = m_amsDialogProvider->GetPrinterKeyAmsInfoMap(m_deviceID);
+    wxVector<AmsBoxObj>      infoList;
     wxVector<AmsSlotObjInfo> slotInfoList;
 
     for (int i = 0; i < infoList.size(); i++) {
