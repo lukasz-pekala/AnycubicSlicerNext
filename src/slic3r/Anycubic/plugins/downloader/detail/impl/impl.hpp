@@ -1,6 +1,6 @@
 ﻿#pragma once
 namespace Anycubic::Plugins {
-class PluginHost;
+struct PluginHost;
 }
 bool is_test_env(Anycubic::Plugins::PluginHost *host);
 
