@@ -1,4 +1,4 @@
-﻿#include "custom_struct_manger.hxx"
+#include "custom_struct_manger.hxx"
 
 
 wxString from_u8(const std::string& str)
