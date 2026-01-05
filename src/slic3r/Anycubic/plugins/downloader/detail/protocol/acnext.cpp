@@ -89,18 +89,19 @@ bool ACNextProtocol::start(size_t id, const wxString &output_path) {
 }
 
 std::string ACNextProtocol::get_jsonvalue() {
-  auto query = uri_.GetQuery().utf8_string();
-  assert(!query.empty());
-  // acnext://open?jsonvalue=base64encodedjson
-  auto jsonvalue = Anycubic::utility::parse_query(query);
-  if (jsonvalue.empty() || jsonvalue.count("jsonvalue") == 0) {
-    // 推送错误通知
-    push_error(ntf_mngr_,
-               _u8L("Invalid URL from makeronline.com: Missing or invalid "
-                    "jsonvalue  parameter."),
-               _u8L("Contact Us"));
-    return std::string();
-  }
+    using namespace Anycubic::utility;
+    auto query = uri_.GetQuery().utf8_string();
+    assert(!query.empty());
+    // acnext://open?jsonvalue=base64encodedjson
+    auto jsonvalue = parse_query(query);
+    if (jsonvalue.empty() || jsonvalue.count("jsonvalue") == 0) {
+        // 推送错误通知
+        push_error(ntf_mngr_,
+                   _u8L("Invalid URL from makeronline.com: Missing or invalid "
+                        "jsonvalue  parameter."),
+                   _u8L("Contact Us"));
+        return std::string(); 
+    }
   std::string jsonvalue_;
   if (auto itr = jsonvalue.find("jsonvalue"); itr != jsonvalue.end()) {
     jsonvalue_ = itr->second;
