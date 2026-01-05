@@ -2,7 +2,7 @@
 #include "detail/downloader_plugin.hpp"
 
 PLUGIN_EXPORT_GETINFO(, PLGUINS_NAME) {
-  const char *deps[] = {"utility"};
+  static const char *deps[] = {"utility"};
   static PluginInfo info{0};
   info.plugin_api = 1;
   info.plugin_type = 0xe;

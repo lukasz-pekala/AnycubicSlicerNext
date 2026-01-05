@@ -11,7 +11,7 @@
 namespace Slic3r {
 namespace GUI {
 
-namespace {
+
 void open_folder(const std::string& path)
 {
 	// Code taken from NotificationManager.cpp
@@ -61,7 +61,7 @@ void open_folder(const std::string& path)
 	}
 #endif
 }
-
+namespace{
 std::string filename_from_url(const std::string& url)
 {
 	// TODO: can it be done with curl?

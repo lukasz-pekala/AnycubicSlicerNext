@@ -9,6 +9,11 @@
 #include <slic3r/GUI/GUI_App.hpp>
 #include <slic3r/GUI/NotificationManager.hpp>
 
+
+namespace Slic3r::GUI {
+void open_folder(const std::string& path);
+}
+
 template <typename T, typename Container, typename owner_type>
 static inline int make_unique(Container &protocols, owner_type *owner) {
   protocols.emplace_back(new T(owner));
@@ -79,7 +84,7 @@ size_t DownloaderPlugin::start_download(const wxString &url,
       return id;
     }
   }
-  return -1;
+  return 0;
 }
 
 bool DownloaderPlugin::stop_download(int32_t download_id) {
@@ -136,9 +141,16 @@ bool DownloaderPlugin::user_action_callback(
       case Slic3r::GUI::DownloadUserContinued:
         d->download->resume();
         return true;
-      case Slic3r::GUI::DownloadUserOpenedFolder:
-        // open_folder(m_downloads[i]->get_dest_folder());
+      case Slic3r::GUI::DownloadUserOpenedFolder:{
+          using namespace Slic3r::GUI;
+          // NOTE: 打开下载文件夹
+          wxString download_path;
+          host_->GetValue(CONFIG_DOWNLOAD_PATH, download_path);
+          if (!download_path.IsEmpty()) {
+              open_folder(download_path.utf8_string());
+          }
         return true;
+      }
       default:
         return false;
       }

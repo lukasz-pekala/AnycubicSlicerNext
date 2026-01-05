@@ -101,11 +101,9 @@ public:
   }
   PluginsManager *GetPM() { return pm_; }
   bool PluginsIsLoaded() const { return pm_ != nullptr; }
-
-  bool StartDownload(const wxString &url) {
-    static auto call = [](void *ctx, int32_t download_id, int32_t status,
+    static void downloader_callback(void *ctx, int32_t download_id, int32_t status,
                           const wxString &filename) {
-      if (status == 0) {
+      if (status == 3) {
         // 下载成功
         LOG_INFO("download success: {}", filename.utf8_string());
         // NOTE: 加载模型文件
@@ -115,8 +113,9 @@ public:
         Slic3r::GUI::wxGetApp().mainframe->update_title();
       }
     };
-    return Anycubic::Plugins::dispatch_call<bool>(
-        pm_, "downloader", "start_download", url, &call, nullptr);
+  bool StartDownload(const wxString &url) {
+    return Anycubic::Plugins::dispatch_call<size_t>(
+        pm_, "downloader", "start_download", url, &downloader_callback, this);
   }
 
 public:

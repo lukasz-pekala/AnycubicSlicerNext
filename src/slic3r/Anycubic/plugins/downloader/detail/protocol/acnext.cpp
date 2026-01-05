@@ -158,7 +158,7 @@ int32_t ACNextProtocol::get_url_index() const {
   if (owner_->is_test_env()) {
     idx += 1;
   }
-  if (owner_->is_china_env()) {
+  if (!owner_->is_china_env()) {
     idx += 2;
   }
   return idx;
