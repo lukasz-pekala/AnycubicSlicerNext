@@ -130,35 +130,28 @@ static wxString CustomUserAgent()
 }
 wxWebView* WebView::CreateWebView(wxWindow * parent, wxString const & url,wxWebViewConfiguration*conf,const std::function<void(wxWebView*)>& visitor)
 {
-    wxFileName edgeFixedDir(wxStandardPaths::Get().GetExecutablePath());
-    edgeFixedDir.SetFullName("");
-    edgeFixedDir.AppendDir("edge_fixed");
-    if (conf && edgeFixedDir.DirExists()) {
-        conf->SetDataPath(edgeFixedDir.GetFullPath()); 
-        wxLogMessage("Using fixed edge version");
+#ifdef __WXMSW__
+    wxWebViewConfiguration confg = wxWebView::NewConfiguration(wxWebViewBackendDefault);
+    if (conf==nullptr) {
+        conf = &confg;
     }
+    // WebView2 Runtime Cache Dir
+    auto cacheDir = wxFileName::DirName(wxStandardPaths::Get().GetTempDir());
+    cacheDir.AppendDir(SLIC3R_APP_KEY);
+    cacheDir.AppendDir(SoftFever_VERSION);
+    if(!cacheDir.DirExists()){
+        cacheDir.Mkdir();
+    }
+    conf->SetDataPath(cacheDir.GetFullPath()); 
+#endif //__WXMSW__
 
     wxWebView* webView = conf==nullptr?wxWebView::New():wxWebView::New(*conf);
-
-
     if (webView) {
         if(visitor){
             visitor(webView);
         }
         webView->SetBackgroundColour(StateColor::darkModeColorFor(*wxWHITE));
-#ifdef __WXMSW__
         webView->Create(parent, wxID_ANY, url, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-        // We register the wxfs:// protocol for testing purposes
-        webView->RegisterHandler(wxSharedPtr<wxWebViewHandler>(new wxWebViewArchiveHandler("bbl")));
-        // And the memory: file system
-        webView->RegisterHandler(wxSharedPtr<wxWebViewHandler>(new wxWebViewFSHandler("memory")));
-#else
-        // With WKWebView handlers need to be registered before creation
-        webView->RegisterHandler(wxSharedPtr<wxWebViewHandler>(new wxWebViewArchiveHandler("wxfs")));
-        // And the memory: file system
-        webView->RegisterHandler(wxSharedPtr<wxWebViewHandler>(new wxWebViewFSHandler("memory")));
-        webView->Create(parent, wxID_ANY, url, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-#endif
         webView->SetUserAgent(CustomUserAgent());
 #ifdef __WXMAC__
         WKWebView * wkWebView = (WKWebView *) webView->GetNativeBackend();
@@ -224,7 +217,7 @@ bool WebView::RunScript(wxWebView *webView, wxString const &javascript)
             && javascript.find("studio_userlogin") == wxString::npos)
         wxLogMessage("Running JavaScript:\n%s\n", javascript);
     try {
-        webView->RunScript(javascript);
+        webView->RunScriptAsync(javascript);
         return true;
     } catch (std::exception &) {
         return false;
