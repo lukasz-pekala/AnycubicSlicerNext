@@ -31,7 +31,7 @@ ACShowDialog::~ACShowDialog()
 }
 
 ACShowDialog::ACShowDialog(wxWindow* parent, bool isTestEnv, wxSize panelSize)
-    :Slic3r::GUI::DPIDialog(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, dialog_style(isTestEnv)), m_size(panelSize)
+    :Slic3r::GUI::DPIDialog(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, dialog_style(isTestEnv)), m_size(FromDIP(panelSize))
 {
     Init(panelSize);
     
