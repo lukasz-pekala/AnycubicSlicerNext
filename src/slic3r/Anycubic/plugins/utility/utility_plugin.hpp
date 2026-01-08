@@ -37,6 +37,7 @@ private:
   void set_login_token(const wxString *token);
   void get_user_info(wxString *username, wxString *password);
   void set_user_info(const wxString *username, const wxString *password);
+  void clear_login_info(void);
 
   std::string get_slic3r_version(void) const;
   std::string get_app_version(void) const;

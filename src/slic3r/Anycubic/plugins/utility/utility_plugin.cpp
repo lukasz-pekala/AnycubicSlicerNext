@@ -29,6 +29,7 @@ UtilityPlugin::UtilityPlugin(Anycubic::Plugins::PluginHost *host):host_(host) {
   router->REGISTER_FUNCATION(UtilityPlugin, set_login_token);
   router->REGISTER_FUNCATION(UtilityPlugin, get_user_info);
   router->REGISTER_FUNCATION(UtilityPlugin, set_user_info);
+  router->REGISTER_FUNCATION(UtilityPlugin, clear_login_info);
   router->REGISTER_FUNCATION(UtilityPlugin, get_slic3r_version);
   router->REGISTER_FUNCATION(UtilityPlugin, get_app_version);
   router->REGISTER_FUNCATION(UtilityPlugin, get_app_version_code);
@@ -105,7 +106,7 @@ bool UtilityPlugin::get_login_token(wxString *token) {
 }
 void UtilityPlugin::set_login_token(const wxString *token) {
   host_->SetEncryptValue("user/login_token", *token);
-  set_auto_login(true);
+  set_auto_login(!token->IsEmpty());
 }
 void UtilityPlugin::get_user_info(wxString *username, wxString *password) {
   host_->GetEncryptValue("user/username", *username);
@@ -115,7 +116,16 @@ void UtilityPlugin::set_user_info(const wxString *username,
                                   const wxString *password) {
   host_->SetEncryptValue("user/username", *username);
   host_->SetEncryptValue("user/password", *password);
-  set_auto_login(true);
+  set_auto_login(!username->IsEmpty());
+}
+
+void UtilityPlugin::clear_login_info(void) {
+  wxString empty_string;
+  if(is_china_env()){
+    set_user_info(&empty_string, &empty_string);
+  }else{
+    set_login_token(&empty_string);
+  }
 }
 
 std::string UtilityPlugin::get_slic3r_version(void) const { return SLIC3R_VERSION; }
