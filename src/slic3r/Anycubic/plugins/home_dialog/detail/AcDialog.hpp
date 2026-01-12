@@ -31,7 +31,9 @@ public:
     {
         m_isEndModel = true;
         OnDialogReturn(retCode);
-        wxDialog::EndModal(retCode);
+        CallAfter([this, retCode]() { 
+            wxDialog::EndModal(retCode);
+        });
     }    
 
 protected:

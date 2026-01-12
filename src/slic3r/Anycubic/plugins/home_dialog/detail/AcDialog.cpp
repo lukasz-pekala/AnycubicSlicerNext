@@ -109,7 +109,7 @@ void ACShowDialog::msw_rescale()
 void ACShowDialog::OnDialogReturn(int code) 
 { 
     if (m_isEndModel) {
-        wxCommandEvent closeEvt(wxEVT_CLOSE_WINDOW);
+        wxCloseEvent closeEvt(wxEVT_CLOSE_WINDOW);
         this->SetReturnCode(code);
         this->ProcessEvent(closeEvt);
     }
