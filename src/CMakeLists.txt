@@ -115,6 +115,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dev-utils/platform/msw/AnycubicSlicer
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dev-utils/platform/osx/Info.plist.in ${CMAKE_CURRENT_BINARY_DIR}/Info.plist @ONLY)
 if (WIN32)
     add_library(${PROJECT_APP_NAME} SHARED AnycubicSlicer.cpp AnycubicSlicer.hpp dev-utils/BaseException.cpp dev-utils/BaseException.h dev-utils/StackWalker.cpp dev-utils/StackWalker.h)
+
 else ()
     add_executable(${PROJECT_APP_NAME} AnycubicSlicer.cpp AnycubicSlicer.hpp)
 endif ()
@@ -177,7 +178,6 @@ if (WIN32)
     if (MINGW)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -municode")
     endif()
-
     add_executable(AnycubicSlicer_app_gui WIN32 AnycubicSlicer_app_msvc.cpp ${CMAKE_CURRENT_BINARY_DIR}/AnycubicSlicer.rc)
     # Generate debug symbols even in release mode.
     if(MSVC)
@@ -186,7 +186,7 @@ if (WIN32)
     target_compile_definitions(AnycubicSlicer_app_gui PRIVATE -DSLIC3R_WRAPPER_NOCONSOLE)
     add_dependencies(AnycubicSlicer_app_gui ${PROJECT_APP_NAME})
     set_target_properties(AnycubicSlicer_app_gui PROPERTIES OUTPUT_NAME "AnycubicSlicerNext")
-    target_link_libraries(AnycubicSlicer_app_gui PRIVATE boost_headeronly)
+    target_link_libraries(AnycubicSlicer_app_gui PRIVATE boost_headeronly OpenSSL::applink)
 endif ()
 
 # Link the resources dir to where Slic3r GUI expects it
