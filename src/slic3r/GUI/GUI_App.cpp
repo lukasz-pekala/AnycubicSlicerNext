@@ -5775,7 +5775,8 @@ void GUI_App::update_mode()
         mainframe->m_param_dialog->panel()->update_mode();
     if (mainframe->m_printer_view)
         mainframe->m_printer_view->update_mode();
-    mainframe->m_webview->update_mode();
+    if (mainframe->m_webview)
+        mainframe->m_webview->update_mode();
 
 #ifdef _MSW_DARK_MODE
     if (!wxGetApp().tabs_as_menu())

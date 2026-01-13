@@ -25,6 +25,8 @@ namespace GUI {
 
     wxDEFINE_EVENT(EVT_RESPONSE_MESSAGE, wxCommandEvent);
 
+    wxDEFINE_EVENT(EVT_HOME_RELEASE, wxCommandEvent);
+
     #define LOGIN_INFO_UPDATE_TIMER_ID 10002
 
     BEGIN_EVENT_TABLE(WebViewPanel, wxPanel)
@@ -224,6 +226,11 @@ WebViewPanel::WebViewPanel(wxWindow *parent)
 WebViewPanel::~WebViewPanel()
 {
     BOOST_LOG_TRIVIAL(trace) << __FUNCTION__ << " Start";
+    
+    wxCommandEvent evt(EVT_HOME_RELEASE);
+    ProcessEvent(evt);
+   
+
     SetEvtHandlerEnabled(false);
     
     delete m_tools_menu;

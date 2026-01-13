@@ -25,7 +25,7 @@ namespace Slic3r {
 class NetworkAgent;
 
 namespace GUI {
-
+wxDECLARE_EVENT(EVT_HOME_RELEASE, wxCommandEvent);
 
 class WebViewPanel : public wxPanel
 {

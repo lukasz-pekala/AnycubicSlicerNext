@@ -1083,6 +1083,9 @@ void MainFrame::init_tabpanel() {
             select_tab(MainFrame::tpHome);
             m_webview->load_url(url);
         });
+        Bind(EVT_HOME_RELEASE, [this](wxCommandEvent& evt) { 
+            m_webview = nullptr; 
+        });
         m_tabpanel->AddPage(m_webview, "", "tab_home_active", "tab_home_active", false);
         m_param_panel = new ParamsPanel(m_tabpanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBK_LEFT | wxTAB_TRAVERSAL);
     }
