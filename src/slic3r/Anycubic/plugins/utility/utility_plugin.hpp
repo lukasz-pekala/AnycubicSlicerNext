@@ -28,13 +28,11 @@ private:
   std::string get_download_path() const;
   void set_download_path(const std::string &path);
 
-  std::string get_access_token(void) const;
-  void set_access_token(const std::string &token);
 
   bool is_auto_login(void) const;
   void set_auto_login(bool auto_login);
-  bool get_login_token(wxString *token);
-  void set_login_token(const wxString *token);
+  bool get_access_token(wxString *token);
+  void set_access_token(const wxString *token);
   void get_user_info(wxString *username, wxString *password);
   void set_user_info(const wxString *username, const wxString *password);
   void clear_login_info(void);
@@ -59,7 +57,6 @@ private:
 private:
   Anycubic::Plugins::PluginHost *host_;
   std::string download_path_;
-  std::string access_token_;
 
   std::vector<wxEvtHandler*> m_evt_list;
   std::mutex                 mtx_;

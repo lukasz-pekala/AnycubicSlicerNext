@@ -25,16 +25,12 @@ UtilityPlugin::UtilityPlugin(Anycubic::Plugins::PluginHost *host):host_(host) {
   router->REGISTER_FUNCATION(UtilityPlugin, get_access_token);
   router->REGISTER_FUNCATION(UtilityPlugin, is_auto_login);
   router->REGISTER_FUNCATION(UtilityPlugin, set_auto_login);
-  router->REGISTER_FUNCATION(UtilityPlugin, get_login_token);
-  router->REGISTER_FUNCATION(UtilityPlugin, set_login_token);
   router->REGISTER_FUNCATION(UtilityPlugin, get_user_info);
   router->REGISTER_FUNCATION(UtilityPlugin, set_user_info);
   router->REGISTER_FUNCATION(UtilityPlugin, clear_login_info);
   router->REGISTER_FUNCATION(UtilityPlugin, get_slic3r_version);
   router->REGISTER_FUNCATION(UtilityPlugin, get_app_version);
   router->REGISTER_FUNCATION(UtilityPlugin, get_app_version_code);
-
-
 }
 
 UtilityPlugin::~UtilityPlugin() {}
@@ -83,12 +79,7 @@ std::string UtilityPlugin::get_download_path() const { return download_path_; }
 void UtilityPlugin::set_download_path(const std::string &path) {
   download_path_ = path;
 }
-std::string UtilityPlugin::get_access_token(void) const {
-  return access_token_;
-}
-void UtilityPlugin::set_access_token(const std::string &token) {
-  access_token_ = token;
-}
+
 bool UtilityPlugin::is_auto_login(void) const {
   wxString auto_login;
   if(host_->GetValue("user/auto_login", auto_login)){
@@ -101,10 +92,10 @@ bool UtilityPlugin::is_auto_login(void) const {
 void UtilityPlugin::set_auto_login(bool auto_login) {
   host_->SetValue("user/auto_login", auto_login ? "true" : "false");
 }
-bool UtilityPlugin::get_login_token(wxString *token) {
+bool UtilityPlugin::get_access_token(wxString *token) {
   return host_->GetEncryptValue("user/login_token", *token);
 }
-void UtilityPlugin::set_login_token(const wxString *token) {
+void UtilityPlugin::set_access_token(const wxString *token) {
   host_->SetEncryptValue("user/login_token", *token);
   set_auto_login(!token->IsEmpty());
 }
@@ -124,7 +115,7 @@ void UtilityPlugin::clear_login_info(void) {
   if(is_china_env()){
     set_user_info(&empty_string, &empty_string);
   }else{
-    set_login_token(&empty_string);
+    set_access_token(&empty_string);
   }
 }
 
