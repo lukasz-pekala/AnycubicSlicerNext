@@ -225,6 +225,11 @@ const std::string& resources_dir()
     return g_resources_dir;
 }
 
+static std::string g_profiles_dir;
+void               set_profiles_dir(const std::string& dir) { g_profiles_dir = dir; }
+const std::string& profiles_dir() { return g_profiles_dir; }
+
+
 //BBS: add temporary dir
 static std::string g_temporary_dir;
 void set_temporary_dir(const std::string &dir)

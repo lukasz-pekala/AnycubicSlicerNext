@@ -2,10 +2,6 @@
 
 #include <wx/wx.h>
 
-wxString from_u8(const std::string& str);
-
-std::string into_u8(const wxString& str);
-
 enum RunCallTestModel {
     r_upload           = 0,
     r_print            = 1,

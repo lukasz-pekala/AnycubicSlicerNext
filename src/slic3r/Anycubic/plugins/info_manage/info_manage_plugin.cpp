@@ -1,18 +1,30 @@
 #include "info_manage_plugin.hpp"
 #include "slic3r/Anycubic/detail/anonymous.hpp"
-
 #include <libslic3r/AppConfig.hpp>
 #include <libslic3r/PrintConfig.hpp>
 #include <slic3r/GUI/GUI_App.hpp>
+#include <slic3r/GUI/GUI.hpp>
 #include <slic3r/GUI/Plater.hpp>
 #include <slic3r/GUI/MainFrame.hpp>
 #include <slic3r/GUI/Notebook.hpp>
-#include <plugins_base/funcation.hxx>
+#include <libslic3r/Semver.hpp>
 #include <string>
 
 #include <wx/filename.h>
 #include <plugins_sdk/event/plugin_event.hxx>
 #include <plugins_sdk/event/detail/plugin_custom_event.hxx>
+#include <plugins_sdk/event/detail/util_tool.hxx>
+#include <slic3r/Utils/PresetUpdater.hpp>
+
+#include <cmath>
+#include <nlohmann/json.hpp>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+#define sqr(x) ((x) * (x))
+
+#define AUTO_DEVICEID "test_01"
 
 InfoManage::InfoManage(Anycubic::Plugins::PluginHost *host)
     : host_(host) {
@@ -28,10 +40,733 @@ InfoManage::InfoManage(Anycubic::Plugins::PluginHost *host)
   router->REGISTER_FUNCATION(InfoManage, get_preset_filament);
   router->REGISTER_FUNCATION(InfoManage, check_is_all_plates_selected);
   router->REGISTER_FUNCATION(InfoManage, send_upload_file_cloud_event);
+  router->REGISTER_FUNCATION(InfoManage, getAcCfg);
+  router->REGISTER_FUNCATION(InfoManage, persetUpdaterOperate);
+  router->REGISTER_FUNCATION(InfoManage, IsAutoRunModel);
+  router->REGISTER_FUNCATION(InfoManage, IsRunCallTestModel);
+
+
+  router->REGISTER_FUNCATION(InfoManage, GetModelSlicerInfoMap);
+  router->REGISTER_FUNCATION(InfoManage, GetModelSlicerInfo);
+
+  router->REGISTER_FUNCATION(InfoManage, GetFilamentSyncColourList);
+  router->REGISTER_FUNCATION(InfoManage, GetFilamentSyncTypeList);
+
+  router->REGISTER_FUNCATION(InfoManage, Download);
+  router->REGISTER_FUNCATION(InfoManage, UploadFile);
 }
 
 InfoManage::~InfoManage() {}
 
+
+void InfoManage::Download(const std::string& url, const TransferCallback* cb)
+{
+    auto http = Slic3r::Http::get(url);
+
+    http.on_progress([cb](Slic3r::Http::Progress p, bool& cancel) {
+            if (!cb || !cb->onProgress)
+                return;
+
+            TransferProgress tp;
+            tp.total = p.ultotal;
+            tp.now   = p.ulnow;
+            cb->onProgress(tp, cancel);
+        })
+        .on_complete([cb](std::string body, unsigned status) {
+            if (cb && cb->onComplete)
+                cb->onComplete(body, status);
+        })
+        .on_error([cb](std::string body, std::string error, unsigned status) {
+            if (cb && cb->onError)
+                cb->onError(body, error, status);
+        });
+
+    http.perform();
+}
+
+void InfoManage::UploadFile(
+    const std::string& url, const std::string& filePath, const std::string& fileName, uint64_t fileSize, const TransferCallback* cb)
+
+{
+    auto http = Slic3r::Http::post(url);
+
+    http.header("Content-Type", "multipart/form-data");
+    http.header("X-File-Length", std::to_string(fileSize));
+
+    http.form_add("filename", fileName).form_add_file("gcode", filePath, fileName).timeout_connect(120);
+
+    http.on_progress([cb](Slic3r::Http::Progress p, bool& cancel) {
+            if (!cb || !cb->onProgress)
+                return;
+
+            TransferProgress tp;
+            tp.total = p.ultotal;
+            tp.now   = p.ulnow;
+            cb->onProgress(tp, cancel);
+        })
+        .on_complete([cb](std::string body, unsigned status) {
+            if (cb && cb->onComplete)
+                cb->onComplete(body, status);
+        })
+        .on_error([cb](std::string body, std::string error, unsigned status) {
+            if (cb && cb->onError)
+                cb->onError(body, error, status);
+        });
+
+    http.perform();
+
+
+}
+
+
+std::string InfoManage::GetFilamentSyncColourList() 
+{ 
+    std::vector<std::string> _filament_colourList;
+    std::string              serialized = json(_filament_colourList).dump();
+    return serialized;
+}
+
+std::string InfoManage::GetFilamentSyncTypeList() 
+{ 
+    std::vector<std::string> _filament_typeList;
+    std::string              serialized = json(_filament_typeList).dump();
+    return serialized;
+}
+
+
+
+void InfoManage::Auto_BindEvent()
+{
+    //Bind(EVT_AUTO_FILE_OPEN_EVENT, [this](wxPluginEvent& evt) {
+    //    if (wxGetApp().plater()->canvas3D() != nullptr && m_autoStartIndex)
+    //        wxGetApp().plater()->canvas3D()->Auto_Importmodel();
+    //});
+    //Bind(EVT_AUTO_FILE_OPEN_FINISH_EVENT, [this](wxPluginEvent& evt) {
+    //    if (m_autoStartIndex)
+    //        wxGetApp().mainframe->Auto_SlicerEvent();
+    //});
+    //Bind(EVT_AUTO_SLICER_FINISH_EVENT, [this](wxPluginEvent& evt) {
+    //    if (m_autoStartIndex)
+    //        wxGetApp().mainframe->Auto_SlicerEvent(1);
+    //});
+    //Bind(EVT_AUTO_REMOTEPRINTSHOW_FINISH_EVENT, [this](wxPluginEvent& evt) {
+    //    if (m_showWindowType == 1 && m_autoStartIndex) {
+    //        wxPluginEvent evt_auto(EVT_AUTO_CLICK_EVENT);
+    //        OnPutEvent(evt_auto);
+    //    }
+    //});
+    //Bind(EVT_AUTO_SLOOP_FINISH_EVENT, [this](wxPluginEvent& evt) {
+    //    if (!m_autoStartIndex)
+    //        return;
+    //    wxGetApp().plater()->new_project();
+    //    Auto_openFileName();
+    //    if (m_auto_nowFileName.size() > 0) {
+    //        wxPluginEvent auto_evt(EVT_AUTO_FILE_OPEN_EVENT);
+    //        // wxPostEvent(this, auto_evt);
+    //        OnPutEvent(auto_evt);
+    //    } else {
+    //        m_autoStartIndex = false;
+    //        wxGetApp().mainframe->AutoSetClickEnable();
+    //    }
+    //});
+    //Bind(EVT_AUTO_SLICER_FAIL_EVENT, [this](wxPluginEvent& evt) {
+    //    int i = 0;
+    //});
+}
+
+
+
+bool InfoManage::IsRunCallTestModel(int index)
+{
+    bool isRunCall = IsAutoRunModel();
+    if (!isRunCall)
+        return isRunCall;
+
+    switch (index) {
+    case RunCallTestModel::r_upload: {
+        wxPluginEvent evt_progress(EVT_REMOTE_PRINTER_UPLOAD_PROGRESS);
+        evt_progress.SetInt(100);
+        OnPutEvent(evt_progress);
+
+        break;
+    }
+    case RunCallTestModel::r_print: {
+        wxPluginEvent   evt(EVT_ACCLOUD_PRINTER_REMOTE);
+        RemotePrintObj* obj = new RemotePrintObj();
+        obj->succeed        = true;
+        obj->result_string  = "";
+        obj->printer_id     = Slic3r::GUI::from_u8(getLastRemoteDeviceID());
+        obj->task_id        = "";
+
+        updateLastTaskID(Slic3r::GUI::into_u8(obj->task_id));
+        evt.SetSharedData(obj, nullptr, [](void*, void* a) { delete (RemotePrintObj*) a; });
+        OnPutEvent(evt);
+
+        break;
+    }
+    case RunCallTestModel::r_calculatePrinter: {
+        m_auto_selectDeviceID = AUTO_DEVICEID;
+
+        break;
+    }
+
+    default: break;
+    }
+
+    return isRunCall;
+}
+
+bool InfoManage::IsAutoRunModel()
+{
+    const std::string value     = Slic3r::GUI::wxGetApp().app_config->get("anycubic_test_mode");
+    bool              isAutoRun = (value == "1" || value == "2" || value == "true");
+    return isAutoRun;
+}
+
+void InfoManage::AutoSetDirPath(const wxString& dir)
+{
+    m_auto_dirPath = dir;
+    Auto_GetFiles();
+}
+
+void InfoManage::Auto_GetFiles()
+{
+    m_autoStartIndex = true;
+    m_auto_filesList.clear();
+
+    if (wxDirExists(m_auto_dirPath)) {
+        m_auto_filesList = GetDirListFiles(m_auto_dirPath);
+        Auto_openFileName();
+
+        wxPluginEvent auto_evt(EVT_AUTO_FILE_OPEN_EVENT);
+        OnPutEvent(auto_evt);
+    }
+}
+
+wxVector<wxString> InfoManage::GetDirListFiles(const wxString& dirPath)
+{
+    wxVector<wxString> filesList;
+
+    if (!wxDirExists(dirPath)) {
+        std::cout << "Directory does not exist." << std::endl;
+        return filesList;
+    }
+
+    wxDir dir(dirPath);
+    if (!dir.IsOpened()) {
+        std::cout << "Failed to open directory." << std::endl;
+        return filesList;
+    }
+
+    wxString filename;
+    bool     cont = dir.GetFirst(&filename, wxEmptyString, wxDIR_FILES);
+    while (cont) {
+        wxFileName fullPath(dirPath, filename);
+        filesList.push_back(fullPath.GetFullPath().wc_str());
+        cont = dir.GetNext(&filename);
+    }
+
+    return filesList;
+}
+wxString InfoManage::Auto_GetImportFileName()
+{
+    return m_auto_nowFileName;
+}
+
+void InfoManage::Auto_openFileName()
+{
+    bool firstInit = false;
+    if (m_auto_nowFileName.empty() && m_auto_filesList.size() > 0) {
+        m_auto_nowFileName = m_auto_filesList[0];
+        firstInit          = true;
+    }
+    if (!firstInit) {
+        int index = FindStringInVector(m_auto_nowFileName);
+        if (index != -1) {
+            m_auto_nowFileName = m_auto_filesList[index + 1];
+        } else {
+            m_auto_nowFileName = wxEmptyString;
+        }
+    }
+}
+
+int InfoManage::FindStringInVector(const wxString& target)
+{
+    auto it = std::find(m_auto_filesList.begin(), m_auto_filesList.end(), target);
+    if (it != m_auto_filesList.end() && it != m_auto_filesList.end() - 1) {
+        return std::distance(m_auto_filesList.begin(), it);
+    }
+    return -1;
+}
+
+
+Slic3r::Semver get_version_from_json(std::string file_path)
+{
+    try {
+        boost::nowide::ifstream ifs(file_path);
+        if (!ifs.is_open()) {
+            return Slic3r::Semver();
+        }
+        json j;
+        ifs >> j;
+        std::string version_str = j.at(BBL_JSON_KEY_VERSION);
+
+        auto config_version = Slic3r::Semver::parse(version_str);
+        if (!config_version) {
+            return Slic3r::Semver();
+        } else {
+            return *config_version;
+        }
+    } catch (nlohmann::detail::parse_error& err) {
+        BOOST_LOG_TRIVIAL(error) << __FUNCTION__ << ": parse " << file_path
+                                 << " got a nlohmann::detail::parse_error, reason = " << err.what();
+        return Slic3r::Semver();
+    }
+}
+
+std::string InfoManage::GetModelSlicerInfo(bool isPrint, const wxString& last_load_gcode)
+{
+    ModelSlicerInfo info;
+
+    Slic3r::GCodeProcessorResult* gcodeResult        = wxGetApp().plater()->get_partplate_list().get_curr_plate()->get_slice_result();
+    std::vector<float>            filament_diameters = gcodeResult->filament_diameters;
+
+    std::vector<float>  filament_densities = gcodeResult->filament_densities;
+    wxString            modesLayersNum = wxString::Format("%d", gcodeResult->print_statistics.modes[0].layers_times.size()) + _(" Layers");
+    wxString            timeStr        = get_time_dhms(gcodeResult->print_statistics.modes[0].time);
+    std::vector<double> wipe_tower_used_filaments_m;
+    std::vector<double> wipe_tower_used_filaments_g;
+    double              total_wipe_tower_used_filament_m = 0, total_wipe_tower_used_filament_g = 0;
+
+    auto get_used_filament_from_volume = [this, &filament_diameters, &filament_densities](double volume, int extruder_id) {
+        double koef = 0.001;
+        double PI   = 3.141592653589793238;
+
+        std::pair<double, double> ret = {koef * volume /
+                                             (PI * ((0.5 * filament_diameters[extruder_id]) * (0.5 * filament_diameters[extruder_id]))),
+                                         volume * filament_densities[extruder_id] * 0.001};
+        return ret;
+    };
+
+    for (auto volume : gcodeResult->print_statistics.total_volumes_per_extruder) {
+        auto [model_used_filament_m, model_used_filament_g] = get_used_filament_from_volume(volume.second, volume.first);
+        wipe_tower_used_filaments_m.push_back(model_used_filament_m);
+        wipe_tower_used_filaments_g.push_back(model_used_filament_g);
+        total_wipe_tower_used_filament_m += model_used_filament_m;
+        total_wipe_tower_used_filament_g += model_used_filament_g;
+    }
+
+    wxString filamentWeight = wxString::Format("%.1fg", total_wipe_tower_used_filament_g);
+    wxString filamentLength = wxString::Format("%.2f%s", total_wipe_tower_used_filament_m, "m");
+
+    std::vector<std::string> base64Img;// = wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->print_statistics().thumbnails;
+    info.imgBase64 = !base64Img.empty() ? base64Img[0] : GetGcodeFileImg(last_load_gcode);
+
+    info.print_time      = timeStr;
+    info.filament_length = filamentLength;
+    info.used_filament   = filamentWeight;
+
+    info.modleLayers = wxString::Format("%d", gcodeResult->print_statistics.modes[0].layers_times.size()) + _(" Layers");
+    std::vector<unsigned int> printing_extruders;//= wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->print_statistics().printing_extruders;
+    for (int i = 0; i < printing_extruders.size(); i++) {
+        info.extruder_idsList.push_back(printing_extruders[i]);
+    }
+
+    wxVector<wxString> filament_colourList;
+    wxVector<wxString> filament_typeList;
+    for (int i = 0; i < wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->config().filament_colour.values.size();
+         i++) {
+        filament_colourList.push_back(
+            Slic3r::GUI::from_u8(wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->config().filament_colour.get_at(i)));
+    }
+    for (int i = 0; i < wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->config().filament_type.values.size(); i++)
+    { filament_typeList.push_back(Slic3r::GUI::from_u8(
+            wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->config().filament_type.get_at(i)));
+    }
+
+    info.filamentColors_slicer = filament_colourList;
+
+    info.filamentTypess_slicer = filament_typeList;
+
+    std::string printerName;// = wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->print_statistics().printer_model;
+    bool        isGcodeIndex = false;
+    if (printerName.empty()) {
+        std::vector<unsigned int> extruders;// = gcodeResult->print_statistics.getPrinting_extruders();
+        std::vector<std::string>  extruder_colors = gcodeResult->extruder_colors;
+        std::vector<std::string>  filament_types;//= gcodeResult->filament_types;
+        info.extruder_idsList.clear();
+        for (int i = 0; i < extruders.size(); i++) {
+            info.extruder_idsList.push_back(extruders[i]);
+        }
+
+        info.extruder_colors_gcode.clear();
+        for (int i = 0; i < extruder_colors.size(); i++) {
+            info.extruder_colors_gcode.push_back(extruder_colors[i]);
+        }
+
+        info.filament_types_gcode.clear();
+        for (int i = 0; i < filament_types.size(); i++) {
+            info.filament_types_gcode.push_back(filament_types[i]);
+        }
+
+        printerName;// = gcodeResult->printer_model;
+        info.isGcode = true;
+    }
+    info.printerName  = Slic3r::GUI::from_u8(printerName);
+    info.machine_type;// = FromStrGetPrinterType(printerName);
+    if (!isPrint) {
+        /*SetBatchResult({static_cast<int>(gcodeResult->print_statistics.modes[0].time),
+                        static_cast<int>(gcodeResult->print_statistics.modes[0].layers_times.size()), total_wipe_tower_used_filament_g,
+                        timeStr});*/
+    }
+
+    json j = info;
+
+    return j.dump();
+}
+
+
+
+std::string InfoManage::GetModelSlicerInfoMap(bool isPrint, const wxString& last_load_gcode)
+{
+    std::map<int, ModelSlicerInfo> modelSelcicerInfoMap;
+    for (const auto& partObj : wxGetApp().plater()->get_partplate_list().get_plate_list()) {
+        partObj->get_index();
+        Slic3r::GCodeProcessorResult* gcodeResult = partObj->get_slice_result();
+
+        ModelSlicerInfo info;
+
+        std::vector<float> filament_diameters = gcodeResult->filament_diameters;
+
+        std::vector<float> filament_densities = gcodeResult->filament_densities;
+        wxString modesLayersNum = wxString::Format("%d", gcodeResult->print_statistics.modes[0].layers_times.size()) + _(" Layers");
+        wxString timeStr        = get_time_dhms(gcodeResult->print_statistics.modes[0].time);
+        std::vector<double> wipe_tower_used_filaments_m;
+        std::vector<double> wipe_tower_used_filaments_g;
+        double              total_wipe_tower_used_filament_m = 0, total_wipe_tower_used_filament_g = 0;
+
+        auto get_used_filament_from_volume = [this, &filament_diameters, &filament_densities](double volume, int extruder_id) {
+            double                    koef = 0.001;
+            std::pair<double, double> ret  = {koef * volume / (M_PI * sqr(0.5 * filament_diameters[extruder_id])),
+                                             volume * filament_densities[extruder_id] * 0.001};
+            return ret;
+        };
+        std::map<int, wxString> extruderWeightMap;
+        for (auto volume : gcodeResult->print_statistics.total_volumes_per_extruder) {
+            auto [model_used_filament_m, model_used_filament_g] = get_used_filament_from_volume(volume.second, volume.first);
+            wipe_tower_used_filaments_m.push_back(model_used_filament_m);
+            wipe_tower_used_filaments_g.push_back(model_used_filament_g);
+            total_wipe_tower_used_filament_m += model_used_filament_m;
+            total_wipe_tower_used_filament_g += model_used_filament_g;
+            extruderWeightMap[volume.first] = wxString::Format("%.2fg", model_used_filament_g);
+        }
+
+        wxString filamentWeight = wxString::Format("%.1fg", total_wipe_tower_used_filament_g);
+        wxString filamentLength = wxString::Format("%.2f%s", total_wipe_tower_used_filament_m, "m");
+
+        std::vector<std::string> base64Img;//= partObj->fff_print()->print_statistics().thumbnails;
+        info.imgBase64 = !base64Img.empty() ? base64Img[0] : GetGcodeFileImg(last_load_gcode);
+
+        info.print_time       = timeStr;
+        info.filament_length  = filamentLength;
+        info.used_filament    = filamentWeight;
+        info.filamentWeight_d = total_wipe_tower_used_filament_g;
+        info.print_time_f     = gcodeResult->print_statistics.modes[0].time;
+
+        info.modleLayers = wxString::Format("%d", gcodeResult->print_statistics.modes[0].layers_times.size()) + _(" Layers");
+
+        std::vector<unsigned int> printing_extruders;// = partObj->fff_print()->print_statistics().printing_extruders;
+        for (int i = 0; i < printing_extruders.size(); i++) {
+            info.extruder_idsList.push_back(printing_extruders[i]);
+        }
+
+        wxVector<wxString> filament_colourList;
+        wxVector<wxString> filament_typeList;
+        for (int i = 0; i < partObj->fff_print()->config().filament_colour.values.size(); i++) {
+            filament_colourList.push_back(Slic3r::GUI::from_u8(partObj->fff_print()->config().filament_colour.get_at(i)));
+        }
+        for (int i = 0; i < partObj->fff_print()->config().filament_type.values.size(); i++) {
+            filament_typeList.push_back(Slic3r::GUI::from_u8(partObj->fff_print()->config().filament_type.get_at(i)));
+        }
+
+        info.filamentColors_slicer = filament_colourList;
+
+        info.filamentTypess_slicer = filament_typeList;
+
+        std::string printerName;// = partObj->fff_print()->print_statistics().printer_model;
+        bool                     isGcodeIndex = false;
+        std::vector<std::string> filament_types;
+        std::vector<std::string> extruder_colors;
+        if (printerName.empty()) {
+            std::vector<unsigned int> extruders;//= gcodeResult->print_statistics.getPrinting_extruders();
+            std::vector<std::string>  extruder_colors = gcodeResult->extruder_colors;
+            std::vector<std::string>  filament_types;// = gcodeResult->filament_types;
+            info.extruder_idsList.clear();
+            for (int i = 0; i < extruders.size(); i++) {
+                info.extruder_idsList.push_back(extruders[i]);
+            }
+
+            info.extruder_colors_gcode.clear();
+            for (int i = 0; i < extruder_colors.size(); i++) {
+                info.extruder_colors_gcode.push_back(extruder_colors[i]);
+            }
+
+            info.filament_types_gcode.clear();
+            for (int i = 0; i < filament_types.size(); i++) {
+                info.filament_types_gcode.push_back(filament_types[i]);
+            }
+
+            printerName;// = gcodeResult->printer_model;
+            info.isGcode = true;
+        }
+
+        wxVector<FilamentInfoObj>    colorFilamentobjsList;
+        wxVector<GcodeFilamentColor> gcodeFilamentColorList;
+
+        if (info.isGcode) {
+            for (int i = 0; i < extruder_colors.size(); i++) {
+                wxColour    numColor           = HexToWxColour(extruder_colors[i]);
+                std::string select_preset_type = "-";
+
+                if (filament_types.size() > i) {
+                    select_preset_type = filament_types[i];
+                }
+
+                colorFilamentobjsList.push_back({numColor, getTextFitColor(numColor), select_preset_type});
+            }
+
+        } else {
+            for (int i = 0; i < info.filamentColors_slicer.size(); i++) {
+                wxColour    numColor           = HexToWxColour(info.filamentColors_slicer.at(i));
+                std::string select_preset_type = "-";
+                if (info.filamentTypess_slicer.size() > i) {
+                    select_preset_type = Slic3r::GUI::into_u8(info.filamentTypess_slicer.at(i));
+                }
+                colorFilamentobjsList.push_back({numColor, getTextFitColor(numColor), select_preset_type});
+            }
+        }
+        int sloopIndex = 0;
+        for (size_t extruder_id : info.extruder_idsList) {
+            if (colorFilamentobjsList.size() > extruder_id) {
+                GcodeFilamentColor colorFilamentobjs;
+                colorFilamentobjs.num   = extruder_id;
+                colorFilamentobjs.sloop = sloopIndex;
+                if (extruderWeightMap.find(extruder_id) != extruderWeightMap.end()) {
+                    colorFilamentobjs.weight = extruderWeightMap[extruder_id];
+                }
+                if (isGcodeIndex) {
+                    if (extruder_colors.size() > extruder_id) {
+                        colorFilamentobjs.filamentColor = HexToWxColour(extruder_colors[extruder_id]);
+                    }
+                } else {
+                    if (info.filamentColors_slicer.size() > extruder_id) {
+                        colorFilamentobjs.filamentColor = HexToWxColour(info.filamentColors_slicer.at(extruder_id));
+                    }
+                }
+                if ((isGcodeIndex ? filament_types.size() : info.filamentTypess_slicer.size()) > extruder_id) {
+                    colorFilamentobjs.filament = isGcodeIndex ? filament_types[extruder_id] : info.filamentTypess_slicer.at(extruder_id);
+                } else {
+                    colorFilamentobjs.filament = get_preset_filament(Slic3r::GUI::into_u8(colorFilamentobjsList[extruder_id].filament_type));
+                }
+                gcodeFilamentColorList.push_back(colorFilamentobjs);
+                sloopIndex++;
+            }
+        }
+
+        info.gcodeFilamentColorList = gcodeFilamentColorList;
+
+        info.printerName                           = printerName;
+        info.machine_type;// = FromStrGetPrinterType(printerName);
+        modelSelcicerInfoMap[partObj->get_index()] = info;
+    }
+    json j = modelSelcicerInfoMap;
+    return j.dump();
+
+
+}
+
+
+std::string InfoManage::LoadGcodeFileInfo(const std::string& filename)
+{
+    std::string   line;
+    std::ifstream file;
+
+#ifdef _WIN32
+    std::filesystem::path p = wxString::FromUTF8(filename).wc_str();
+#else
+    std::filesystem::path p = filename;
+#endif
+    bool        capture     = false;
+    bool        infoCapture = false;
+    std::string capturedLines;
+
+    if (file.is_open()) {
+        while (getline(file, line)) {
+            if (line.find("thumbnail begin") != std::string::npos) {
+                capture = true;
+                continue;
+            }
+            if (line.find("thumbnail end") != std::string::npos) {
+                capture = false;
+                break;
+            }
+            if (capture) {
+                std::stringstream ss(line);
+                char              semicolon;
+                std::string       content;
+                ss >> semicolon;
+                getline(ss, content);
+                auto it = std::find_if(content.begin(), content.end(), [](unsigned char ch) { return !std::isspace(ch); });
+                content.erase(content.begin(), it);
+                capturedLines += content;
+            }
+        }
+        file.close();
+    } else {
+        std::cerr << "Unable to open file";
+        return capturedLines;
+    }
+
+    return capturedLines;
+}
+
+
+
+std::string InfoManage::GetGcodeFileImg(wxString last_load_gcode)
+{
+    std::string localFielName;
+    wxString    nowFileName = !last_load_gcode.empty() ? last_load_gcode : wxString();
+    if (nowFileName.length() == 0) {
+        nowFileName = get_default_gcode_file_name();
+        if (nowFileName == "emptyFile") {
+            //showACCloudOpterStaticDialog(false, _("Upload to cloud failed"),_("G-code export failed. Please check your model and print settings"));
+
+            //SetUpLoadFileIndexEvent(false);
+            return localFielName;
+        }
+        localFielName = Slic3r::GUI::into_u8(nowFileName);
+    } else {
+        localFielName = Slic3r::GUI::into_u8(nowFileName);
+    }
+    std::string imgStr = LoadGcodeFileInfo(localFielName);
+    return imgStr;
+}
+
+
+
+bool InfoManage::persetUpdaterOperate(const std::string& cmd, wxString profiles_new_dir, std::string* error_reason) 
+{
+    boost::filesystem::path paramDir(profiles_new_dir.ToUTF8().data());
+    return persetUpdaterOperate_(cmd, paramDir, error_reason);
+
+}
+bool InfoManage::persetUpdaterOperate_(const std::string& cmd, boost::filesystem::path profiles_new_dir, std::string* error_reason)
+{
+    static boost::filesystem::path pereset_dir_sys = boost::filesystem::path(Slic3r::resources_dir()) / "profiles";    
+    static boost::filesystem::path pereset_dir_run = boost::filesystem::path(Slic3r::data_dir()) / "system";         
+    static boost::filesystem::path pereset_dir_ota = boost::filesystem::path(Slic3r::data_dir()) / "ota" / "profiles"; 
+    Slic3r::Semver version_of_sys = get_version_from_json((pereset_dir_sys / "Anycubic.json").make_preferred().string());
+    Slic3r::Semver version_of_run = get_version_from_json((pereset_dir_run / "Anycubic.json").make_preferred().string());
+    Slic3r::Semver version_of_ota = get_version_from_json((pereset_dir_ota / "Anycubic.json").make_preferred().string());
+
+    static auto testPersetFolder = [](boost::filesystem::path profiles_dir) -> bool {
+        if (!get_version_from_json((profiles_dir / "Anycubic.json").make_preferred().string()).valid()) {
+            return false;
+        }
+        return true;
+    };
+    static auto doPersetFolderCut = [](boost::filesystem::path source, boost::filesystem::path target) -> bool {
+        boost::system::error_code ec;
+        if (source == target) {
+            return true;
+        }
+        if (boost::filesystem::exists(target)) {
+            boost::filesystem::remove_all(target, ec);
+            if (ec) {
+                BOOST_LOG_TRIVIAL(error) << Slic3r::format("Error removing %1%  %2% ", target.string(), ec.message());
+                return false;
+            }
+        }
+        if (boost::filesystem::exists(source)) {
+            boost::filesystem::rename(source, target, ec);
+            if (ec) {
+                BOOST_LOG_TRIVIAL(error) << Slic3r::format("Error renaming %1% ---> %2%  %3% ", source.string(), target.string(),
+                                                          ec.message());
+                return false;
+            }
+            return true;
+        }
+        return false;
+    };
+    static auto doPersetUpdateNow = []() -> bool {
+        bool res = true;
+        Slic3r::set_profiles_dir(pereset_dir_ota.string());
+        Slic3r::GUI::wxGetApp().check_config_updates_from_updater_true();
+        return res;
+    };
+
+    bool result = true;
+
+    if (cmd == "verify") {
+        wxString status;
+        host_->GetEncryptValue("app/profiles_ota", status);
+        if (status.empty()) {
+            Slic3r::set_profiles_dir(pereset_dir_sys.string());
+            BOOST_LOG_TRIVIAL(info) << "use system profiles : " << pereset_dir_sys.string();
+            return true;
+        }
+        if (testPersetFolder(pereset_dir_ota) && version_of_ota > version_of_sys) {
+            Slic3r::set_profiles_dir(pereset_dir_ota.string());
+
+            wxString vale_ota = "ota";
+            host_->SetEncryptValue("app/profiles_ota", vale_ota);
+            BOOST_LOG_TRIVIAL(info) << "use ota profiles : " << pereset_dir_ota.string();
+        } else {
+            Slic3r::set_profiles_dir(pereset_dir_sys.string());
+            wxString vale_0 = "0";
+            host_->SetEncryptValue("app/profiles_ota", vale_0);
+            BOOST_LOG_TRIVIAL(info) << "use system profiles : " << pereset_dir_sys.string();
+        }
+    } else if (cmd == "ready" || cmd == "install") {
+        result = result && testPersetFolder(profiles_new_dir);
+        result = result && doPersetFolderCut(profiles_new_dir, pereset_dir_ota);
+        result = result && testPersetFolder(pereset_dir_ota);
+
+        if (!result) {
+            BOOST_LOG_TRIVIAL(error) << "Error in persetUpdaterOperate: " << cmd;
+            return false; 
+        }
+        wxString vale_ready = "ready";
+        host_->SetEncryptValue("app/profiles_ota", vale_ready);
+        if (cmd == "install") {
+            result = result && doPersetUpdateNow();
+            if (!result) {
+                Slic3r::set_profiles_dir(pereset_dir_sys.string());
+                wxString vale_system = "system";
+                host_->SetEncryptValue("app/profiles_ota", vale_system);
+                BOOST_LOG_TRIVIAL(error) << "Error in install: " << cmd;
+                return false;
+            }
+            BOOST_LOG_TRIVIAL(info) << "Successfully installed pereset_dir_ota.";
+            wxString vale_done = "done";
+            host_->SetEncryptValue("app/profiles_ota", vale_done);
+        }
+    }
+
+    return result;
+}
+
+std::string InfoManage::getAcCfg(std::string key2)
+{
+    if ("preset_version_sys" == key2) {
+        boost::filesystem::path p(Slic3r::resources_dir());
+        p = p / "profiles" / "Anycubic.json";
+        return get_version_from_json(p.string()).to_string();
+    } else if ("preset_version_runtime" == key2) {
+        return Slic3r::GUI::wxGetApp().preset_bundle->get_vendor_profile_version("Anycubic").to_string();
+    }
+    return std::string();
+}
 
 wxString GetFileNameFromUrl(const wxString& url)
 {

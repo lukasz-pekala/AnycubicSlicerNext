@@ -101,6 +101,9 @@ void set_resources_dir(const std::string &path);
 // Return a full path to the resources directory.
 const std::string& resources_dir();
 
+void set_profiles_dir(const std::string& path);
+const std::string& profiles_dir();
+
 //BBS: add temp dir
 void set_temporary_dir(const std::string &path);
 const std::string& temporary_dir();

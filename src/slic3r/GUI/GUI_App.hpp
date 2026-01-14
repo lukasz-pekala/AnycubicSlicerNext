@@ -695,6 +695,8 @@ public:
 #ifdef ENABLE_OLD_VERSION_UPDATE
     void            check_config_updates_from_updater() { check_updates(false); }
 #endif // ENABLE_OLD_VERSION_UPDATE
+    void            check_config_updates_from_updater_true() { check_updates(true); }
+
 private:
     int             updating_bambu_networking();
     bool            on_init_inner();

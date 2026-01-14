@@ -3,8 +3,12 @@
 
 #include <boost/preprocessor/cat.hpp>
 #include <plugins_sdk/event/plugin_event.hxx>
-#include "plugins_base/plugins.hxx"
-#include "plugins_base/plugins_base.hxx"
+#include <plugins_base/plugins.hxx>
+#include <plugins_base/plugins_base.hxx>
+#include <plugins_base/funcation.hxx>
+#include "slic3r/Anycubic/plugins/xrc/detail/widgets/custom_struct_manger.hxx"
+#include "slic3r/Anycubic/plugins/xrc/detail/widgets/ModelSlicerInfoJson.hxx"
+#include <plugins_sdk/event/detail/CloudTransferCallback.hxx>
 
 #define PLGUINS_NAME info_manage
 #define PLUGIN_NAME_STR BOOST_PP_STRINGIZE(PLGUINS_NAME)
@@ -18,7 +22,36 @@ public:
     InfoManage(Anycubic::Plugins::PluginHost* host);
     virtual ~InfoManage();
 
+    void Auto_BindEvent();
+    void Auto_openFileName();
+    int  FindStringInVector(const wxString& target);
+    std::string GetAuto_SelectDeviceID() { return m_auto_selectDeviceID; }
+    void        AutoSetDirPath(const wxString& dir);
+    bool        IsAutoRunModel();
+    void        Auto_GetFiles();
+    wxVector<wxString> GetDirListFiles(const wxString& dirPath);
+    std::string        getLastRemoteDeviceID() { return m_last_remote_deviceID; }
+    void               updateLastTaskID(std::string taskID) { m_last_taskID = taskID; }
+    bool               IsRunCallTestModel(int index);
+    wxString           Auto_GetImportFileName();
+
 private:
+
+
+    void Download(const std::string& url, const TransferCallback* cb);
+
+    void UploadFile(const std::string& url, const std::string& filePath, const std::string& fileName, uint64_t fileSize, const TransferCallback* cb);
+
+    std::string GetFilamentSyncColourList();
+    std::string GetFilamentSyncTypeList();
+
+    std::string      LoadGcodeFileInfo(const std::string& filename);
+    std::string      GetModelSlicerInfoMap(bool isPrint, const wxString& last_load_gcode);
+    std::string      GetModelSlicerInfo(bool isPrint, const wxString& last_load_gcode);
+    std::string      GetGcodeFileImg(wxString last_load_gcode);
+    bool        persetUpdaterOperate(const std::string& cmd, wxString profiles_new_dir, std::string* error_reason);
+    bool        persetUpdaterOperate_(const std::string& cmd, boost::filesystem::path profiles_new_dir, std::string* error_reason);
+    std::string getAcCfg(std::string key2);
   wxString get_default_gcode_file_name();
   std::string get_curr_plate_printer_model_name();
   std::string autoExport_gcode3mf(const std::string& fileIndex, bool export_all = false);
@@ -26,12 +59,20 @@ private:
   wxString    get_preset_filament(std::string filament_type);
   bool check_is_all_plates_selected();
   void        send_upload_file_cloud_event(wxString constr);
+  bool          m_autoStartIndex{false};
+  int           m_showWindowType{-1}; // 1. remoteing 2.farm 3.sendPrinter
+  wxString      m_auto_nowFileName;
+  wxVector<wxString> m_auto_filesList;
+  std::string        m_auto_selectDeviceID;
+  wxString           m_auto_dirPath;
+  std::string        m_last_remote_deviceID = "";
+  std::string        m_last_taskID          = "";
 
   
 private:
   void OnPutEvent(Anycubic::Plugins::SDK::wxPluginEvent& event);
 
-  private:
+private:
   // Anycubic::Plugins::Plugin
   const char *Name(void) override { return PLUGIN_NAME_STR; };
   bool Start(void) override { return true; };

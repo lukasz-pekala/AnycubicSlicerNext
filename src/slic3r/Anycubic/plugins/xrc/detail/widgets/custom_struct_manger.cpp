@@ -1,20 +1,6 @@
 #include "custom_struct_manger.hxx"
 
 
-wxString from_u8(const std::string& str)
-{
-    return wxString::FromUTF8(str.c_str());
-}
-
-std::string into_u8(const wxString& str)
-{
-    auto buffer_utf8 = str.utf8_str();
-    return std::string(buffer_utf8.data());
-}
-
-
-
-
 bool LANInfoObj::isQualInfo(LANInfoObj& obj)
 {
     if (auto_leveling_support != obj.auto_leveling_support)
