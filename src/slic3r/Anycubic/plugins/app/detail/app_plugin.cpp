@@ -3,6 +3,7 @@
 #include <slic3r/GUI/GUI_App.hpp>
 #include <slic3r/GUI/MainFrame.hpp>
 #include <slic3r/GUI/Plater.hpp>
+#include <slic3r/GUI/Notebook.hpp>
 
 #include <plugins_base/funcation.hxx>
 
@@ -36,7 +37,17 @@ int32_t AppPlugin::import(const wxString *paths) {
       filenames.Add(path);
     }
   }
-
+  // NOTE: 切换TAB页
+  // 切换到打印页
+  if(auto tab = Slic3r::GUI::wxGetApp().mainframe->m_tabpanel;tab!=nullptr){
+      auto size =  static_cast<int32_t>(tab->GetPageCount());
+      for(auto idx = 0;idx<size;++idx){
+          if (auto txt = tab->GetPageText(idx);txt == _("Prepare")) {
+              tab->SetSelection(idx);
+              break;
+          }
+      }
+  }
   bool res = Slic3r::GUI::wxGetApp().plater()->load_files(filenames);
   Slic3r::GUI::wxGetApp().mainframe->update_title();
   return res ? 0 : -1;

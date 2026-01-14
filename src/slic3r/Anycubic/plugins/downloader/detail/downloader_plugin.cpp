@@ -59,6 +59,7 @@ bool DownloaderPlugin::is_china_env(void) const {
 
 size_t DownloaderPlugin::start_download(const wxString &url,
                                         download_callback callback, void *ctx) {
+  LOG_INFO("start_download: {}", url.utf8_string());
   for (auto &p : protocols_) {
     if (!p->parse_url(url)) {
       continue;
@@ -187,8 +188,13 @@ bool DownloaderPlugin::set_download_state(int id,
   if (state == Slic3r::GUI::DownloadState::DownloadDone ||
       state == Slic3r::GUI::DownloadState::DownloadError ||
       state == Slic3r::GUI::DownloadState::DownloadStopped) {
-    d->callback(d->id, state, d->download->get_filename());
-    m_downloads.erase(itr);
+      auto filename = d->download->get_dest_folder();
+      if(filename.back() != '/'){
+        filename += '/';
+      }
+      filename += d->download->get_filename();
+      d->callback(d->id, state, filename);
+      m_downloads.erase(itr);
   }
   return true;
 }

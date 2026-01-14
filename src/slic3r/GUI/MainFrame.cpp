@@ -3674,7 +3674,9 @@ void MainFrame::add_to_recent_projects(const wxString& filename)
             recent_projects.push_back(into_u8(m_recent_projects.GetHistoryFile(i)));
         }
         wxGetApp().app_config->set_recent_projects(recent_projects);
-        m_webview->SendRecentList(0);
+        if(m_webview != nullptr){
+            m_webview->SendRecentList(0);
+        }
     }
 }
 

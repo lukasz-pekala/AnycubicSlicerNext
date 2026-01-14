@@ -2,6 +2,8 @@
 
 #include "../downloader_plugin.hpp"
 
+#include <easy_log/log.hxx>
+
 #include <slic3r/GUI/GUI_App.hpp>
 #include <slic3r/GUI/I18N.hpp>
 #include <slic3r/GUI/NotificationManager.hpp>
@@ -108,6 +110,7 @@ std::string ACNextProtocol::get_jsonvalue() {
   } else {
     return std::string();
   }
+  LOG_INFO("jsonvalue_: {}", jsonvalue_);
   return base64Decode(jsonvalue_);
 }
 

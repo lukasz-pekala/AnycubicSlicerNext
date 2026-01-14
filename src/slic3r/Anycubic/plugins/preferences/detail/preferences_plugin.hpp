@@ -24,6 +24,7 @@ private:
   bool register_tab(const wxString &plugin_name, const wxString &title,
                     const wxString &icon, const wxString &xrcName,
                     const wxString *xrc);
+  void open(void) const;
 
 private:
   // Anycubic::Plugins::Plugin interface

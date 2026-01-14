@@ -3,6 +3,7 @@
 #include <plugins_base/funcation.hxx>
 
 #include <slic3r/GUI/Preferences.hpp>
+#include <slic3r/GUI/GUI_App.hpp>
 
 PreferencesPlugin::PreferencesPlugin(Anycubic::Plugins::PluginHost *host)
     : host_(host) {
@@ -10,6 +11,7 @@ PreferencesPlugin::PreferencesPlugin(Anycubic::Plugins::PluginHost *host)
   assert(router != nullptr);
 
   router->REGISTER_FUNCATION(PreferencesPlugin, register_tab);
+  router->REGISTER_FUNCATION(PreferencesPlugin, open);
 
   host_->WatchWindow("Preferences", this, [](void *ctx, wxWindow *wnd) {
     assert(wxIsMainThread());
@@ -50,4 +52,8 @@ bool PreferencesPlugin::register_tab(const wxString &plugin_name,
   }
   tabs_.push_back({plugin_name, title, icon, xrcName, *xrc});
   return false;
+}
+
+void PreferencesPlugin::open(void) const {
+  Slic3r::GUI::wxGetApp().open_preferences();
 }
