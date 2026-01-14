@@ -39,7 +39,7 @@ int32_t TabBookPlugin::CreateTab(int idx, const std::string &title,
     idx = static_cast<int>(tabbook->GetPageCount());
   }
   auto ret =
-      tabbook->InsertPage(size_t(idx), panel, wxString::FromUTF8(title), icon);
+      tabbook->InsertPage(size_t(idx), panel, wxString::FromUTF8(title), icon,icon);
   if (ret)
     return 0;
   return -1;
