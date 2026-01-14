@@ -6,6 +6,7 @@
 #include <slic3r/GUI/Notebook.hpp>
 
 #include <plugins_base/funcation.hxx>
+#include <plugins_sdk/webview/detail/script_format.hxx>
 
 #include <wx/filename.h>
 #include <wx/tokenzr.h>
@@ -20,6 +21,7 @@ AppPlugin::AppPlugin(Anycubic::Plugins::PluginHost *host) : host_(host) {
   router->REGISTER_FUNCATION(AppPlugin, import);
   router->REGISTER_FUNCATION(AppPlugin, current_gcode_file);
   router->REGISTER_FUNCATION(AppPlugin, recent_projects);
+  router->REGISTER_FUNCATION(AppPlugin, handler_web_request);
 }
 
 AppPlugin::~AppPlugin() {}
@@ -59,10 +61,28 @@ bool AppPlugin::current_gcode_file(wxString *path) {
   return path->IsEmpty() == false;
 }
 
-wxString AppPlugin::recent_projects(void) {  
+bool AppPlugin::recent_projects(wxString *json) {
+  assert(json != nullptr);
   boost::property_tree::wptree data;
   wxGetApp().mainframe->get_recent_projects(data, INT_MAX);
   std::wostringstream oss;
   boost::property_tree::write_json(oss, data, false);
-  return oss.str(); 
+  *json = wxString(oss.str()); 
+  return json->IsEmpty() == false;
+}
+
+void AppPlugin::handler_web_request(wxWebView* view, const wxString* cmd) {
+  if(cmd==nullptr || cmd->IsEmpty()){
+      return;
+  }
+  auto response =  Slic3r::GUI::wxGetApp().handle_web_request(cmd->utf8_string());
+  if (response.empty()||view==nullptr) {
+    return;
+  }
+
+  response.erase(std::remove(response.begin(), response.end(), '\n'), response.end());
+  if (!response.empty()) {
+      auto jsresponse = ScriptFormat("window.postMessage", response);
+      RunScript(view, jsresponse);
+  }
 }

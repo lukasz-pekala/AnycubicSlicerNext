@@ -20,7 +20,8 @@ public:
 private:
   int32_t import(const wxString *paths);
   bool current_gcode_file(wxString *path);
-  wxString recent_projects(void);
+  bool recent_projects(wxString *json);
+  void handler_web_request(wxWebView*view, const wxString* cmd);
 
 private:
   // Anycubic::Plugins::Plugin
