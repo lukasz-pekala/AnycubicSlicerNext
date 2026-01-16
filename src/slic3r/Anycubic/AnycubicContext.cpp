@@ -3,12 +3,13 @@
 #include "detail/anonymous.hpp"
 #include "plugins/plugins_list.hpp"
 
+#include <utility/codec/base64.hxx>
 #include <utility/encrypt/aes.hxx>
 #include <utility/utils/filesystem.hxx>
 #include <utility/utils/range.hxx>
-#include <utility/codec/base64.hxx>
 
 #include <plugins_base/funcation.hxx>
+#include <plugins_sdk/constant/config.hxx>
 
 #include <slic3r/GUI/GUI_App.hpp>
 #include <slic3r/GUI/MainFrame.hpp>
@@ -54,10 +55,8 @@ bool is_section_name_allowed(const wxString &section_name) {
 }
 #else
 // 好像存在的意义很小，先关闭以后再说
-bool is_section_name_allowed(const wxString &section_name) {
-  return true;
-}
-#endif  
+bool is_section_name_allowed(const wxString &section_name) { return true; }
+#endif
 
 struct EmptyPM : public PluginsManager {
   bool AddWidget(const wxString &position, wxWindow *widget) override {
@@ -79,7 +78,7 @@ struct EmptyPM : public PluginsManager {
 };
 
 class AnycubicContextPrivate : public PMConfig {
-
+  friend class AnycubicContext;
 #define URL_SWITCH(name, cn, cn_test, en, en_test)                             \
   static const char *name[] = {cn, cn_test, en, en_test};
 
@@ -101,18 +100,18 @@ public:
   }
   PluginsManager *GetPM() { return pm_; }
   bool PluginsIsLoaded() const { return pm_ != nullptr; }
-    static void downloader_callback(void *ctx, int32_t download_id, int32_t status,
-                          const wxString &filename) {
-      if (status == 3) {
-        // 下载成功
-        LOG_INFO("download success: {}", filename.utf8_string());
-        // NOTE: 加载模型文件
-        wxArrayString filenames;
-        filenames.Add(filename);
-        Slic3r::GUI::wxGetApp().plater()->load_files(filenames);
-        Slic3r::GUI::wxGetApp().mainframe->update_title();
-      }
-    };
+  static void downloader_callback(void *ctx, int32_t download_id,
+                                  int32_t status, const wxString &filename) {
+    if (status == 3) {
+      // 下载成功
+      LOG_INFO("download success: {}", filename.utf8_string());
+      // NOTE: 加载模型文件
+      wxArrayString filenames;
+      filenames.Add(filename);
+      Slic3r::GUI::wxGetApp().plater()->load_files(filenames);
+      Slic3r::GUI::wxGetApp().mainframe->update_title();
+    }
+  };
   bool StartDownload(const wxString &url) {
     return Anycubic::Plugins::dispatch_call<size_t>(
         pm_, "downloader", "start_download", url, &downloader_callback, this);
@@ -162,7 +161,7 @@ private:
       auto config_name = tokenizer.GetNextToken();
       auto val = app_config_->get(section_name.utf8_string(),
                                   config_name.utf8_string());
-      if(val.empty()){
+      if (val.empty()) {
         return false;
       }
       value = wxString::FromUTF8(val);
@@ -195,19 +194,19 @@ private:
           return false; // 不在白名单中，丢弃处理
         }
         auto config_name = tokenizer.GetNextToken();
-        if(value.IsEmpty()){
+        if (value.IsEmpty()) {
           app_config_->erase(section_name.utf8_string(),
                              config_name.utf8_string());
-        }else{
+        } else {
           app_config_->set_str(section_name.utf8_string(),
-                             config_name.utf8_string(), value.utf8_string());
+                               config_name.utf8_string(), value.utf8_string());
         }
         break;
       }
       case 1: {
-        if(value.IsEmpty()){
+        if (value.IsEmpty()) {
           app_config_->erase("app", key.utf8_string());
-        }else{
+        } else {
           app_config_->set(key.utf8_string(), value.utf8_string());
         }
         break;
@@ -232,29 +231,31 @@ private:
 
   bool SetEncryptValue(const class wxString &key, const class wxString &value,
                        bool persistent = true) override {
-    if(value.IsEmpty()){
+    if (value.IsEmpty()) {
       return SetValue(key, value, persistent);
-    }else{
+    } else {
       auto tmp = Encrypt(value);
       return SetValue(key, tmp, persistent);
     }
   }
-  wxString encode_impl(const wxString& value) { 
+  wxString encode_impl(const wxString &value) {
     std::string tmp = value.utf8_string();
-    for(auto&c:tmp){
-      c+=5;
+    for (auto &c : tmp) {
+      c += 5;
     }
-    tmp =  ::base64Encode(tmp);
-    std::wstring wstr = boost::locale::conv::utf_to_utf<wchar_t>(tmp.c_str(), tmp.c_str() + tmp.size());
+    tmp = ::base64Encode(tmp);
+    std::wstring wstr = boost::locale::conv::utf_to_utf<wchar_t>(
+        tmp.c_str(), tmp.c_str() + tmp.size());
     return wstr;
   }
   wxString decode_impl(const wxString &value) {
     auto tmp = ::base64Decode(value.utf8_string());
-    for(auto& c:tmp){
+    for (auto &c : tmp) {
       c -= 5;
     }
     // NOTE: 转std::string为std::wstring
-    std::wstring wstr = boost::locale::conv::utf_to_utf<wchar_t>(tmp.c_str(), tmp.c_str() + tmp.size());
+    std::wstring wstr = boost::locale::conv::utf_to_utf<wchar_t>(
+        tmp.c_str(), tmp.c_str() + tmp.size());
     return wstr;
   }
   inline wxString Decrypt(const wxString &value) {
@@ -264,19 +265,6 @@ private:
   inline wxString Encrypt(const wxString &value) {
     return encode_impl(encode_impl(value));
   }
-
-public:
-  void CheckUpdatePlugin(int64_t version, const char *name,
-                         const PluginUpdateCallback &callback) {
-
-    // 检查插件更新
-  }
-  std::string GetPluginUpdateUrl(const wxString &name, int64_t version) {
-
-    return std::string();
-  }
-
-  int get_url_index() { return 0; }
 
 private:
   std::map<wxString, wxString> config_;
@@ -301,29 +289,24 @@ bool AnycubicContext::PluginsIsLoaded() const {
   return impl_->PluginsIsLoaded();
 }
 
-bool AnycubicContext::CheckUpdatePlugins(const PluginUpdateCallback &callback) {
-  assert(callback != nullptr);
-  using Anycubic::utility::make_range;
-  wxString path;
-  for (auto index : make_range(static_cast<int>(impl_->GetPM()->Package()))) {
-    if (impl_->GetPM()->PackagePath(index, path)) {
-      PluginsPackageInfo info = {0};
-      if (GetPluginsPackageInfo(path.utf8_string().c_str(), &info)) {
-        impl_->CheckUpdatePlugin(info.version, info.name, callback);
-        FreePluginsPackageInfo(&info);
-      }
-    }
-  }
-
-  return false;
-}
-
 bool AnycubicContext::HasPlugin() const {
   auto pm = impl_->GetPM();
   if (pm == nullptr) {
     return false;
   }
-  return pm->Package() > 0;
+  return Anycubic::Plugins::dispatch_call<bool>(pm, "manager", "has_package",
+                                                ANYCUBIC_PLUGIN_NAME);
+}
+bool AnycubicContext::StartDownloadPlugins(const wxString &name) {
+  if (name.IsEmpty()) {
+    return false;
+  }
+  auto pm = impl_->GetPM();
+  if (pm == nullptr) {
+    return false;
+  }
+  return Anycubic::Plugins::dispatch_call<bool>(pm, "manager",
+                                                "start_download_plugin", name);
 }
 bool AnycubicContext::StartDownload(const wxString &url) {
   return impl_->StartDownload(url);
@@ -365,6 +348,10 @@ void AnycubicContext::OnInitByApp() {
     LOG_ERROR("SetupPM failed");
     return;
   }
+  // 保证所有地方读取都是一致的
+  impl_->SetValue(CONFIG_PACKAGE_PATH, package, false);
+  impl_->SetValue(CONFIG_PLUGINS_PATH, current_dir, false);
+
   std::vector<create_library_t> &plugins = Anycubic::Plugins::GetPluginsList();
   (*impl_)->AddStaticPlugins(plugins.data(), plugins.size());
   // 这行只能最后一行

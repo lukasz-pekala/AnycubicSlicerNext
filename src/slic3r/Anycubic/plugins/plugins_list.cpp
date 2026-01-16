@@ -2,7 +2,6 @@
 
 #include <plugins_list.h>
 
-
 #include <boost/preprocessor.hpp>
 
 #include <plugins_base/plugins_base.hxx>
@@ -28,9 +27,9 @@ BOOST_PP_SEQ_FOR_EACH(DECLARE_PLUGIN_FUNCTION, nil, PLUGINS_LIST_SEQ)
 
 BOOST_PP_SEQ_FOR_EACH(DEFINED_FUNCTION, _create, PLUGINS_LIST_SEQ)
 namespace Anycubic::Plugins {
-    std::vector<create_library_t> & GetPluginsList(){
-        static std::vector<create_library_t> plugins_list{BOOST_PP_SEQ_FOR_EACH(DECLARE_FUNCTION, _create, PLUGINS_LIST_SEQ) nullptr};
-        return plugins_list;
-    }
+std::vector<create_library_t> &GetPluginsList() {
+  static std::vector<create_library_t> plugins_list{BOOST_PP_SEQ_FOR_EACH(
+      DECLARE_FUNCTION, _create, PLUGINS_LIST_SEQ) nullptr};
+  return plugins_list;
+}
 } // namespace Anycubic::Plugins
-

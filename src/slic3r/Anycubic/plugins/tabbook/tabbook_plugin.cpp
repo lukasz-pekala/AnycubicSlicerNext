@@ -38,8 +38,8 @@ int32_t TabBookPlugin::CreateTab(int idx, const std::string &title,
   if (idx == -1) {
     idx = static_cast<int>(tabbook->GetPageCount());
   }
-  auto ret =
-      tabbook->InsertPage(size_t(idx), panel, wxString::FromUTF8(title), icon,icon);
+  auto ret = tabbook->InsertPage(size_t(idx), panel, wxString::FromUTF8(title),
+                                 icon, icon);
   if (ret)
     return 0;
   return -1;
@@ -80,8 +80,7 @@ bool TabBookPlugin::AttachEvt(wxEvtHandler *) { return false; }
 
 bool TabBookPlugin::DetachEvt(wxEvtHandler *) { return false; }
 
-bool TabBookPlugin::BindEvt(wxPanel* panel, wxWindow* parent,
-                                wxString *bmp) {
+bool TabBookPlugin::BindEvt(wxPanel *panel, wxWindow *parent, wxString *bmp) {
   return false;
 }
 

@@ -2,8 +2,8 @@
 
 #include <plugins_base/funcation.hxx>
 
-#include <slic3r/GUI/Preferences.hpp>
 #include <slic3r/GUI/GUI_App.hpp>
+#include <slic3r/GUI/Preferences.hpp>
 
 PreferencesPlugin::PreferencesPlugin(Anycubic::Plugins::PluginHost *host)
     : host_(host) {

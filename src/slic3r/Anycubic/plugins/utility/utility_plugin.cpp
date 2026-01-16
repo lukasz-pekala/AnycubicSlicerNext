@@ -2,13 +2,14 @@
 
 #include "slic3r/Anycubic/detail/anonymous.hpp"
 
-#include <slic3r/GUI/GUI_App.hpp>
 #include <libslic3r/AppConfig.hpp>
+#include <slic3r/GUI/GUI_App.hpp>
 
 #include <plugins_base/funcation.hxx>
 #include <string>
 
-UtilityPlugin::UtilityPlugin(Anycubic::Plugins::PluginHost *host):host_(host) {
+UtilityPlugin::UtilityPlugin(Anycubic::Plugins::PluginHost *host)
+    : host_(host) {
   assert(host_ != nullptr);
   auto router = host_->Router();
   assert(router != nullptr);
@@ -35,8 +36,6 @@ UtilityPlugin::UtilityPlugin(Anycubic::Plugins::PluginHost *host):host_(host) {
 
 UtilityPlugin::~UtilityPlugin() {}
 
-
-
 std::string UtilityPlugin::pcid(void) const {
   return Slic3r::GetPCID(nullptr).ToStdString();
 }
@@ -47,7 +46,7 @@ bool UtilityPlugin::is_test_env(void) const {
 }
 bool UtilityPlugin::is_china_env(void) const {
   // 获取真实现的区域信息
-  return region() != "Global"; 
+  return region() != "Global";
 }
 bool UtilityPlugin::dark_mode(void) const {
   return Slic3r::GUI::wxGetApp().dark_mode();
@@ -62,7 +61,7 @@ std::string UtilityPlugin::region(void) const {
 std::string UtilityPlugin::language(void) const {
   wxString developer_mode;
   host_->GetValue("language", developer_mode);
-  return developer_mode.utf8_string(); 
+  return developer_mode.utf8_string();
 }
 std::string UtilityPlugin::get_temp_path(void) const {
   wxStandardPaths &standardPaths = wxStandardPaths::Get();
@@ -82,10 +81,10 @@ void UtilityPlugin::set_download_path(const std::string &path) {
 
 bool UtilityPlugin::is_auto_login(void) const {
   wxString auto_login;
-  if(host_->GetValue("user/auto_login", auto_login)){
+  if (host_->GetValue("user/auto_login", auto_login)) {
     auto_login.Lower();
     return auto_login == "true" || auto_login == "1" || auto_login == "on" ||
-          auto_login == "yes" || auto_login == "y" || auto_login == "t";
+           auto_login == "yes" || auto_login == "y" || auto_login == "t";
   }
   return false;
 }
@@ -112,19 +111,22 @@ void UtilityPlugin::set_user_info(const wxString *username,
 
 void UtilityPlugin::clear_login_info(void) {
   wxString empty_string;
-  if(is_china_env()){
+  if (is_china_env()) {
     set_user_info(&empty_string, &empty_string);
-  }else{
+  } else {
     set_access_token(&empty_string);
   }
 }
 
-std::string UtilityPlugin::get_slic3r_version(void) const { return SLIC3R_VERSION; }
-std::string UtilityPlugin::get_app_version(void) const { return SoftFever_VERSION; }
+std::string UtilityPlugin::get_slic3r_version(void) const {
+  return SLIC3R_VERSION;
+}
+std::string UtilityPlugin::get_app_version(void) const {
+  return SoftFever_VERSION;
+}
 int32_t UtilityPlugin::get_app_version_code(void) const { return VERSION_CODE; }
 
-bool UtilityPlugin::BindEvt(wxPanel* panel, wxWindow* parent,
-                                wxString *bmp) {
+bool UtilityPlugin::BindEvt(wxPanel *panel, wxWindow *parent, wxString *bmp) {
   return false;
 }
 

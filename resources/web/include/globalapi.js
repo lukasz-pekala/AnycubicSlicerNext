@@ -327,7 +327,7 @@ function clearCookie(name) {
 /*--------Studio WX Message-------*/
 function IsInSlicer()
 {
-	let bMatch=navigator.userAgent.match(  RegExp('BBL-Slicer','i') );
+	let bMatch=navigator.userAgent.match(  RegExp('AnycubicSlicerNext2','i') );
 	
 	return bMatch;
 }
@@ -340,7 +340,10 @@ function SendWXMessage( strMsg )
 	
 	if(bCheck!=null)
 	{
+		console.log(strMsg);
 		window.wx.postMessage(strMsg);
+	}else{
+		console.log("Not In Slicer");
 	}
 }
 

@@ -78,8 +78,8 @@ private:
   void Stop(void) override {}
   bool AttachEvt(class wxEvtHandler *) override { return false; };
   bool DetachEvt(class wxEvtHandler *) override { return false; };
-  bool BindEvt(class wxPanel* panel, class wxWindow* parent = nullptr,
-                   class wxString *bmp = nullptr) override {
+  bool BindEvt(class wxPanel *panel, class wxWindow *parent = nullptr,
+               class wxString *bmp = nullptr) override {
     return false;
   }
   bool CreateWebview(class wxWebView *view, class wxWindow *parent = nullptr,

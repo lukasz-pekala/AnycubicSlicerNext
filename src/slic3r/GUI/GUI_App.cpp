@@ -3562,14 +3562,8 @@ if (res) {
 
 void GUI_App::ShowDownNetPluginDlg() {
     try {
-        auto iter = std::find_if(dialogStack.begin(), dialogStack.end(), [](auto dialog) {
-            return dynamic_cast<DownloadProgressDialog *>(dialog) != nullptr;
-        });
-        if (iter != dialogStack.end())
-            return;
-        DownloadProgressDialog dlg(_L("Downloading Anycubic Plug-in"));
-        dlg.ShowModal();
-    } catch (std::exception &) {
+        m_anycubic_context->StartDownloadPlugins();
+    } catch (std::exception&) {
         ;
     }
 }
@@ -4084,6 +4078,8 @@ std::string GUI_App::handle_web_request(std::string cmd)
                         wxGetApp().request_model_download(realurl);
                     }
                 }
+            }else if (command_str.compare("homepage_check_plugin_show") == 0 && m_anycubic_context->HasPlugin()==false) {
+                mainframe->refresh_plugin_tips();
             }
         }
     }

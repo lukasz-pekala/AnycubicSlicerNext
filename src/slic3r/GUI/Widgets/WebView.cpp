@@ -119,11 +119,11 @@ public:
 static wxString CustomUserAgent()
 {
 #if defined(__WXMAC__)
-    static const wxString webUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15";
+    static const wxString webUserAgent = "AnycubicSlicerNext2 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15";
 #elif defined(__WXGTK__)
-    static const wxString webUserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
+    static const wxString webUserAgent = "AnycubicSlicerNext2 Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
 #else
-    static const wxString webUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0";
+    static const wxString webUserAgent = "AnycubicSlicerNext2 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0";
 #endif
     wxString dark_light = Slic3r::GUI::wxGetApp().dark_mode() ? "dark" : "light";
     return wxString::Format(SLIC3R_APP_NAME "/V" SLIC3R_VERSION " (%s) %s",  dark_light, webUserAgent);

@@ -8,6 +8,19 @@
 #include <slic3r/GUI/MsgDialog.hpp>
 
 
+static
+bool HasModalDialog() {
+    assert(wxIsMainThread());
+    auto result = std::any_of(wxTopLevelWindows.rbegin(), wxTopLevelWindows.rend(),
+        [](wxWindow* window) {
+            assert(window != nullptr);
+            auto dlg = wxDynamicCast(window, wxDialog);
+            return dlg && dlg->IsModal() && dlg->IsShown();
+        });
+    return result;
+}
+
+
 wxDEFINE_EVENT(EVT_THREAD_CHANGE_TO_MAIN, wxCommandEvent);
 
 
@@ -91,6 +104,11 @@ void HomeDialog::create_dialog(wxCommandEvent& evt)
         host_->GetPlugin(parm->plugin_name.ToStdString().c_str())->BindEvt(panel, dialog);
         int result = -1;
         if (parm->isShowModal) {
+            while (HasModalDialog()) {
+                // 等待模态对话框关闭
+                wxYield();
+                wxMilliSleep(10); 
+            }
             result = dialog->ShowModal();
         } else {
             dialog->Raise();

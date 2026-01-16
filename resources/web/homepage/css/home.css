@@ -103,6 +103,7 @@ body
 #LoginBtn
 {
 	cursor:pointer;
+	display: none;
 }
 
 #LoginBtn:hover

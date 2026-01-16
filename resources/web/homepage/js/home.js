@@ -10,6 +10,7 @@ function OnInit()
 	SendMsg_GetLoginInfo();
 	SendMsg_GetRecentFile();
 	SendMsg_GetStaffPick();
+	SendMsg_CheckPluginShow();
 }
 
 //------最佳打开文件的右键菜单功能----------
@@ -38,10 +39,16 @@ function Set_RecentFile_MouseRightBtn_Event()
 			}
 		});
 
-	$(document).bind("contextmenu",function(e){
-		//在这里书写代码，构建个性右键化菜单
-		return false;
-	});	
+	  $("#RightBoard").bind("contextmenu",function(e){
+        //在这里书写代码，构建个性右键化菜单
+        return false;
+    });
+	
+    // 在LeftBoard区域内允许默认右键菜单
+    $("#LeftBoard").bind("contextmenu",function(e){
+        // LeftBoard保留默认右键菜单
+        return true;
+    });
 	
     $(document).mousemove( function(e){
 		MousePosX=e.pageX;
@@ -77,11 +84,12 @@ function Set_RecentFile_MouseRightBtn_Event()
 
 function SetLoginPanelVisibility(visible) {
   var leftBoard = document.getElementById("LeftBoard");
-  if (visible) {
+  // NOTE: 登录面板都是可见的
+//   if (visible) {
     leftBoard.style.display = "block";
-  } else {
-    leftBoard.style.display = "none";
-  }
+//   } else {
+//     leftBoard.style.display = "none";
+//   }
 }
 
 function HandleStudio( pVal )
@@ -457,7 +465,14 @@ function SendMsg_GetStaffPick()
 	
 	setTimeout("SendMsg_GetStaffPick()",3600*1000*1);
 }
-
+function SendMsg_CheckPluginShow()
+{
+	var tSend={};
+	tSend['sequence_id']=Math.round(new Date() / 1000);
+	tSend['command']="homepage_check_plugin_show";
+	
+	SendWXMessage( JSON.stringify(tSend) );	
+}
 function ShowStaffPick( ModelList )
 {
 	let PickTotal=ModelList.length;

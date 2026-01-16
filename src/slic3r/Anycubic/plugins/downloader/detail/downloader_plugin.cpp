@@ -9,9 +9,8 @@
 #include <slic3r/GUI/GUI_App.hpp>
 #include <slic3r/GUI/NotificationManager.hpp>
 
-
 namespace Slic3r::GUI {
-void open_folder(const std::string& path);
+void open_folder(const std::string &path);
 }
 
 template <typename T, typename Container, typename owner_type>
@@ -142,14 +141,14 @@ bool DownloaderPlugin::user_action_callback(
       case Slic3r::GUI::DownloadUserContinued:
         d->download->resume();
         return true;
-      case Slic3r::GUI::DownloadUserOpenedFolder:{
-          using namespace Slic3r::GUI;
-          // NOTE: 打开下载文件夹
-          wxString download_path;
-          host_->GetValue(CONFIG_DOWNLOAD_PATH, download_path);
-          if (!download_path.IsEmpty()) {
-              open_folder(download_path.utf8_string());
-          }
+      case Slic3r::GUI::DownloadUserOpenedFolder: {
+        using namespace Slic3r::GUI;
+        // NOTE: 打开下载文件夹
+        wxString download_path;
+        host_->GetValue(CONFIG_DOWNLOAD_PATH, download_path);
+        if (!download_path.IsEmpty()) {
+          open_folder(download_path.utf8_string());
+        }
         return true;
       }
       default:
@@ -188,13 +187,13 @@ bool DownloaderPlugin::set_download_state(int id,
   if (state == Slic3r::GUI::DownloadState::DownloadDone ||
       state == Slic3r::GUI::DownloadState::DownloadError ||
       state == Slic3r::GUI::DownloadState::DownloadStopped) {
-      auto filename = d->download->get_dest_folder();
-      if(filename.back() != '/'){
-        filename += '/';
-      }
-      filename += d->download->get_filename();
-      d->callback(d->id, state, filename);
-      m_downloads.erase(itr);
+    auto filename = d->download->get_dest_folder();
+    if (filename.back() != '/') {
+      filename += '/';
+    }
+    filename += d->download->get_filename();
+    d->callback(d->id, state, filename);
+    m_downloads.erase(itr);
   }
   return true;
 }
