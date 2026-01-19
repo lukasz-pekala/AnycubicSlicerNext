@@ -1090,7 +1090,7 @@ std::string InfoManage::GetModelSlicerInfo(bool isPrint, const wxString& last_lo
 
     std::vector<float>  filament_densities = gcodeResult->filament_densities;
     wxString            modesLayersNum = wxString::Format("%d", gcodeResult->print_statistics.modes[0].layers_times.size()) + _(" Layers");
-    wxString            timeStr        = get_time_dhms(gcodeResult->print_statistics.modes[0].time);
+    wxString            timeStr        = Slic3r::get_time_dhms(gcodeResult->print_statistics.modes[0].time);
     std::vector<double> wipe_tower_used_filaments_m;
     std::vector<double> wipe_tower_used_filaments_g;
     double              total_wipe_tower_used_filament_m = 0, total_wipe_tower_used_filament_g = 0;
@@ -1197,7 +1197,7 @@ std::string InfoManage::GetModelSlicerInfoMap(bool isPrint, const wxString& last
 
         std::vector<float> filament_densities = gcodeResult->filament_densities;
         wxString modesLayersNum = wxString::Format("%d", gcodeResult->print_statistics.modes[0].layers_times.size()) + _(" Layers");
-        wxString timeStr        = get_time_dhms(gcodeResult->print_statistics.modes[0].time);
+        wxString timeStr        = Slic3r::get_time_dhms(gcodeResult->print_statistics.modes[0].time);
         std::vector<double> wipe_tower_used_filaments_m;
         std::vector<double> wipe_tower_used_filaments_g;
         double              total_wipe_tower_used_filament_m = 0, total_wipe_tower_used_filament_g = 0;
