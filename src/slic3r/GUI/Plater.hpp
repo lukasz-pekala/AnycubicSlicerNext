@@ -798,6 +798,7 @@ public:
     std::atomic<bool> m_arrange_running{false};
 
     bool is_loading_project() const { return m_loading_project; }
+    wxString GetLastGcodeFileName() { return m_last_gcodeFile_name; }
 
 private:
     struct priv;
@@ -810,6 +811,7 @@ private:
     wxString m_tracking_popup_menu_error_message;
 
     wxString m_last_loaded_gcode;
+    wxString m_last_gcodeFile_name{wxEmptyString};
     //BBS: add only gcode mode
     bool m_only_gcode { false };
     bool m_exported_file { false };

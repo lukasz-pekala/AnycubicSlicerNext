@@ -8950,6 +8950,10 @@ int Plater::new_project(bool skip_confirm, bool silent, const wxString& project_
     if (!skip_confirm && (result = close_with_confirm(check)) == wxID_CANCEL)
         return wxID_CANCEL;
 
+
+    m_last_gcodeFile_name = wxEmptyString;
+
+
     m_only_gcode = false;
     m_exported_file = false;
     m_loading_project = false;
@@ -9132,6 +9136,7 @@ void Plater::load_project(wxString const& filename2,
 
     BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << __LINE__ << " load project done";
     m_loading_project = false;
+    m_last_gcodeFile_name = wxEmptyString;
 }
 
 // BBS: save logic
@@ -10429,9 +10434,14 @@ void Plater::load_gcode(const wxString& filename)
 {
     BOOST_LOG_TRIVIAL(trace) << __FUNCTION__ << __LINE__ << " entry and filename: " << filename;
     BOOST_LOG_TRIVIAL(info) << __FUNCTION__;
-    if (! is_gcode_file(into_u8(filename))
-        || (m_last_loaded_gcode == filename && m_only_gcode)
-        )
+    if (! is_gcode_file(into_u8(filename)) || (m_last_loaded_gcode == filename && m_only_gcode))
+        if (m_last_loaded_gcode == filename) {
+            wxBookCtrlEvent evt(wxEVT_BOOKCTRL_PAGE_CHANGED, wxGetApp().mainframe->m_tabpanel->GetId());
+            wxGetApp().mainframe->m_tabpanel->SetSelection(2);
+            evt.SetSelection(2);
+            evt.SetInt(2);
+            wxPostEvent(wxGetApp().mainframe->m_tabpanel, evt);
+        }
         return;
 
     m_last_loaded_gcode = filename;
@@ -10450,6 +10460,10 @@ void Plater::load_gcode(const wxString& filename)
     //current_result->reset();
     //p->gcode_result.reset();
     //reset_gcode_toolpaths();
+
+    m_last_gcodeFile_name = filename;
+
+
     p->preview->reload_print(false, m_only_gcode);
     wxGetApp().mainframe->select_tab(MainFrame::tpPreview);
     p->set_current_panel(p->preview, true);
@@ -11082,6 +11096,9 @@ bool Plater::load_files(const wxArrayString& filenames)
         }
         return res;
     };
+
+
+    m_last_gcodeFile_name = wxEmptyString;
 
     switch (loadfiles_type) {
     case LoadFilesType::Single3MF:

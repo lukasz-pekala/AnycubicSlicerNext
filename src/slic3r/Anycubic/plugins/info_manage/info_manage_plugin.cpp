@@ -54,10 +54,16 @@ InfoManage::InfoManage(Anycubic::Plugins::PluginHost *host)
 
   router->REGISTER_FUNCATION(InfoManage, Download);
   router->REGISTER_FUNCATION(InfoManage, UploadFile);
+  router->REGISTER_FUNCATION(InfoManage, GetLastLoadGcode);
+  router->REGISTER_FUNCATION(InfoManage, CreateSideToolBtn);
 }
 
 InfoManage::~InfoManage() {}
 
+wxString InfoManage::GetLastLoadGcode() 
+{
+    return Slic3r::GUI::wxGetApp().plater()->GetLastGcodeFileName();
+}
 
 void InfoManage::Download(const std::string& url, const TransferCallback* cb)
 {
@@ -333,7 +339,7 @@ std::string InfoManage::GetModelSlicerInfo(bool isPrint, const wxString& last_lo
 
     std::vector<float>  filament_densities = gcodeResult->filament_densities;
     wxString            modesLayersNum = wxString::Format("%d", gcodeResult->print_statistics.modes[0].layers_times.size()) + _(" Layers");
-    wxString            timeStr        = get_time_dhms(gcodeResult->print_statistics.modes[0].time);
+    wxString            timeStr        = Slic3r::get_time_dhms(gcodeResult->print_statistics.modes[0].time);
     std::vector<double> wipe_tower_used_filaments_m;
     std::vector<double> wipe_tower_used_filaments_g;
     double              total_wipe_tower_used_filament_m = 0, total_wipe_tower_used_filament_g = 0;
@@ -440,7 +446,7 @@ std::string InfoManage::GetModelSlicerInfoMap(bool isPrint, const wxString& last
 
         std::vector<float> filament_densities = gcodeResult->filament_densities;
         wxString modesLayersNum = wxString::Format("%d", gcodeResult->print_statistics.modes[0].layers_times.size()) + _(" Layers");
-        wxString timeStr        = get_time_dhms(gcodeResult->print_statistics.modes[0].time);
+        wxString timeStr        = Slic3r::get_time_dhms(gcodeResult->print_statistics.modes[0].time);
         std::vector<double> wipe_tower_used_filaments_m;
         std::vector<double> wipe_tower_used_filaments_g;
         double              total_wipe_tower_used_filament_m = 0, total_wipe_tower_used_filament_g = 0;
@@ -842,6 +848,21 @@ std::string InfoManage::get_curr_plate_printer_model_name()
     return printer_model;
 }
 
+wxColour InfoManage::HexToWxColour(const wxString& hex)
+{
+    long red, green, blue;
+
+    wxString colorStr = hex;
+    if (colorStr.StartsWith("#")) {
+        colorStr = colorStr.Mid(1);
+    }
+    colorStr.Mid(0, 2).ToLong(&red, 16);
+    colorStr.Mid(2, 2).ToLong(&green, 16);
+    colorStr.Mid(4, 2).ToLong(&blue, 16);
+
+    return wxColour(red, green, blue);
+}
+
 wxString InfoManage::get_default_gcode_file_name() 
 {
 
@@ -849,6 +870,197 @@ wxString InfoManage::get_default_gcode_file_name()
 
 }
 
+void InfoManage::CreateSideToolBtn(int flag) 
+{
+    // flag:1.remotePrint 2.farmPrinter 3.sendPrinter 4.coudeUpload
+    if (!m_showRemote)
+        m_showRemote = flag == 1;
+
+    if (!m_showFarm)
+        m_showFarm = flag == 2;
+
+    if (!m_showSend)
+        m_showSend = flag == 3;
+
+    if (!m_showCloud)
+        m_showCloud = flag == 4;
+
+
+    SideButton* print_option_btn = Slic3r::GUI::wxGetApp().mainframe->m_print_option_btn;
+    if (!print_option_btn)
+        return;
+    SideButton* print_btn = Slic3r::GUI::wxGetApp().mainframe->m_print_btn;
+
+    wxBoxSizer* sizer            = dynamic_cast<wxBoxSizer*>(print_option_btn->GetSizer());
+    if (!sizer)
+        return;
+
+    print_option_btn->Bind(wxEVT_BUTTON, [this, print_btn](wxCommandEvent& event) {
+        SidePopup* p = new SidePopup(Slic3r::GUI::wxGetApp().mainframe);
+        if (Slic3r::GUI::wxGetApp().preset_bundle) {
+
+            if (m_showRemote)
+            {
+                SideButton* remotePrint_btn = new SideButton(p, _L("Remote Print"), "");
+                remotePrint_btn->SetCornerRadius(0);
+                remotePrint_btn->Bind(wxEVT_BUTTON, [this, p, print_btn](wxCommandEvent&) {
+                    print_btn->SetLabel(_L("Remote Print"));
+                    m_print_select = eRemotePrinting;
+                    m_print_enable = get_enable_print_status();
+                    print_btn->Enable(m_print_enable);
+                    Slic3r::GUI::wxGetApp().mainframe->Layout();
+                    p->Dismiss();
+                });
+                p->append_button(remotePrint_btn);
+            }
+
+            if (m_showSend) {
+                SideButton* sendToPrinters_btn = new SideButton(p, _L("Send To Printers"), "");
+                sendToPrinters_btn->SetCornerRadius(0);
+                sendToPrinters_btn->Bind(wxEVT_BUTTON, [this, p, print_btn](wxCommandEvent&) {
+                    print_btn->SetLabel(_L("Send To Printers"));
+                    m_print_select = eSendToPrinters;
+                    m_print_enable = get_enable_print_status();
+                    print_btn->Enable(m_print_enable);
+                    Slic3r::GUI::wxGetApp().mainframe->Layout();
+                    p->Dismiss();
+                });
+                p->append_button(sendToPrinters_btn);
+            }
+
+            if (m_showFarm) {
+                SideButton* sendTaskList_btn = new SideButton(p, _L("Send Task List"), "");
+                sendTaskList_btn->SetCornerRadius(0);
+                sendTaskList_btn->Bind(wxEVT_BUTTON, [this, p, print_btn](wxCommandEvent&) {
+                    print_btn->SetLabel(_L("Send Task List"));
+                    m_print_select = eSendTaskList;
+                    m_print_enable = get_enable_print_status();
+                    print_btn->Enable(m_print_enable);
+                    Slic3r::GUI::wxGetApp().mainframe->Layout();
+                    p->Dismiss();
+                });
+                p->append_button(sendTaskList_btn);
+            }
+
+            {
+                SideButton* export_gcode_btn = new SideButton(p, _L("Export G-code file"), "");
+                export_gcode_btn->SetCornerRadius(0);
+                export_gcode_btn->Bind(wxEVT_BUTTON, [this, p, print_btn](wxCommandEvent&) {
+                    print_btn->SetLabel(_L("Export G-code file"));
+                    m_print_select = eExportGcode;
+                    m_print_enable = get_enable_print_status();
+                    print_btn->Enable(m_print_enable);
+                    Slic3r::GUI::wxGetApp().mainframe->Layout();
+                    p->Dismiss();
+                });
+                p->append_button(export_gcode_btn);
+            }
+
+            if (m_showCloud)
+            {
+                SideButton* upload = new SideButton(p, _L("Send To Cloud File"), "");
+                upload->SetCornerRadius(0);
+                upload->Bind(wxEVT_BUTTON, [this, p, print_btn](wxCommandEvent&) {
+                    print_btn->SetLabel(_L("Send To Cloud File"));
+                    m_print_select = eUploadGcode;
+                    m_print_enable = get_enable_print_status();
+                    print_btn->Enable(m_print_enable);
+                    Slic3r::GUI::wxGetApp().mainframe->Layout();
+                    p->Dismiss();
+                });
+                p->append_button(upload);
+            }
+        }
+        
+    });
+
+    print_btn->Bind(wxEVT_BUTTON, [this](wxCommandEvent& event) {
+        bool fromCloud = false;
+        int  type      = -1;
+        if (m_print_select == int(eExportGcode)) {
+            wxPostEvent(Slic3r::GUI::wxGetApp().mainframe->m_plater, SimpleEvent(EVT_GLTOOLBAR_EXPORT_GCODE));
+            return;
+        }else if (m_print_select == int(eUploadGcode)) {
+            Anycubic::Plugins::dispatch_call<bool>(host_, "uploadGcode", "showdialog");
+            return;
+        } else if (m_print_select == int(eRemotePrinting)) {
+            type = 0;
+        } else if (m_print_select == int(eSendTaskList)) {
+            type = 1;
+        } else if (m_print_select == int(eSendToPrinters)) {
+            type = 2;
+        }
+        Anycubic::Plugins::dispatch_call<void>(host_, "remotePrint", "doRemotePrintEvent", type);
+    });
+}
+bool InfoManage::get_enable_print_status() 
+{
+    bool enable = true;
+
+    PartPlateList& part_plate_list = Slic3r::GUI::wxGetApp().mainframe->m_plater->get_partplate_list();
+    PartPlate*     current_plate   = part_plate_list.get_curr_plate();
+    bool           is_all_plates   = wxGetApp().plater()->get_preview_canvas3D()->is_all_plates_selected();
+    bool isLogin                   = Anycubic::Plugins::dispatch_call<bool>(host_, "cloud_client", "is_login");
+    if (m_print_select == int(eExportGcode)) {
+        if (!current_plate->is_slice_result_valid()) {
+            enable = false;
+        }
+        enable = enable && !is_all_plates;
+    } else if (m_print_select == int(eUploadGcode)) {
+        wxString lastGcodeFile = GetLastLoadGcode();
+
+        if (!current_plate->is_slice_result_valid()) {
+            enable = false;
+        }
+        if (!lastGcodeFile.empty())
+            enable = true;
+
+        enable = enable && !is_all_plates && isLogin;
+
+    } else if (m_print_select == int(eSendTaskList)) {
+        wxString lastGcodeFile = GetLastLoadGcode();
+
+        if (!current_plate->is_slice_result_ready_for_print()) {
+            enable = false;
+        }
+        if (!lastGcodeFile.empty())
+            enable = true;
+
+        enable = isLogin;
+
+        enable = enable && !is_all_plates;
+
+    } else if (m_print_select == int(eSendToPrinters)) {
+        wxString lastGcodeFile = GetLastLoadGcode();
+
+        if (!current_plate->is_slice_result_ready_for_print()) {
+            enable = false;
+        }
+        if (!lastGcodeFile.empty())
+            enable = true;
+
+        enable = enable && !is_all_plates;
+
+    } else if (m_print_select == int(eRemotePrinting)) {
+        wxString lastGcodeFile = GetLastLoadGcode();
+
+        if (!current_plate->is_slice_result_ready_for_print()) {
+            enable = false;
+        }
+        if (!lastGcodeFile.empty())
+            enable = true;
+        
+
+        enable = isLogin;
+
+        enable = enable && !is_all_plates;
+    }
+
+    BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << boost::format(": m_print_select %1%, enable= %2% ") % m_print_select % enable;
+
+    return enable;
+
+}
 
 void InfoManage::OnPutEvent(Anycubic::Plugins::SDK::wxPluginEvent& event)
 {

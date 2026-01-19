@@ -1622,6 +1622,10 @@ wxBoxSizer* MainFrame::create_side_tools()
 
     m_print_btn->Bind(wxEVT_BUTTON, [this](wxCommandEvent& event)
         {
+        if (m_plugin) {
+            event.Skip();
+            return;
+        }
             //this->m_plater->select_view_3D("Preview");
             if (m_print_select == ePrintAll || m_print_select == ePrintPlate || m_print_select == ePrintMultiMachine)
             {
@@ -1689,8 +1693,11 @@ wxBoxSizer* MainFrame::create_side_tools()
 
     m_print_option_btn->Bind(wxEVT_BUTTON, [this](wxCommandEvent& event)
         {
+            if (m_plugin) {
+                event.Skip();
+                return;
+            }
             SidePopup* p = new SidePopup(this);
-
             if (wxGetApp().preset_bundle
                 && !wxGetApp().preset_bundle->is_bbl_vendor()) {
                 // ThirdParty Buttons

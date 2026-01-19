@@ -193,6 +193,7 @@ class MainFrame : public DPIFrame
     bool preview_only_to_editor = false;
 
 protected:
+    bool         m_plugin{true};
     virtual void on_dpi_changed(const wxRect &suggested_rect) override;
     virtual void on_sys_color_changed() override;
 
