@@ -285,17 +285,12 @@ inline wxVector<wxString>from_json_string_wxstring_vector(const nlohmann::json& 
         const std::string& s = item.get_ref<const std::string&>();
         vec.push_back(wxString::FromUTF8(s.c_str()));
     }
-
     return vec;
 }
 
 
 
-
-/* ---------------- FileUploadObj ---------------- */
 inline void to_json(json& j, const FileUploadObj& f) {
-    j = {{"isCloud", f.isCloud}, {"processList", vector_to_json(f.processList)}, {"errList", vector_to_json(f.errList)}};
-}
 inline void from_json(const json& j, FileUploadObj& f) {
     f.isCloud = j.value("isCloud", true);
     if (j.contains("processList")) f.processList = j.at("processList").get<wxVector<int>>();

@@ -1124,7 +1124,7 @@ std::string InfoManage::GetModelSlicerInfo(bool isPrint, const wxString& last_lo
     info.used_filament   = filamentWeight;
 
     info.modleLayers = wxString::Format("%d", gcodeResult->print_statistics.modes[0].layers_times.size()) + _(" Layers");
-    std::vector<unsigned int> printing_extruders;//= wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->print_statistics().printing_extruders;
+    std::vector<unsigned int> printing_extruders = wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->print_statistics().printing_extruders;
     for (int i = 0; i < printing_extruders.size(); i++) {
         info.extruder_idsList.push_back(printing_extruders[i]);
     }
@@ -1145,7 +1145,7 @@ std::string InfoManage::GetModelSlicerInfo(bool isPrint, const wxString& last_lo
 
     info.filamentTypess_slicer = filament_typeList;
 
-    std::string printerName;// = wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->print_statistics().printer_model;
+    std::string printerName = wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->print_statistics().printer_model;
     bool        isGcodeIndex = false;
     if (printerName.empty()) {
         std::vector<unsigned int> extruders;// = gcodeResult->print_statistics.getPrinting_extruders();
@@ -1170,16 +1170,14 @@ std::string InfoManage::GetModelSlicerInfo(bool isPrint, const wxString& last_lo
         info.isGcode = true;
     }
     info.printerName  = Slic3r::GUI::from_u8(printerName);
-    info.machine_type;// = FromStrGetPrinterType(printerName);
+    info.machine_type = Anycubic::Plugins::dispatch_call<int>(host_, "remoteManger", "FromStrGetPrinterType", printerName);
     if (!isPrint) {
         /*SetBatchResult({static_cast<int>(gcodeResult->print_statistics.modes[0].time),
                         static_cast<int>(gcodeResult->print_statistics.modes[0].layers_times.size()), total_wipe_tower_used_filament_g,
                         timeStr});*/
     }
 
-    json j = info;
-
-    return j.dump();
+    return Anycubic::Plugins::to_json_string(info);
 }
 
 
@@ -1336,8 +1334,20 @@ std::string InfoManage::GetModelSlicerInfoMap(bool isPrint, const wxString& last
         info.machine_type;// = FromStrGetPrinterType(printerName);
         modelSelcicerInfoMap[partObj->get_index()] = info;
     }
-    json j = modelSelcicerInfoMap;
-    return j.dump();
+    
+    
+    json jmap = json::object();
+
+    for (const auto& [key, info] : modelSelcicerInfoMap) {
+        json jinfo;
+        Anycubic::Plugins::to_json(jinfo, info);
+        jmap[std::to_string(key)] = jinfo;
+    }
+
+    std::string jsonStr = jmap.dump(2); 
+    
+    
+    return jsonStr;
 
 
 }
