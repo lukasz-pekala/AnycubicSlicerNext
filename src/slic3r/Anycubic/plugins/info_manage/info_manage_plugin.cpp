@@ -56,9 +56,39 @@ InfoManage::InfoManage(Anycubic::Plugins::PluginHost *host)
   router->REGISTER_FUNCATION(InfoManage, UploadFile);
   router->REGISTER_FUNCATION(InfoManage, GetLastLoadGcode);
   router->REGISTER_FUNCATION(InfoManage, CreateSideToolBtn);
+
+  router->REGISTER_FUNCATION(InfoManage, PushLog);
 }
 
 InfoManage::~InfoManage() {}
+
+void InfoManage::PushLog(const std::string& content, int logLevel) 
+{
+    // logLevel: 0:trace 1:info   2:debug 3:warning 4:error
+
+    switch (logLevel) {
+    case 4: {
+        BOOST_LOG_TRIVIAL(error) << content;
+        break;
+    }
+    case 3: {
+        BOOST_LOG_TRIVIAL(warning) << content;
+        break;
+    } 
+    case 2: {
+        BOOST_LOG_TRIVIAL(debug) << content;
+        break;
+    }
+    case 1: {
+        BOOST_LOG_TRIVIAL(info) << content;
+        break;
+    }
+    default: {
+        BOOST_LOG_TRIVIAL(trace) << content;
+        break;
+    }
+    }
+}
 
 wxString InfoManage::GetLastLoadGcode() 
 {
@@ -365,7 +395,7 @@ std::string InfoManage::GetModelSlicerInfo(bool isPrint, const wxString& last_lo
     wxString filamentWeight = wxString::Format("%.1fg", total_wipe_tower_used_filament_g);
     wxString filamentLength = wxString::Format("%.2f%s", total_wipe_tower_used_filament_m, "m");
 
-    std::vector<std::string> base64Img;// = wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->print_statistics().thumbnails;
+    std::vector<std::string> base64Img = wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->print_statistics().thumbnails;
     info.imgBase64 = !base64Img.empty() ? base64Img[0] : GetGcodeFileImg(last_load_gcode);
 
     info.print_time      = timeStr;
@@ -373,7 +403,7 @@ std::string InfoManage::GetModelSlicerInfo(bool isPrint, const wxString& last_lo
     info.used_filament   = filamentWeight;
 
     info.modleLayers = wxString::Format("%d", gcodeResult->print_statistics.modes[0].layers_times.size()) + _(" Layers");
-    std::vector<unsigned int> printing_extruders;//= wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->print_statistics().printing_extruders;
+    std::vector<unsigned int> printing_extruders = wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->print_statistics().printing_extruders;
     for (int i = 0; i < printing_extruders.size(); i++) {
         info.extruder_idsList.push_back(printing_extruders[i]);
     }
@@ -394,7 +424,7 @@ std::string InfoManage::GetModelSlicerInfo(bool isPrint, const wxString& last_lo
 
     info.filamentTypess_slicer = filament_typeList;
 
-    std::string printerName;// = wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->print_statistics().printer_model;
+    std::string printerName = wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->print_statistics().printer_model;
     bool        isGcodeIndex = false;
     if (printerName.empty()) {
         std::vector<unsigned int> extruders;// = gcodeResult->print_statistics.getPrinting_extruders();
@@ -419,16 +449,14 @@ std::string InfoManage::GetModelSlicerInfo(bool isPrint, const wxString& last_lo
         info.isGcode = true;
     }
     info.printerName  = Slic3r::GUI::from_u8(printerName);
-    info.machine_type;// = FromStrGetPrinterType(printerName);
+    info.machine_type = Anycubic::Plugins::dispatch_call<int>(host_, "remoteManger", "FromStrGetPrinterType", printerName);
     if (!isPrint) {
         /*SetBatchResult({static_cast<int>(gcodeResult->print_statistics.modes[0].time),
                         static_cast<int>(gcodeResult->print_statistics.modes[0].layers_times.size()), total_wipe_tower_used_filament_g,
                         timeStr});*/
     }
 
-    json j = info;
-
-    return j.dump();
+    return Anycubic::Plugins::to_json_string(info);
 }
 
 
@@ -585,8 +613,20 @@ std::string InfoManage::GetModelSlicerInfoMap(bool isPrint, const wxString& last
         info.machine_type;// = FromStrGetPrinterType(printerName);
         modelSelcicerInfoMap[partObj->get_index()] = info;
     }
-    json j = modelSelcicerInfoMap;
-    return j.dump();
+    
+    
+    json jmap = json::object();
+
+    for (const auto& [key, info] : modelSelcicerInfoMap) {
+        json jinfo;
+        Anycubic::Plugins::to_json(jinfo, info);
+        jmap[std::to_string(key)] = jinfo;
+    }
+
+    std::string jsonStr = jmap.dump(2); 
+    
+    
+    return jsonStr;
 
 
 }
@@ -891,9 +931,6 @@ void InfoManage::CreateSideToolBtn(int flag)
         return;
     SideButton* print_btn = Slic3r::GUI::wxGetApp().mainframe->m_print_btn;
 
-    wxBoxSizer* sizer            = dynamic_cast<wxBoxSizer*>(print_option_btn->GetSizer());
-    if (!sizer)
-        return;
 
     print_option_btn->Bind(wxEVT_BUTTON, [this, print_btn](wxCommandEvent& event) {
         SidePopup* p = new SidePopup(Slic3r::GUI::wxGetApp().mainframe);
@@ -970,6 +1007,9 @@ void InfoManage::CreateSideToolBtn(int flag)
                 });
                 p->append_button(upload);
             }
+
+
+            p->Popup(print_btn);
         }
         
     });
@@ -990,7 +1030,7 @@ void InfoManage::CreateSideToolBtn(int flag)
         } else if (m_print_select == int(eSendToPrinters)) {
             type = 2;
         }
-        Anycubic::Plugins::dispatch_call<void>(host_, "remotePrint", "doRemotePrintEvent", type);
+        Anycubic::Plugins::dispatch_call<void>(host_, "remoteManger", "doRemotePrintEvent", type);
     });
 }
 bool InfoManage::get_enable_print_status() 

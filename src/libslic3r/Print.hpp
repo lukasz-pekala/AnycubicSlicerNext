@@ -770,6 +770,9 @@ struct PrintStatistics
     double                          total_wipe_tower_filament;
     unsigned int                    initial_tool;
     std::map<size_t, double>        filament_stats;
+    std::vector<unsigned int>       printing_extruders;
+    std::string                     printer_model;
+    std::vector<std::string>        thumbnails;
 
     // Config with the filled in print statistics.
     DynamicConfig           config() const;
@@ -788,6 +791,9 @@ struct PrintStatistics
         total_wipe_tower_filament = 0.;
         initial_tool           = 0;
         filament_stats.clear();
+        printing_extruders.clear();
+        printer_model.clear();
+        thumbnails.clear();
     }
     static const std::string FilamentUsedG;
     static const std::string FilamentUsedGMask;

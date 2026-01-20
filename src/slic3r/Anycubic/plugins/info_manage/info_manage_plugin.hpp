@@ -6,10 +6,8 @@
 #include <plugins_base/plugins.hxx>
 #include <plugins_base/plugins_base.hxx>
 #include <plugins_base/funcation.hxx>
-#include "slic3r/Anycubic/plugins/xrc/detail/widgets/custom_struct_manger.hxx"
-#include "slic3r/Anycubic/plugins/xrc/detail/widgets/ModelSlicerInfoJson.hxx"
+#include "slic3r/Anycubic/plugins/xrc/detail/widgets/JsonCodec.hxx"
 #include <plugins_sdk/event/detail/CloudTransferCallback.hxx>
-
 #define PLGUINS_NAME info_manage
 #define PLUGIN_NAME_STR BOOST_PP_STRINGIZE(PLGUINS_NAME)
 
@@ -89,7 +87,7 @@ private:
     bool         m_showSend{false};
     bool         m_showCloud{false};
 
-  
+    void PushLog(const std::string& content, int logLevel);
 private:
     bool get_enable_print_status();
     void OnPutEvent(Anycubic::Plugins::SDK::wxPluginEvent& event);

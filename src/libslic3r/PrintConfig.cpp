@@ -8394,7 +8394,7 @@ static std::map<t_custom_gcode_key, t_config_option_keys> s_CustomGcodeSpecificP
     {"machine_pause_gcode",         {}},
     {"template_custom_gcode",       {}},
     // Filament G-code
-    {"filament_start_gcode",        {"filament_extruder_id"}},
+    {"filament_start_gcode",        {"layer_num", "layer_z", "max_layer_z", "filament_extruder_id", "long_retraction_when_cut", "retraction_distance_when_cut"}},
     {"filament_end_gcode",          {"layer_num", "layer_z", "max_layer_z", "filament_extruder_id"}},
 };
 
@@ -8453,6 +8453,18 @@ CustomGcodeSpecificConfigDef::CustomGcodeSpecificConfigDef()
     new_def("flush_length_2", coFloat, "Flush Length 2", "The second flush length.");
     new_def("flush_length_3", coFloat, "Flush Length 3", "The third flush length.");
     new_def("flush_length_4", coFloat, "Flush Length 4", "The fourth flush length.");
+    new_def("timelapse_type", coEnum, "timelapse_type", "timelapse_type");
+
+    // filament_start_gcode
+    new_def("long_retraction_when_cut", coBool, "Long retraction when cut", "Indicates if long retraction is used when cutting");
+    new_def("retraction_distance_when_cut", coFloat, "Retraction distance when cut", "The retraction distance when cutting");
+
+    // tcr_rotated_gcode
+    new_def("change_filament_gcode", coString, "change_filament_gcode", "change_filament_gcode");
+    new_def("deretraction_from_wipe_tower_generator", coString, "deretraction_from_wipe_tower_generator",
+            "deretraction_from_wipe_tower_generator");
+    new_def("filament_start_gcode", coString, "filament_start_gcode", "filament_start_gcode");
+    new_def("filament_end_gcode", coString, "filament_end_gcode", "filament_end_gcode");
 
 // change_extrusion_role_gcode
     std::string extrusion_role_types = "Possible Values:\n[\"Perimeter\", \"ExternalPerimeter\", "
