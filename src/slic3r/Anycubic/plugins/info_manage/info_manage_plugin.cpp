@@ -747,7 +747,9 @@ bool InfoManage::persetUpdaterOperate_(const std::string& cmd, boost::filesystem
     static auto doPersetUpdateNow = []() -> bool {
         bool res = true;
         Slic3r::set_profiles_dir(pereset_dir_ota.string());
-        Slic3r::GUI::wxGetApp().check_config_updates_from_updater_true();
+#ifdef ENABLE_OLD_VERSION_UPDATE
+        Slic3r::GUI::wxGetApp().check_config_updates_from_updater();
+#endif
         return res;
     };
 
