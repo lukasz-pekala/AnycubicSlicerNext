@@ -56,6 +56,16 @@ inline void to_json(json& j, const AmsSlotObj& c);
 inline void from_json(const json& j, AmsSlotObj& c);
 inline void to_json(json& j, const CPrintOptionsResponse& c);
 inline void from_json(const json& j, CPrintOptionsResponse& c);
+inline void to_json(json& j, const FramGroupSendTaskObj& c);
+inline void from_json(const json& j, FramGroupSendTaskObj& c);
+inline void to_json(json& j, const FramGroupListInfo& c);
+inline void from_json(const json& j, FramGroupListInfo& c);
+inline void to_json(json& j, const FramGroupCloudList& c);
+inline void from_json(const json& j, FramGroupCloudList& c);
+
+
+
+
 
 
 inline std::string WxToUtf8(const wxString& s)
@@ -236,16 +246,35 @@ inline wxVector<T> from_json_string_any(const std::string& s) {
     return json_to_vector<T>(json::parse(s));
 }
 
-inline wxVector<wxString> from_json_string_wxstring_vector(const nlohmann::json& j)
+inline wxVector<wxString>from_json_string_wxstring_vector(const nlohmann::json& j)
 {
     wxVector<wxString> vec;
 
-    if (!j.is_array())
+    nlohmann::json arr;
+
+    if (j.is_array())
+    {
+        arr = j;
+    }
+    else if (j.is_string())
+    {
+        arr = nlohmann::json::parse(
+            j.get_ref<const std::string&>(),
+            nullptr,
+            false
+        );
+    }
+    else
+    {
+        return vec;
+    }
+
+    if (!arr.is_array())
         return vec;
 
-    vec.reserve(j.size());
+    vec.reserve(arr.size());
 
-    for (const auto& item : j)
+    for (const auto& item : arr)
     {
         if (!item.is_string())
             continue;
@@ -253,8 +282,10 @@ inline wxVector<wxString> from_json_string_wxstring_vector(const nlohmann::json&
         const std::string& s = item.get_ref<const std::string&>();
         vec.push_back(wxString::FromUTF8(s.c_str()));
     }
+
     return vec;
 }
+
 
 
 
