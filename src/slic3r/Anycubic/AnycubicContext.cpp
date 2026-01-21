@@ -38,6 +38,7 @@ static int setenv(const char *name, const char *value, int overwrite) {
 }
 #endif // __WXMSW__
 
+extern const char *CONFIG_PLUGIN_NAME_LIST;
 namespace Slic3r {
 namespace GUI {
 
@@ -75,6 +76,8 @@ struct EmptyPM : public PluginsManager {
                        Anycubic::Plugins::OStream *result) override {
     return false;
   }
+  void SetPackageVisitor(PluginsVisitor_t visitor,
+                         void *ctx = nullptr) override {}
 };
 
 class AnycubicContextPrivate : public PMConfig {
@@ -92,6 +95,30 @@ public:
       ::ShutdownPM(pm_);
       pm_ = nullptr;
     }
+  }
+  bool Visitor(const wxString &package) {
+    // 如果有名单，就要在名单内才允许加载
+    static wxString name_list;
+    static bool init = false;
+    if (init || !GetEncryptValue(CONFIG_PLUGIN_NAME_LIST, name_list) ||
+        name_list.IsEmpty()) {
+      return true;
+    }
+    init = true;
+
+    wxString filename;
+    wxFileName::SplitPath(package, nullptr, &filename, nullptr);
+    if (filename == name_list) {
+      return true;
+    }
+    wxStringTokenizer tokenizer(name_list, ";");
+    while (tokenizer.HasMoreTokens()) {
+      auto token = tokenizer.GetNextToken();
+      if (token == filename) {
+        return true;
+      }
+    }
+    return false;
   }
   void SetPM(PluginsManager *pm) {
     assert(pm != nullptr && pm_ == nullptr);
@@ -343,6 +370,13 @@ void AnycubicContext::OnInitByApp() {
   auto pm = ::SetupPM(package.utf8_string().c_str(), WebView::CreateWebView,
                       SLIC3R_APP_KEY, current_dir.utf8_string().c_str());
   if (pm != nullptr) {
+    pm->SetPackageVisitor(
+        [](void *ctx, const wxString &package) {
+          auto pthis = static_cast<AnycubicContextPrivate *>(ctx);
+          assert(pthis != nullptr);
+          return pthis->Visitor(package);
+        },
+        impl_);
     impl_->SetPM(pm);
   } else {
     LOG_ERROR("SetupPM failed");

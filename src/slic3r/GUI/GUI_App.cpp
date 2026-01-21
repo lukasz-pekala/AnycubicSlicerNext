@@ -999,8 +999,9 @@ void GUI_App::post_init()
             std::string network_ver = Slic3r::NetworkAgent::get_version();
             bool        sys_preset  = app_config->get("sync_system_preset") == "true";
             this->preset_updater->sync(http_url, language, network_ver, sys_preset ? preset_bundle : nullptr);
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
             this->check_new_version_sf();
+#endif // ENABLE_OLD_VERSION_UPDATE
             if (is_user_login() && !app_config->get_stealth_mode()) {
               // this->check_privacy_version(0);
               request_user_handle(0);
@@ -4312,7 +4313,7 @@ void GUI_App::reset_to_active()
 {
     last_active_point = std::chrono::system_clock::now();
 }
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
 void GUI_App::check_update(bool show_tips, int by_user)
 {
     if (version_info.version_str.empty()) return;
@@ -4401,7 +4402,7 @@ void GUI_App::check_new_version(bool show_tips, int by_user)
             BOOST_LOG_TRIVIAL(error) << "check new version error" << body;
     }).perform();
 }
-
+#endif  // ENABLE_OLD_VERSION_UPDATE
 //parse the string, if it doesn't contain a valid version string, return invalid version.
 Semver get_version(const std::string& str, const std::regex& regexp) {
     std::smatch match;
@@ -4679,7 +4680,7 @@ void maybe_attach_updater_signature(Http& http, const std::string& canonical_que
 }
 
 } // namespace
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
 void GUI_App::check_new_version_sf(bool show_tips, int by_user)
 {
     AppConfig* app_config = wxGetApp().app_config;
@@ -4824,6 +4825,7 @@ void GUI_App::check_new_version_sf(bool show_tips, int by_user)
 
     http.perform();
 }
+#endif // ENABLE_OLD_VERSION_UPDATE
 
 void GUI_App::process_network_msg(std::string dev_id, std::string msg)
 {
@@ -6939,7 +6941,7 @@ bool GUI_App::config_wizard_startup()
     }*/
     return false;
 }
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
 void GUI_App::check_updates(const bool verbose)
 {
 	PresetUpdater::UpdateResult updater_result;
@@ -6961,6 +6963,7 @@ void GUI_App::check_updates(const bool verbose)
 	}
 }
 
+#endif  // ENABLE_OLD_VERSION_UPDATE
 bool GUI_App::open_browser_with_warning_dialog(const wxString& url, int flags/* = 0*/)
 {
     return wxLaunchDefaultBrowser(url, flags);

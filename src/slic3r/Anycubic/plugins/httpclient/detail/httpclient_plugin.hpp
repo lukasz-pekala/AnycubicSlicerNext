@@ -41,7 +41,7 @@ private:
    * @param url 请求URL
    * @return wxString 响应内容
    */
-  bool Post(const wxString &url, wxString *content);
+  bool Post(const wxString &url, const wxString *body, wxString *content);
 
 private:
   // Anycubic::Plugins::Plugin interface
@@ -50,8 +50,8 @@ private:
   void Stop(void) override {}
   bool AttachEvt(wxEvtHandler *evt) override { return false; }
   bool DetachEvt(wxEvtHandler *evt) override { return false; }
-  bool BindEvt(class wxPanel* panel, wxWindow* parent = nullptr,
-                   wxString *bmp = nullptr) override {
+  bool BindEvt(class wxPanel *panel, wxWindow *parent = nullptr,
+               wxString *bmp = nullptr) override {
     return false;
   }
   bool CreateWebview(wxWebView *view, wxWindow *parent = nullptr,

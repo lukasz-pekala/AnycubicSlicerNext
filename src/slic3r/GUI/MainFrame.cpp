@@ -2230,7 +2230,9 @@ static wxMenu* generate_help_menu()
     // Check New Version
     append_menu_item(helpMenu, wxID_ANY, _L("Check for Update"), _L("Check for Update"),
         [](wxCommandEvent&) {
+#ifdef ENABLE_OLD_VERSION_UPDATE
             wxGetApp().check_new_version_sf(true, 1);
+#endif // ENABLE_OLD_VERSION_UPDATE
         }, "", nullptr, []() {
             return true;
         });

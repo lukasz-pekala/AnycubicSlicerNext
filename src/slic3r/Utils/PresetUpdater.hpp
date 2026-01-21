@@ -6,6 +6,11 @@
 
 #include <wx/event.h>
 
+#include <boost/filesystem.hpp>
+
+
+namespace fs = boost::filesystem;
+
 namespace Slic3r {
 
 
@@ -60,7 +65,12 @@ public:
     void do_printer_config_update();
 
 	bool version_check_enabled() const;
-
+#ifndef ENABLE_OLD_VERSION_UPDATE
+	// add by anycubic
+	fs::path cache_path(void) const;
+	fs::path rsrc_path(void) const;
+	fs::path vendor_path(void) const;
+#endif // ENABLE_OLD_VERSION_UPDATE
 private:
 	struct priv;
 	std::unique_ptr<priv> p;

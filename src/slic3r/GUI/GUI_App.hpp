@@ -474,10 +474,11 @@ public:
     void            reset_to_active();
     bool            m_studio_active = true;
     std::chrono::system_clock::time_point  last_active_point;
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
     void            check_update(bool show_tips, int by_user);
     void            check_new_version(bool show_tips = false, int by_user = 0);
     void            check_new_version_sf(bool show_tips = false, int by_user = 0);
+#endif // ENABLE_OLD_VERSION_UPDATE
     void            process_network_msg(std::string dev_id, std::string msg);
     void            request_new_version(int by_user);
     void            enter_force_upgrade();
@@ -684,8 +685,9 @@ public:
     bool            check_networking_version();
     void            cancel_networking_install();
     void            restart_networking();
+#ifdef ENABLE_OLD_VERSION_UPDATE
     void            check_config_updates_from_updater() { check_updates(false); }
-
+#endif // ENABLE_OLD_VERSION_UPDATE
 private:
     int             updating_bambu_networking();
     bool            on_init_inner();
@@ -707,8 +709,9 @@ private:
     bool            select_language();
 
     bool            config_wizard_startup();
+#ifdef ENABLE_OLD_VERSION_UPDATE
 	void            check_updates(const bool verbose);
-
+#endif // ENABLE_OLD_VERSION_UPDATE
     bool                    m_init_app_config_from_older { false };
     bool                    m_datadir_redefined { false };
     std::string             m_older_data_dir_path;

@@ -1,6 +1,7 @@
 #include "detail/manager_plugin.hpp"
 PLUGIN_EXPORT_GETINFO(, PLGUINS_NAME) {
-  static const char *dependency[] = {"app", "home_dialog"};
+  static const char *dependency[] = {"app", "home_dialog", "httpclient",
+                                     "utility"};
   static PluginInfo info{0};
   info.plugin_api = 1;
   info.plugin_type = 0xe;

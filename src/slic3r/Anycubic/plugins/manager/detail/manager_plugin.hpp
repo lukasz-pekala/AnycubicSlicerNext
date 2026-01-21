@@ -4,13 +4,12 @@
 #include "plugins_base/plugins.hxx"
 #include "plugins_base/plugins_base.hxx"
 
+#include <atomic>
 #include <memory>
 #include <vector>
 
 #define PLGUINS_NAME manager
 #define PLUGIN_NAME_STR BOOST_PP_STRINGIZE(PLGUINS_NAME)
-
-struct Instace;
 
 class ManagerPlugin : public Anycubic::Plugins::Plugin {
 public:
@@ -39,6 +38,9 @@ private:
   bool check_update(const wxString &name, int manual_check);
 
 private:
+  void check_update_impl(int manual_check);
+
+private:
   Anycubic::Plugins::PluginHost *host_;
-  std::vector<std::shared_ptr<Instace>> instances_;
+  std::atomic<bool> running_; ///< 更新运行标记
 };

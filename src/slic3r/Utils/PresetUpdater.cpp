@@ -11,7 +11,6 @@
 #include <stdexcept>
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/log/trivial.hpp>
@@ -40,7 +39,7 @@
 #include "libslic3r/miniz_extension.hpp"
 #include "slic3r/GUI/GUI_Utils.hpp"
 
-namespace fs = boost::filesystem;
+
 using Slic3r::GUI::Config::Index;
 using Slic3r::GUI::Config::Version;
 using Slic3r::GUI::Config::Snapshot;
@@ -1378,7 +1377,9 @@ void PresetUpdater::sync(std::string http_url, std::string language, std::string
 		    if (p->cancel)
 			    return;
             GUI::wxGetApp().CallAfter([] {
+#ifdef ENABLE_OLD_VERSION_UPDATE
                 GUI::wxGetApp().check_config_updates_from_updater();
+#endif // ENABLE_OLD_VERSION_UPDATE
             });
         }
 		if (p->cancel)
@@ -1569,5 +1570,15 @@ bool PresetUpdater::version_check_enabled() const
 {
 	return p->enabled_version_check;
 }
-
+#ifndef ENABLE_OLD_VERSION_UPDATE
+fs::path PresetUpdater::cache_path(void) const{
+    return p->cache_path;
+}
+fs::path PresetUpdater::rsrc_path(void) const{
+    return p->rsrc_path;
+}
+fs::path PresetUpdater::vendor_path(void) const{
+    return p->vendor_path;
+}
+#endif // ENABLE_OLD_VERSION_UPDATE
 }
