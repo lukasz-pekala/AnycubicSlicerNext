@@ -285,6 +285,7 @@ inline wxVector<wxString>from_json_string_wxstring_vector(const nlohmann::json& 
         const std::string& s = item.get_ref<const std::string&>();
         vec.push_back(wxString::FromUTF8(s.c_str()));
     }
+
     return vec;
 }
 
