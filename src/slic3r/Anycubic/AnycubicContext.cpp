@@ -127,6 +127,15 @@ public:
   }
   PluginsManager *GetPM() { return pm_; }
   bool PluginsIsLoaded() const { return pm_ != nullptr; }
+  bool IsFinishedGUIInit() const { return is_finished_gui_init_; }
+  void EmitEvent(EventType event)  {
+    if (pm_ != nullptr) {
+      pm_->EmitEvent(event);
+      if(event == EventType::kEventFinishedByGUI){
+        is_finished_gui_init_ = true;
+      }
+    }
+  }
   static void downloader_callback(void *ctx, int32_t download_id,
                                   int32_t status, const wxString &filename) {
     if (status == 3) {
@@ -297,6 +306,7 @@ private:
   std::map<wxString, wxString> config_;
   AppConfig *app_config_{nullptr};
   PluginsManager *pm_{nullptr};
+  bool is_finished_gui_init_{false};
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -317,6 +327,9 @@ bool AnycubicContext::PluginsIsLoaded() const {
 }
 
 bool AnycubicContext::HasPlugin() const {
+  if (!impl_->IsFinishedGUIInit()) {
+    return false;
+  }
   auto pm = impl_->GetPM();
   if (pm == nullptr) {
     return false;
@@ -325,6 +338,9 @@ bool AnycubicContext::HasPlugin() const {
                                                 ANYCUBIC_PLUGIN_NAME);
 }
 bool AnycubicContext::StartDownloadPlugins(const wxString &name) {
+  if (!impl_->IsFinishedGUIInit()) {
+    return false;
+  }
   if (name.IsEmpty()) {
     return false;
   }
@@ -389,26 +405,26 @@ void AnycubicContext::OnInitByApp() {
   std::vector<create_library_t> &plugins = Anycubic::Plugins::GetPluginsList();
   (*impl_)->AddStaticPlugins(plugins.data(), plugins.size());
   // 这行只能最后一行
-  (*impl_)->EmitEvent(EventType::kEventInitByApp);
+  impl_->EmitEvent(EventType::kEventInitByApp);
 }
 void AnycubicContext::OnInitByGui() {
   if (PluginsIsLoaded()) {
-    (*impl_)->EmitEvent(EventType::kEventInitByGUI);
+    impl_->EmitEvent(EventType::kEventInitByGUI);
   }
 }
 void AnycubicContext::OnFinishedByGui() {
   if (PluginsIsLoaded()) {
-    (*impl_)->EmitEvent(EventType::kEventFinishedByGUI);
+    impl_->EmitEvent(EventType::kEventFinishedByGUI);
   }
 }
 void AnycubicContext::OnExitByGui() {
   if (PluginsIsLoaded()) {
-    (*impl_)->EmitEvent(EventType::kEventExitByGUI);
+    impl_->EmitEvent(EventType::kEventExitByGUI);
   }
 }
 void AnycubicContext::OnExitByApp() {
   if (PluginsIsLoaded()) {
-    (*impl_)->EmitEvent(EventType::kEventExitByApp);
+    impl_->EmitEvent(EventType::kEventExitByApp);
   }
 }
 } // namespace GUI
