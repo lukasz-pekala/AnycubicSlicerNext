@@ -62,9 +62,12 @@ inline void to_json(json& j, const FramGroupListInfo& c);
 inline void from_json(const json& j, FramGroupListInfo& c);
 inline void to_json(json& j, const FramGroupCloudList& c);
 inline void from_json(const json& j, FramGroupCloudList& c);
-
-
-
+inline void to_json(json& j, const LANSendRemoteEventDataObj& c);
+inline void from_json(const json& j, LANSendRemoteEventDataObj& c);
+inline void to_json(json& j, const LANInfoObjList& c);
+inline void from_json(const json& j, LANInfoObjList& c);
+inline void to_json(json& j, const OpAmsChange& c);
+inline void from_json(const json& j, OpAmsChange& c);
 
 
 

@@ -1,17 +1,14 @@
 #include "AmsButton.hpp"
-#include "slic3r/GUI/Widgets/StateColor.hpp"
-#include "slic3r/GUI/Widgets/Label.hpp"
-#include "slic3r/GUI/Widgets/StateHandler.hpp"
+#include "StateColor.hpp"
+#include "Label.hpp"
+#include "StateHandler.hpp"
 #include <wx/mstream.h>
-#include "slic3r/GUI/GUI.hpp"
-#include "slic3r/GUI/GUI_App.hpp"
 #include <wx/dcgraph.h>
 #include <wx/base64.h>
 #include <plugins_sdk/event/detail/program_color.hxx>
 #include <plugins_sdk/event/detail/util_tool.hxx>
 #include "RemotePrintingAmsDialog.hpp"
 
-#include "slic3r/GUI/MainFrame.hpp"
 
 BEGIN_EVENT_TABLE(AmsButton, StaticBox)
 
@@ -99,7 +96,7 @@ void AmsButton::OnChangeEvent(wxPluginEvent& event)
     SetSlotShowNumber(showSlotNum);
 
 
-    wxVector<AmsBoxObj>      infoList;
+    wxVector<AmsBoxObj>      infoList = m_plugin->GetPrinterKeyAmsInfoMap(m_nowDeviceID);
     wxVector<AmsSlotObjInfo> slotInfoList;
     
     for (int i = 0; i < infoList.size(); i++) {
@@ -125,17 +122,15 @@ void AmsButton::OnChangeEvent(wxPluginEvent& event)
     evt_ams.SetSharedData(selectObj, nullptr, [](void*, void* a) { delete (PrinterSelectObj*) a; });
     wxPostEvent(m_parent, evt_ams);
 
+    m_plugin->SendFilamentSlotChangeEvent();
 
+    OpAmsChange amsChangeObj;
+    amsChangeObj.deviceID    = wxString(m_nowDeviceID);
+    amsChangeObj.slotNum         = showSlotNum;
+    amsChangeObj.countIndex      = m_countIndex;
+    amsChangeObj.slotFilament    = slotInfoList[showSlotNum - 1].filament_type;
 
-    OpAmsChange* amsChangeObj     = new OpAmsChange;
-    amsChangeObj->deviceID    = wxString(m_nowDeviceID);
-    amsChangeObj->slotNum         = showSlotNum;
-    amsChangeObj->countIndex      = m_countIndex;
-    amsChangeObj->slotFilament    = slotInfoList[showSlotNum - 1].filament_type;
-
-    wxPluginEvent* evt = new wxPluginEvent(EVT_REMOTE_OP_AMS_CHANGE_INFO_MANGER);
-    evt->SetSharedData(amsChangeObj, nullptr, [](void*, void* a) { delete (OpAmsChange*)a; });
-
+    m_plugin->SendOpAmsChange(amsChangeObj);
 }
 
 void AmsButton::init()
@@ -150,8 +145,8 @@ void AmsButton::init()
     m_typeColor_text = blackGap > whiteGap ? COLOR_Neutral_10 : COLOR_Neutral_01;
 
 
-    m_white_down_ico = ScalableBitmap(this, "ico_remote_down_white", 12).bmp();
-    m_gray_down_ico  = ScalableBitmap(this, "ico_remote_down_gray", 12).bmp();
+    m_white_down_ico = Plucgin_ScalableBitmap(this, "ico_remote_down_white", 12).bmp();
+    m_gray_down_ico  = Plucgin_ScalableBitmap(this, "ico_remote_down_gray", 12).bmp();
     m_icoSize = wxSize(FromDIP(12), FromDIP(12));
     wxWindow::SetMinSize(m_winSize);
     Refresh();
@@ -324,7 +319,7 @@ void AmsButton::render(wxAutoBufferedPaintDC& dc)
     if (!isDrawIndex)
         dc.DrawPolygon(&pt_list_4, 0, 0);
 
-    wxString slotStr = m_slotNum == -1 ? "-" : wxString::Format("%d", m_slotNum);
+    wxString slotStr = m_slotNum == -1 ? wxString("-") : wxString::Format("%d", m_slotNum);
 
     wxRect textSize;
     dc.GetTextExtent(slotStr, &textSize.width, &textSize.height, &textSize.x, &textSize.y);
@@ -369,7 +364,7 @@ void AmsButton::SetShowFilamentDialog(bool index)
     if (index) {
         wxPoint                         now_show_winPos = this->GetScreenPosition() + wxPoint(0, FromDIP(8) + m_winSize.y);
         if (m_amsPop == nullptr) {
-            m_amsPop = new ColorAMSBoxDialog(this, this, m_filamentType, m_countIndex, m_slotNum, now_show_winPos, m_nowDeviceID);
+            m_amsPop = new ColorAMSBoxDialog(m_plugin,this, this, m_filamentType, m_countIndex, m_slotNum, now_show_winPos, m_nowDeviceID);
             m_amsPop->SetPosition(now_show_winPos);
             m_amsPop->Bind(EVT_AMS_POP_DISMISS, [this](auto&) {
                 m_downClick = false;
@@ -377,8 +372,11 @@ void AmsButton::SetShowFilamentDialog(bool index)
             m_amsPop->Bind(EVT_AMS_POP_SELECT, [this](auto&) { 
                 m_downClick = false; 
                 m_amsPop->Close();
-                delete m_amsPop;
-                m_amsPop = nullptr;
+                if (m_amsPop)
+                {
+                    m_amsPop->Destroy();
+                    m_amsPop = nullptr;
+                }
 
             });
         }
@@ -410,8 +408,8 @@ void AmsButton::mouseDown(wxMouseEvent& event)
 {
     wxPoint now_mousePos =  event.GetPosition();
     if (m_downRect.Contains(now_mousePos) /*&& !m_isEmpty*/ && !m_nowDeviceID.empty()) {
-        wxVector<PrinterObj>   printerInfo;
-        wxVector<AmsBoxObj>     amsBoxLists  ;
+        wxVector<PrinterObj>   printerInfo = m_plugin->GetPrinterList(m_printerType);
+        wxVector<AmsBoxObj>     amsBoxLists = m_plugin->GetPrinterKeyAmsInfoMap(m_nowDeviceID);
         bool                                 isInclude     = false;
         for (PrinterObj obj : printerInfo) {
             if (obj.deviceID == m_nowDeviceID && obj.machine_type >= 3 && !amsBoxLists.empty()) {

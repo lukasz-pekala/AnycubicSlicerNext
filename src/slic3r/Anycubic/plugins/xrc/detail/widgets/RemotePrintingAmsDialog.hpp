@@ -1,26 +1,18 @@
-#ifndef slic3r_GUI_Anycubic_RemotePrinting_RemotePrintingAmsDialog_hpp_
-#define slic3r_GUI_Anycubic_RemotePrinting_RemotePrintingAmsDialog_hpp_
+#pragma once
 
 #include <wx/wx.h>
-#include "slic3r/GUI/GUI.hpp"
-#include "slic3r/GUI/GUI_App.hpp"
-#include "slic3r/GUI/GUI_Utils.hpp"
-#include "slic3r/GUI/BitmapCache.hpp"
-#include "libslic3r/Utils.hpp"
-#include "slic3r/GUI/Widgets/Label.hpp"
-#include "slic3r/GUI/Widgets/Button.hpp"
+
 #include <boost/date_time/posix_time/posix_time.hpp>
-
-#include <plugins_sdk/event/detail/plugin_custom_event.hxx>
-
+#include "PopupWindow.hpp"
+#include "Button.hpp"
 #include "custom_struct_manger.hxx"
-
-
+#include <wx/dcbuffer.h>
+#include "../RemotePrint_plugin.hpp"
 
 class ColorBoxObject : public wxNavigationEnabled<StaticBox>
 {
 public:
-    ColorBoxObject(wxWindow* parent,
+    ColorBoxObject(Anycubic::Plugins::RemotePrintPlugin* plugin,wxWindow* parent,
                    wxSize    winSize,
                    AmsSlotObjInfo amsSlotBoj,
                    bool      isCheck   = false,
@@ -55,13 +47,14 @@ private:
     bool      m_isHover{false};
     bool      m_isCheck{false};
     AmsSlotObjInfo m_amsSlotObj;
+    Anycubic::Plugins::RemotePrintPlugin* m_plugin{ nullptr };
 };
 
 
 class ColorAMSBoxDialog : public PopupWindow
 {
 public:
-    ColorAMSBoxDialog(wxWindow* parent,
+    ColorAMSBoxDialog(Anycubic::Plugins::RemotePrintPlugin* plugin,wxWindow* parent,
                       wxWindow* amsParent,
                       wxString& filamentType,
                       int       parentIndex,
@@ -94,10 +87,6 @@ public:
 
     virtual void OnDismiss() wxOVERRIDE;
     bool         HasDismissLongTime();
-
-
-
-
 private:
     wxWindow *m_parent;
     wxWindow*                    m_amsParent{nullptr};
@@ -113,11 +102,10 @@ private:
     bool                         m_isInlcudeWin{false};
     bool                         m_pressedDown{false};
     boost::posix_time::ptime     dismissTime;
+    Anycubic::Plugins::RemotePrintPlugin* m_plugin{ nullptr };
     DECLARE_EVENT_TABLE()
 };
 
 
 
 
-
-#endif //!slic3r_GUI_Anycubic_RemotePrinting_RemotePrintingAmsDialog_hpp_

@@ -6,16 +6,14 @@
 #include <wx/dcgraph.h>
 #include <string>
 #include <stdio.h>
-#include "slic3r/GUI/wxExtensions.hpp"
-#include "slic3r/GUI/MsgDialog.hpp"
-#include "slic3r/GUI/MainFrame.hpp"
 #include <wx/richtooltip.h>
-#include "slic3r/GUI/Plater.hpp"
 #include <plugins_sdk/event/detail/program_color.hxx>
+#include <plugins_sdk/event/detail/plugin_custom_event.hxx>
 #include <plugins_sdk/event/detail/util_tool.hxx>
-#include "slic3r/GUI/GLCanvas3D.hpp"
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include "Label.hpp"
+#include "Plucgin_ScalableBitmap.hpp"
 
 BEGIN_EVENT_TABLE(ColorBoxObject, StaticBox)
 
@@ -41,10 +39,8 @@ END_EVENT_TABLE()
 
 
 
-
-
 	
-ColorAMSBoxDialog::ColorAMSBoxDialog(
+ColorAMSBoxDialog::ColorAMSBoxDialog(Anycubic::Plugins::RemotePrintPlugin* plugin,
     wxWindow* parent, wxWindow* amsParent, wxString& filament, int parentIndex, int slotNum, wxPoint& posPint, std::string deviceID)
     : PopupWindow(parent, wxPU_CONTAINS_CONTROLS)
     , m_parent(parent)
@@ -54,25 +50,17 @@ ColorAMSBoxDialog::ColorAMSBoxDialog(
     , m_parentIndex(parentIndex)
     , m_amsParent(amsParent)
     , m_slotNum(slotNum)
+    , m_plugin(plugin)
 
 {
     Init();
     
 }
 
-static wxColour Imvec4ToWxColour(ImVec4 color)
-{
-    int      r = std::min(255, std::max(0, int(color.x * 255.0f)));
-    int      g = std::min(255, std::max(0, int(color.y * 255.0f)));
-    int      b = std::min(255, std::max(0, int(color.z * 255.0f)));
-    int      a = std::min(255, std::max(0, int(color.w * 255.0f)));
-    wxColour colors(r, g, b, a);
-    return colors;
-}
 
 void ColorAMSBoxDialog::Init()
 {
-    wxVector<AmsBoxObj>      infoList;
+    wxVector<AmsBoxObj>         infoList = m_plugin->GetPrinterKeyAmsInfoMap(m_deviceID);
     wxVector<AmsSlotObjInfo> slotInfoList;
 
     for (int i = 0; i < infoList.size(); i++) {
@@ -95,7 +83,7 @@ void ColorAMSBoxDialog::Init()
     m_colorBoxList.clear();
     for (int i = 0; i < m_slotSum; i++) {
         
-        ColorBoxObject* colorBox  = new ColorBoxObject(this, wxSize(FromDIP(74), FromDIP(74)), slotInfoList[i],i == m_slotNum - 1, m_deviceID);
+        ColorBoxObject* colorBox  = new ColorBoxObject(m_plugin,this, wxSize(FromDIP(74), FromDIP(74)), slotInfoList[i],i == m_slotNum - 1, m_deviceID);
         m_colorBoxList.push_back(colorBox);
         if (i == 0 || i == 4) {
             m_mainSizer->Add(colorBox, 0, wxBOTTOM, FromDIP(4));
@@ -104,7 +92,7 @@ void ColorAMSBoxDialog::Init()
         }
     }
     
-    Button* m_warningInfo = new Button(this, _L("Only the same filament can be selected"));
+    Button* m_warningInfo = new Button(this, _("Only the same filament can be selected"));
 
     StateColor report_bg;
     StateColor fgColor;
@@ -152,7 +140,7 @@ void ColorAMSBoxDialog::Init()
     //  such as losting mouse move, and dismissing soon on first LEFT_DOWN event.
     Bind(wxEVT_IDLE, [](wxIdleEvent& evt) {});
 #endif
-    wxGetApp().UpdateDarkUIWin(this);
+    //wxGetApp().UpdateDarkUIWin(this);
 
 }
 
@@ -297,7 +285,7 @@ void ColorAMSBoxDialog::msw_rescale()
 }
 
 
-ColorBoxObject::ColorBoxObject(
+ColorBoxObject::ColorBoxObject(Anycubic::Plugins::RemotePrintPlugin* plugin,
     wxWindow* parent,
     wxSize winSize,
     AmsSlotObjInfo amsSlotBoj,
@@ -308,6 +296,7 @@ ColorBoxObject::ColorBoxObject(
     , m_deviceID(deviceID)
     , m_isCheck(isCheck)
     , m_amsSlotObj(amsSlotBoj)
+    , m_plugin(plugin)
 {
     Init();
 }
@@ -330,7 +319,7 @@ void ColorBoxObject::Init()
     double blackGap  = calculateColorDifference_RGB(m_showColor, COLOR_Neutral_10);
     m_showColor_Text = whiteGap > 40 ? COLOR_Neutral_01 : COLOR_Neutral_10;
 
-    m_check_ico = ScalableBitmap(this, "ico_remote_ams_check", 16).bmp();
+    m_check_ico = Plucgin_ScalableBitmap(this, "ico_remote_ams_check", 16).bmp();
 
 
     wxWindow::SetMinSize(m_winSize);
@@ -391,7 +380,7 @@ void ColorBoxObject::paintEvent(wxPaintEvent& evt)
 void ColorBoxObject::edgeColorRender(wxAutoBufferedPaintDC& dc, const wxPoint& point, const wxColour& colors, int type)
 {
 
-    wxColour edgeColor    = wxGetApp().dark_mode() ? COLOR_Neutral_01 : colors;
+    wxColour edgeColor    = m_plugin->dark_mode() ? COLOR_Neutral_01 : colors;
     int circle_big = FromDIP(31);
     int circle_small = FromDIP(9);
 
@@ -436,7 +425,7 @@ void ColorBoxObject::render(wxAutoBufferedPaintDC& dc)
     wxPoint filamentTypePoint(rc.x + (width_middle - (textSize_type.width / 2)), rc.height - FromDIP(8) - textSize_type.height);
     int     circle_big = FromDIP(30);
     int     circle_small = FromDIP(8);
-    wxColour edgeColor = wxGetApp().dark_mode() ? COLOR_Neutral_01 : m_showColor;
+    wxColour edgeColor = m_plugin->dark_mode() ? COLOR_Neutral_01 : m_showColor;
 
 
     if (!m_isEnable) {
@@ -448,7 +437,7 @@ void ColorBoxObject::render(wxAutoBufferedPaintDC& dc)
 
 
         edgeColorRender(dc, circularPoint, m_showColor);
-        dc.SetBrush(wxGetApp().dark_mode() ?COLOR_Neutral_13: COLOR_Neutral_01);
+        dc.SetBrush(m_plugin->dark_mode() ?COLOR_Neutral_13: COLOR_Neutral_01);
         dc.DrawCircle(circularPoint, circle_small);
         dc.SetTextForeground(COLOR_Neutral_01);
 
@@ -480,7 +469,7 @@ void ColorBoxObject::render(wxAutoBufferedPaintDC& dc)
     if (m_showColor.Red() == 255 && m_showColor.Green() == 255 && m_showColor.Blue() == 255) {
         isWhite = true;
     }
-    if (wxGetApp().dark_mode() && isWhite) {
+    if (m_plugin->dark_mode() && isWhite) {
         dc.SetBrush(COLOR_Neutral_01);
         dc.SetPen(COLOR_Neutral_13);
         dc.DrawCircle(circularPoint, circle_big);
@@ -507,7 +496,7 @@ void ColorBoxObject::render(wxAutoBufferedPaintDC& dc)
 
         wxColour brush_small = showColorType != 0 ? COLOR_Neutral_01 :
                                                     !isWhite ?
-                                                    wxGetApp().dark_mode() ? COLOR_Neutral_13:COLOR_Neutral_01 :
+            m_plugin->dark_mode() ? COLOR_Neutral_13:COLOR_Neutral_01 :
                                                     parentColour;
         wxColour penColor    = showColorType != 0 ? showColorType == 3 ? m_amsSlotObj.skuColors[1] : COLOR_Neutral_01 :
                                !isWhite           ? COLOR_Neutral_01 :  COLOR_Ams_Box_borderColor;
