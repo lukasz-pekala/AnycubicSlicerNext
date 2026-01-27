@@ -20,7 +20,7 @@ See the [wiki](doc/Wiki.md) for more information.
 
 build instructions for Windows, macOS, and Linux 
 
-See the [wiki](https://github.com/ANYCUBIC-3D/AnycubicSlicerNext/wiki/) for more 
+See the [wiki](doc/Wiki.md) for more 
 information.
 <h3>
 
