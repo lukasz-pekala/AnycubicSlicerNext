@@ -2,6 +2,7 @@
 #include "AnycubicContext.hpp"
 #include "detail/anonymous.hpp"
 #include "plugins/plugins_list.hpp"
+#include "protocol/check_protocol.hpp"
 
 #include <utility/codec/base64.hxx>
 #include <utility/encrypt/aes.hxx>
@@ -127,13 +128,9 @@ public:
   }
   PluginsManager *GetPM() { return pm_; }
   bool PluginsIsLoaded() const { return pm_ != nullptr; }
-  bool IsFinishedGUIInit() const { return is_finished_gui_init_; }
-  void EmitEvent(EventType event)  {
+  inline void EmitEvent(EventType event) {
     if (pm_ != nullptr) {
       pm_->EmitEvent(event);
-      if(event == EventType::kEventFinishedByGUI){
-        is_finished_gui_init_ = true;
-      }
     }
   }
   static void downloader_callback(void *ctx, int32_t download_id,
@@ -306,7 +303,6 @@ private:
   std::map<wxString, wxString> config_;
   AppConfig *app_config_{nullptr};
   PluginsManager *pm_{nullptr};
-  bool is_finished_gui_init_{false};
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -327,30 +323,95 @@ bool AnycubicContext::PluginsIsLoaded() const {
 }
 
 bool AnycubicContext::HasPlugin() const {
-  if (!impl_->IsFinishedGUIInit()) {
-    return false;
-  }
-  auto pm = impl_->GetPM();
-  if (pm == nullptr) {
-    return false;
-  }
-  return Anycubic::Plugins::dispatch_call<bool>(pm, "manager", "has_package",
-                                                ANYCUBIC_PLUGIN_NAME);
+  // TODO: 检查是否存在插件
+  return false;
 }
-bool AnycubicContext::StartDownloadPlugins(const wxString &name) {
-  if (!impl_->IsFinishedGUIInit()) {
-    return false;
-  }
-  if (name.IsEmpty()) {
-    return false;
-  }
-  auto pm = impl_->GetPM();
-  if (pm == nullptr) {
-    return false;
-  }
-  return Anycubic::Plugins::dispatch_call<bool>(pm, "manager",
-                                                "start_download_plugin", name);
+
+bool AnycubicContext::StartDownloadPlugins(bool is_auto_update /*= false*/) {
+  // TODO: 下载插件
+  return false;
 }
+
+void AnycubicContext::UpdatePluginConfig(void) {
+  // 更新插件列表。在必要时和用于关闭问题插件
+  UpdateChecker checker(impl_);
+  std::vector<std::string> name_list;
+  checker.update_plugin_name_list(name_list);
+}
+
+void AnycubicContext::UpdatePreset(void) {
+  // TODO: 更新打印配置
+}
+int version_comparison(const char *verison,
+                       const char *verison2 = SoftFever_VERSION) {
+  assert(verison != nullptr);
+  Semver v2 = *(Semver::parse(verison2));
+  Semver v1 = *(Semver::parse(verison));
+  assert(v1.valid() && v2.valid());
+  if (v1 > v2) {
+    return 1;
+  } else if (v1 < v2) {
+    return -1;
+  } else {
+    return 0;
+  }
+}
+void AnycubicContext::UpdateApp(bool is_auto_update /*= false*/) {
+  // 更新主程序
+  UpdateChecker checker(impl_);
+  UpdateAppResponse response;
+  if (!checker.check_app_update_available(response)) {
+    // 更新检查失败
+    if (is_auto_update) {
+      ShowUpdateVersionDialog(_L("Check update failed"), _L(""), false);
+    }
+    return;
+  }
+  if (response.version_code == 0) {
+    if (!is_auto_update) {
+      // 没有更新弹框
+      ShowUpdateVersionDialog(_L("It's already the latest"), _L(""), false);
+    }
+    return;
+  }
+  if (is_auto_update) {
+    wxString skip_version;
+    auto result = impl_->GetValue("app/skip_version", skip_version);
+    if (result && version_comparison(skip_version.utf8_string().c_str(),
+                                     response.version_name.c_str()) >= 0) {
+      // 自动更新，跳过版本
+      return;
+    }
+  }
+
+  // 弹框提示更新
+
+  wxString language;
+  impl_->GetValue("language", language);
+
+  auto buttonID = ShowUpdateVersionDialog(
+      wxString::FromUTF8(language != "zh-CN" ? response.update_content_us
+                                             : response.update_content_cn),
+      response.version_name);
+  if (buttonID == wxID_YES) {
+   
+  }else if(buttonID == wxID_CANCEL){
+    // 取消更新
+    return;
+  }else if(buttonID == wxID_IGNORE){
+
+  }
+
+  // TODO: 下载更新包
+  StartDownload(response.download_url);
+
+  // TODO: 提示退出程序确认后执行更新
+
+  // TODO: 执行应用更新
+
+  // TODO: 退出程序
+}
+
 bool AnycubicContext::StartDownload(const wxString &url) {
   return impl_->StartDownload(url);
 }
@@ -416,6 +477,9 @@ void AnycubicContext::OnFinishedByGui() {
   if (PluginsIsLoaded()) {
     impl_->EmitEvent(EventType::kEventFinishedByGUI);
   }
+  // 检查是否有新的版本
+  UpdateApp(true);
+  UpdatePreset();
 }
 void AnycubicContext::OnExitByGui() {
   if (PluginsIsLoaded()) {
@@ -426,6 +490,18 @@ void AnycubicContext::OnExitByApp() {
   if (PluginsIsLoaded()) {
     impl_->EmitEvent(EventType::kEventExitByApp);
   }
+}
+int AnycubicContext::ShowUpdateVersionDialog(const wxString &extmsg,
+                                              const wxString &version_str,
+                                              bool is_skip_version) {
+
+  UpdateVersionDialog dialog(wxGetApp().GetTopWindow());
+  dialog.update_version_info(extmsg, version_str);
+  // dialog.update_version_info(version_info.description);
+  if (is_skip_version) {
+    dialog.m_button_skip_version->Hide();
+  }
+  return dialog.ShowModal();
 }
 } // namespace GUI
 } // namespace Slic3r

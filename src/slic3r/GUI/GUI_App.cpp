@@ -2477,8 +2477,9 @@ bool GUI_App::on_init_inner()
         app_config->set("version", SLIC3R_VERSION);
     }
 
-    SplashScreen * scrn = nullptr;
-    if (app_config->get("show_splash_screen") == "true") {
+    
+    /*if (app_config->get("show_splash_screen") == "true")*/ {
+        std::unique_ptr<SplashScreen> scrn;
         // make a bitmap with dark grey banner on the left side
         //BBS make BBL splash screen bitmap
         wxBitmap bmp = SplashScreen::MakeBitmap();
@@ -2493,9 +2494,24 @@ bool GUI_App::on_init_inner()
 
         BOOST_LOG_TRIVIAL(info) << "begin to show the splash screen...";
         //BBS use BBL splashScreen
-        scrn = new SplashScreen(bmp, wxSPLASH_CENTRE_ON_SCREEN | wxSPLASH_TIMEOUT, 1500, splashscreen_pos);
+        scrn = std::make_unique<SplashScreen>(bmp, wxSPLASH_CENTRE_ON_SCREEN, 0, splashscreen_pos);
+
+        scrn->SetText(_L("Updating plugin configuration..."));
+        wxYield(); // 确保界面更新
+        
+        // 执行UpdatePluginConfig操作
+        if (m_anycubic_context) {
+            m_anycubic_context->UpdatePluginConfig();
+        }
+        
+        // 更新完成后显示完成信息
+        scrn->SetText(_L("Plugin configuration updated successfully"));
         wxYield();
+        wxMilliSleep(500); // 显示完成信息500毫秒
+        BOOST_LOG_TRIVIAL(info) << "Splash screen destroyed after UpdatePluginConfig completion";
         scrn->SetText(_L("Loading configuration")+ dots);
+        wxYield(); // 确保界面更新，显示Loading configuration信息
+        wxMilliSleep(500); // 显示Loading configuration信息500毫秒
     }
 
     BOOST_LOG_TRIVIAL(info) << "loading systen presets...";
@@ -3567,7 +3583,7 @@ if (res) {
 
 void GUI_App::ShowDownNetPluginDlg() {
     try {
-        m_anycubic_context->StartDownloadPlugins();
+        m_anycubic_context->StartDownloadPlugins(false);
     } catch (std::exception&) {
         ;
     }
@@ -4419,7 +4435,7 @@ Semver get_version(const std::string& str, const std::regex& regexp) {
     }
     return Semver::invalid();
 }
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
 namespace
 {
 
@@ -4684,7 +4700,7 @@ void maybe_attach_updater_signature(Http& http, const std::string& canonical_que
 }
 
 } // namespace
-#ifdef ENABLE_OLD_VERSION_UPDATE
+
 void GUI_App::check_new_version_sf(bool show_tips, int by_user)
 {
     AppConfig* app_config = wxGetApp().app_config;
@@ -4828,6 +4844,10 @@ void GUI_App::check_new_version_sf(bool show_tips, int by_user)
         });
 
     http.perform();
+}
+#else
+void GUI_App::CheckForUpdate(bool is_auto_update) {
+    m_anycubic_context->UpdateApp(is_auto_update);
 }
 #endif // ENABLE_OLD_VERSION_UPDATE
 

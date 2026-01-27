@@ -164,7 +164,13 @@ static int log_trace(CURL* handle, curl_infotype type,
 	char* data, size_t size,
 	void* userp)
 {
-	return 0;
+#ifndef NDEBUG
+	if (type == CURLINFO_SSL_DATA_IN || type == CURLINFO_SSL_DATA_OUT){
+		return 0;
+	}
+	BOOST_LOG_TRIVIAL(info) << "libcurl debug:" << std::string(data,size);
+#endif
+    return 0;
 }
 
 Http::priv::priv(const std::string &url)

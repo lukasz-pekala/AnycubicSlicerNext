@@ -427,15 +427,14 @@ void GuideFrame::OnScriptMessage(wxWebViewEvent &evt)
             json MSelected = j["data"];
 
             int nModel = m_ProfileJson["model"].size();
-            for (int m = 0; m < nModel; m++) {
-                json TmpModel = m_ProfileJson["model"][m];
-                m_ProfileJson["model"][m]["nozzle_selected"] = "";
-
-                for (auto it = MSelected.begin(); it != MSelected.end(); ++it) {
-                    json OneSelect = it.value();
+            for (auto it = MSelected.begin(); it != MSelected.end(); ++it) {
+                json OneSelect = it.value();
+                wxString s2 = OneSelect["model"];
+                for (int m = 0; m < nModel; m++) {
+                    json TmpModel = m_ProfileJson["model"][m];
+                    m_ProfileJson["model"][m]["nozzle_selected"] = "";
 
                     wxString s1 = TmpModel["model"];
-                    wxString s2 = OneSelect["model"];
                     if (s1.compare(s2) == 0) {
                         m_ProfileJson["model"][m]["nozzle_selected"] = OneSelect["nozzle_diameter"];
                         break;
