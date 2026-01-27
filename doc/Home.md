@@ -1,7 +1,7 @@
 # Welcome to the AnycubicslicerNext WIKI!
 
 
-## [How to compile](https://github.com/ANYCUBIC-3D/AnycubicSlicerNext/doc/how-to-build.md) 
+## [How to compile](how-to-build.md) 
 
 build instructions for Windows, macOS, and Linux 
 

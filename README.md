@@ -25,7 +25,7 @@ information.
 <h3>
 
 
-## [How to compile](https://github.com/ANYCUBIC-3D/AnycubicSlicerNext/doc/how-to-build.md) 
+## [How to compile](doc/how-to-build.md) 
 
 build instructions for Windows, macOS, and Linux 
 
