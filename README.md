@@ -6,14 +6,8 @@
 
 # AnycubicSlicerNext 
 </div>
-AnycubicSlicerNext is an open source Next-Gen Slicing Software for Precision 3D Prints.  
-Optimize your prints with ultra-fast slicing, intelligent support generation, and seamless printer compatibility—engineered for perfection.
-
-
-AnycubicSlicerNext was originally forked from OrcaSlicer.
-
+AnycubicSlicerNext is an open-source slicing software developed based on OrcaSlicer. It delivers powerful slicing performance and an exceptional user experience.
 OrcaSlicer was originally forked from Bambu Studio, it was previously known as BambuStudio-SoftFever.
-
 [Bambu Studio](https://github.com/bambulab/BambuStudio) is forked from [PrusaSlicer](https://github.com/prusa3d/PrusaSlicer) by Prusa Research, which is from [Slic3r](https://github.com/Slic3r/Slic3r) by Alessandro Ranellucci and the RepRap community.
 OrcaSlicer incorporates a lot of features from [SuperSlicer](https://github.com/supermerill/SuperSlicer) by @supermerill
 OrcaSlicer's logo is designed by community member Justin Levine (@freejstnalxndr).
