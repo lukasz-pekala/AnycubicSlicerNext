@@ -1023,7 +1023,7 @@ void InfoManage::CreateSideToolBtn(int flag)
             wxPostEvent(Slic3r::GUI::wxGetApp().mainframe->m_plater, SimpleEvent(EVT_GLTOOLBAR_EXPORT_GCODE));
             return;
         }else if (m_print_select == int(eUploadGcode)) {
-            Anycubic::Plugins::dispatch_call<bool>(host_, "uploadGcode", "showdialog");
+            Anycubic::Plugins::dispatch_call<void>(host_, "remoteManger", "doGcodeUploadEvent");
             return;
         } else if (m_print_select == int(eRemotePrinting)) {
             type = 0;
