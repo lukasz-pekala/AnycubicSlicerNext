@@ -48,7 +48,7 @@
 #define AUFILE_PANEL_SIZE wxSize(FromDIP(168), FromDIP(208))
 #define AUFILE_TEXT_HEIGHT FromDIP(40)
 #define AUFILE_ROUNDING FromDIP(5)
-
+#ifdef ENABLE_BBS_TAB
 namespace Slic3r { namespace GUI {
 
 struct project_file{
@@ -98,5 +98,5 @@ public:
 
 wxDECLARE_EVENT(EVT_PROJECT_RELOAD, wxCommandEvent);
 }} // namespace Slic3r::GUI
-
+#endif // ENABLE_BBS_TAB
 #endif

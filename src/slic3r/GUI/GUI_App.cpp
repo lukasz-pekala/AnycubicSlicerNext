@@ -2689,8 +2689,9 @@ bool GUI_App::on_init_inner()
 
     BOOST_LOG_TRIVIAL(info) << "create the main window";
     renew_mainframe(MainFrame::tpHome);
+#ifdef ENABLE_BBS_TAB
     mainframe->m_project->init_auxiliary();
-
+#endif // ENABLE_BBS_TAB
 
     plater_->init_notification_manager();
 
@@ -3819,7 +3820,7 @@ void GUI_App::get_login_info()
             wxString strJS = wxString::Format("window.postMessage(%s)", logout_cmd);
             GUI::wxGetApp().run_script(strJS);
         }
-        mainframe->m_webview->SetLoginPanelVisibility(true);
+        mainframe->m_home->SetLoginPanelVisibility(true);
     }
 }
 
@@ -3953,8 +3954,8 @@ std::string GUI_App::handle_web_request(std::string cmd)
             }
             else if (command_str.compare("get_recent_projects") == 0) {
                 if (mainframe) {
-                    if (mainframe->m_webview) {
-                        mainframe->m_webview->SendRecentList(INT_MAX);
+                    if (mainframe->m_home) {
+                        mainframe->m_home->SendRecentList(INT_MAX);
                     }
                 }
             }
@@ -5361,7 +5362,7 @@ void GUI_App::stop_http_server()
 
 void GUI_App::switch_staff_pick(bool on)
 {
-    mainframe->m_webview->SendDesignStaffpick(on);
+    mainframe->m_home->SendDesignStaffpick(on);
 }
 
 bool GUI_App::switch_language()
@@ -5778,10 +5779,12 @@ void GUI_App::update_mode()
         mainframe->m_param_panel->update_mode();
     if (mainframe->m_param_dialog)
         mainframe->m_param_dialog->panel()->update_mode();
+#ifdef ENABLE_BBS_TAB
     if (mainframe->m_printer_view)
         mainframe->m_printer_view->update_mode();
-    if (mainframe->m_webview)
-        mainframe->m_webview->update_mode();
+#endif // /ENABLE_BBS_TAB
+    if (mainframe->m_home)
+        mainframe->m_home->update_mode();
 
 #ifdef _MSW_DARK_MODE
     if (!wxGetApp().tabs_as_menu())
@@ -5799,9 +5802,11 @@ void GUI_App::update_mode()
 }
 
 void GUI_App::update_internal_development() {
-    mainframe->m_webview->update_mode();
+    mainframe->m_home->update_mode();
+#ifdef ENABLE_BBS_TAB
     if (mainframe->m_printer_view)
         mainframe->m_printer_view->update_mode();
+#endif // ENABLE_BBS_TAB
 }
 
 void GUI_App::show_ip_address_enter_dialog(wxString title)
