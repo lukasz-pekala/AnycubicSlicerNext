@@ -324,9 +324,11 @@ bool SimplyPrint::do_temp_upload(const boost::filesystem::path& file_path,
             if (should_open_in_external_browser()) {
                 wxLaunchDefaultBrowser(url);
             } else {
+#ifdef ENABLE_BBS_TAB
                 const auto mainframe = GUI::wxGetApp().mainframe;
                 mainframe->request_select_tab(MainFrame::TabPosition::tpMonitor);
                 mainframe->load_printer_url(url);
+#endif  // ENABLE_BBS_TAB
             }
 
             return true;
