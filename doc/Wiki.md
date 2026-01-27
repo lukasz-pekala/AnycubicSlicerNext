@@ -1,7 +1,7 @@
 # Welcome to the AnycubicslicerNext WIKI!
 
 
-## [How to compile](how-to-build.md) 
+## [How to compile](How-to-build.md) 
 
 build instructions for Windows, macOS, and Linux 
 
