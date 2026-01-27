@@ -21,7 +21,7 @@
 #include "wx/textctrl.h"
 #include <wx/timer.h>
 
-
+#ifdef ENABLE_BBS_TAB
 namespace Slic3r {
 namespace GUI {
 
@@ -56,5 +56,5 @@ private:
 
 } // GUI
 } // Slic3r
-
+#endif // ENABLE_BBS_TAB
 #endif /* slic3r_Tab_hpp_ */

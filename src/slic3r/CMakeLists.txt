@@ -57,8 +57,8 @@ set(SLIC3R_GUI_SOURCES
     GUI/calib_dlg.hpp
     GUI/Calibration.cpp
     GUI/Calibration.hpp
-    GUI/CalibrationPanel.cpp
-    GUI/CalibrationPanel.hpp
+    # GUI/CalibrationPanel.cpp
+    # GUI/CalibrationPanel.hpp
     GUI/CalibrationWizardCaliPage.cpp
     GUI/CalibrationWizardCaliPage.hpp
     GUI/CalibrationWizard.cpp
@@ -284,8 +284,8 @@ set(SLIC3R_GUI_SOURCES
     GUI/ModelMall.hpp
     GUI/MonitorBasePanel.cpp
     GUI/MonitorBasePanel.h
-    GUI/Monitor.cpp
-    GUI/Monitor.hpp
+    # GUI/Monitor.cpp
+    # GUI/Monitor.hpp
     GUI/MonitorPage.cpp
     GUI/MonitorPage.hpp
     GUI/Mouse3DController.cpp
@@ -346,8 +346,8 @@ set(SLIC3R_GUI_SOURCES
     GUI/PrinterCloudAuthDialog.hpp
     GUI/Printer/PrinterFileSystem.cpp
     GUI/Printer/PrinterFileSystem.h
-    GUI/PrinterWebView.cpp
-    GUI/PrinterWebView.hpp
+    # GUI/PrinterWebView.cpp
+    # GUI/PrinterWebView.hpp
     GUI/PrintHostDialogs.cpp
     GUI/PrintHostDialogs.hpp
     GUI/PrintOptionsDialog.cpp
@@ -356,10 +356,10 @@ set(SLIC3R_GUI_SOURCES
     GUI/PrivacyUpdateDialog.hpp
     GUI/ProgressStatusBar.cpp
     GUI/ProgressStatusBar.hpp
-    GUI/Project.cpp
+    # GUI/Project.cpp
     GUI/ProjectDirtyStateManager.cpp
     GUI/ProjectDirtyStateManager.hpp
-    GUI/Project.hpp
+    # GUI/Project.hpp
     GUI/PublishDialog.cpp
     GUI/PublishDialog.hpp
     GUI/RammingChart.cpp
@@ -580,6 +580,19 @@ set(SLIC3R_GUI_SOURCES
     Utils/WxFontUtils.cpp
     Utils/WxFontUtils.hpp
 )
+option(ENABLE_BBS_TAB "Enable BBS Tab" OFF)
+if (ENABLE_BBS_TAB)
+    list(APPEND SLIC3R_GUI_SOURCES
+        GUI/CalibrationPanel.cpp
+        GUI/CalibrationPanel.hpp
+        GUI/Project.cpp
+        GUI/Project.hpp
+        GUI/Monitor.cpp
+        GUI/Monitor.hpp
+        GUI/PrinterWebView.cpp
+        GUI/PrinterWebView.hpp
+    )
+endif()
 
 add_subdirectory(GUI/DeviceTab)
 
@@ -637,6 +650,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/GeneratedConfig.hpp.in
                @ONLY)
 
 add_library(libslic3r_gui STATIC ${SLIC3R_GUI_SOURCES} ${ANYCUBIC_SUB_DIR_SOURCES})
+if(ENABLE_BBS_TAB)
+    target_compile_definitions(libslic3r_gui PRIVATE -DENABLE_BBS_TAB)
+endif()
 target_include_directories(libslic3r_gui PRIVATE Utils ${CMAKE_CURRENT_BINARY_DIR})
 anycubic_target_link(libslic3r_gui OUT_SDK_DLLS)
 

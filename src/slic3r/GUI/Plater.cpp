@@ -7310,7 +7310,7 @@ void Plater::priv::on_tab_selection_changing(wxBookCtrlEvent& e)
         e.Skip();
         return;
     }
-
+#ifdef ENABLE_BBS_TAB
     const int new_sel = e.GetSelection();
     sidebar_layout.show = new_sel == MainFrame::tp3DEditor || new_sel == MainFrame::tpPreview;
     update_sidebar();
@@ -7334,6 +7334,7 @@ void Plater::priv::on_tab_selection_changing(wxBookCtrlEvent& e)
             }
         }
     }
+#endif // ENABLE_BBS_TAB
 }
 
 int Plater::priv::update_print_required_data(Slic3r::DynamicPrintConfig config, Slic3r::Model model, Slic3r::PlateDataPtrs plate_data_list, std::string file_name, std::string file_path)
@@ -13054,6 +13055,7 @@ int Plater::export_config_3mf(int plate_idx, Export3mfProgressFn proFn)
 //BBS
 void Plater::send_calibration_job_finished(wxCommandEvent & evt)
 {
+#ifdef ENABLE_BBS_TAB
     p->main_frame->request_select_tab(MainFrame::TabPosition::tpCalibration);
     auto calibration_panel = p->main_frame->m_calibration;
     if (calibration_panel) {
@@ -13063,6 +13065,7 @@ void Plater::send_calibration_job_finished(wxCommandEvent & evt)
         event.SetEventObject(curr_wizard);
         wxPostEvent(curr_wizard, event);
     }
+#endif // ENABLE_BBS_TAB
     evt.Skip();
 }
 
@@ -13081,11 +13084,13 @@ void Plater::print_job_finished(wxCommandEvent &evt)
     if (!dev) return;
 
     dev->set_selected_machine(evt.GetString().ToStdString());
+#ifdef ENABLE_BBS_TAB
     p->main_frame->request_select_tab(MainFrame::TabPosition::tpMonitor);
     //jump to monitor and select device status panel
     MonitorPanel* curr_monitor = p->main_frame->m_monitor;
     if(curr_monitor)
        curr_monitor->get_tabpanel()->ChangeSelection(MonitorPanel::PrinterTab::PT_STATUS);
+#endif // ENABLE_BBS_TAB
 }
 
 void Plater::send_job_finished(wxCommandEvent& evt)
@@ -13471,8 +13476,10 @@ void Plater::update_print_error_info(int code, std::string msg, std::string extr
     if (p->m_send_to_sdcard_dlg) {
         p->m_send_to_sdcard_dlg->update_print_error_info(code, msg, extra);
     }
+#ifdef ENABLE_BBS_TAB
     if (p->main_frame->m_calibration)
         p->main_frame->m_calibration->update_print_error_info(code, msg, extra);
+#endif // ENABLE_BBS_TAB
 }
 
 wxString Plater::get_project_filename(const wxString& extension) const

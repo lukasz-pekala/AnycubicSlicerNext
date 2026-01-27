@@ -49,7 +49,7 @@
 #include "slic3r/GUI/AmsWidgets.hpp"
 #include "Widgets/SideTools.hpp"
 #include "SelectMachinePop.hpp"
-
+#ifdef ENABLE_BBS_TAB
 namespace Slic3r {
 namespace GUI {
 
@@ -162,5 +162,5 @@ public:
 
 } // GUI
 } // Slic3r
-
+#endif // ENABLE_BBS_TAB
 #endif /* slic3r_Tab_hpp_ */
