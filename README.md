@@ -20,10 +20,12 @@ See the [wiki](doc/Wiki.md) for more information.
 
 build instructions for Windows, macOS, and Linux 
 
-See the [wiki](doc/Wiki.md) for more 
-information.
-<h3>
+AnycubicSlicerNext is an open-source slicing software developed based on OrcaSlicer. It delivers powerful slicing performance and an exceptional user experience.  
+OrcaSlicer was originally forked from Bambu Studio, it was previously known as BambuStudio-SoftFever.  
+[Bambu Studio](https://github.com/bambulab/BambuStudio) is forked from [PrusaSlicer](https://github.com/prusa3d/PrusaSlicer) by Prusa Research, which is from [Slic3r](https://github.com/Slic3r/Slic3r) by Alessandro Ranellucci and the RepRap community.  
 
+See the [wiki](doc/Wiki.md) for more information.
+<h3>
 
 ## [How to compile](doc/How-to-build.md) 
 
