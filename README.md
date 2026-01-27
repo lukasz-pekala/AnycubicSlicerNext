@@ -12,7 +12,7 @@ OrcaSlicer was originally forked from Bambu Studio, it was previously known as B
 OrcaSlicer incorporates a lot of features from [SuperSlicer](https://github.com/supermerill/SuperSlicer) by @supermerill
 OrcaSlicer's logo is designed by community member Justin Levine (@freejstnalxndr).
 
-See the [wiki](https://github.com/ANYCUBIC-3D/AnycubicSlicerNext/wiki/) for more 
+See the [wiki](doc/Wiki.md) for more 
 information.
 <h3>
 
