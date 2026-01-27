@@ -36,6 +36,7 @@ void UpgradeNetworkJob::update_status(Ctl &ctl, int st, const std::string &msg)
 
 void UpgradeNetworkJob::process(Ctl &ctl)
 {
+#ifdef ENABLE_OLD_VERSION_UPDATE
     // downloading
     int result = 0;
 
@@ -116,6 +117,7 @@ void UpgradeNetworkJob::process(Ctl &ctl)
     wxPostEvent(m_event_handle, event);
     BOOST_LOG_TRIVIAL(info) << "[UpgradeNetworkJob process]: exit";
     return;
+#endif // ENABLE_OLD_VERSION_UPDATE
 }
 
 void UpgradeNetworkJob::finalize(bool canceled, std::exception_ptr &eptr)

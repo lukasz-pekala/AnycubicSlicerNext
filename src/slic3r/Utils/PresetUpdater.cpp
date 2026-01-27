@@ -209,8 +209,9 @@ struct PresetUpdater::priv
     };
 
     priv();
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
 	void set_download_prefs(AppConfig *app_config);
+#endif // ENABLE_OLD_VERSION_UPDATE
 	bool get_file(const std::string &url, const fs::path &target_path) const;
 	//BBS: refine preset update logic
     bool extract_file(const fs::path &source_path, const fs::path &dest_path = {});
@@ -220,10 +221,13 @@ struct PresetUpdater::priv
     void sync_resources(std::string http_url, std::map<std::string, Resource> &resources, bool check_patch = false,  std::string current_version="", std::string changelog_file="");
     void sync_config();
     void sync_tooltip(std::string http_url, std::string language);
+#ifdef ENABLE_OLD_VERSION_UPDATE
     void sync_plugins(std::string http_url, std::string plugin_version);
+#endif // ENABLE_OLD_VERSION_UPDATE
     void sync_printer_config(std::string http_url);
+#ifdef ENABLE_OLD_VERSION_UPDATE
     bool get_cached_plugins_version(std::string &cached_version, bool& force);
-
+#endif // ENABLE_OLD_VERSION_UPDATE
 	//BBS: refine preset update logic
 	bool install_bundles_rsrc(const std::vector<std::string>& bundles, bool snapshot) const;
 	void check_installed_vendor_profiles() const;
@@ -242,14 +246,16 @@ PresetUpdater::priv::priv()
 {
 	//BBS: refine preset updater logic
 	enabled_version_check = true;
+#ifdef ENABLE_OLD_VERSION_UPDATE
 	set_download_prefs(GUI::wxGetApp().app_config);
+#endif // ENABLE_OLD_VERSION_UPDATE
 	// Install indicies from resources. Only installs those that are either missing or older than in resources.
 	check_installed_vendor_profiles();
     perform_updates(get_printer_config_updates(), false);
 	// Load indices from the cache directory.
 	//index_db = Index::load_db();
 }
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
 // Pull relevant preferences from AppConfig
 void PresetUpdater::priv::set_download_prefs(AppConfig *app_config)
 {
@@ -261,7 +267,7 @@ void PresetUpdater::priv::set_download_prefs(AppConfig *app_config)
 	else
 		enabled_config_update = false;
 }
-
+#endif // ENABLE_OLD_VERSION_UPDATE
 //BBS: refine the Preset Updater logic
 // Downloads a file (http get operation). Cancels if the Updater is being destroyed.
 bool PresetUpdater::priv::get_file(const std::string &url, const fs::path &target_path) const
@@ -662,7 +668,7 @@ void PresetUpdater::priv::sync_config()
         }
     }
     AppConfig *app_config = GUI::wxGetApp().app_config;
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
     auto profile_update_url = app_config->profile_update_url() + "/" + SoftFever_VERSION;
     // parse the assets section and get the latest asset by comparing the name
 
@@ -759,6 +765,7 @@ void PresetUpdater::priv::sync_config()
             } catch (...) {}
         })
         .perform_sync();
+#endif // ENABLE_OLD_VERSION_UPDATE
 }
 
 void PresetUpdater::priv::sync_tooltip(std::string http_url, std::string language)
@@ -790,7 +797,7 @@ void PresetUpdater::priv::sync_tooltip(std::string http_url, std::string languag
         BOOST_LOG_TRIVIAL(warning) << format("[Anycubic Updater] sync_tooltip: %1%", e.what());
     }
 }
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
 // return true means there are plugins files
 bool PresetUpdater::priv::get_cached_plugins_version(std::string& cached_version, bool &force)
 {
@@ -987,7 +994,7 @@ void PresetUpdater::priv::sync_plugins(std::string http_url, std::string plugin_
             GUI::wxGetApp().plater()->get_notification_manager()->push_notification(GUI::NotificationType::BBLPluginUpdateAvailable);
     }
 }
-
+#endif // ENABLE_OLD_VERSION_UPDATE
 void PresetUpdater::priv::sync_printer_config(std::string http_url)
 {
     std::string curr_version  = SLIC3R_VERSION;
@@ -1384,7 +1391,9 @@ void PresetUpdater::sync(std::string http_url, std::string language, std::string
         }
 		if (p->cancel)
 			return;
+#ifdef ENABLE_OLD_VERSION_UPDATE
         this->p->sync_plugins(http_url, plugin_version);
+#endif // ENABLE_OLD_VERSION_UPDATE
         this->p->sync_printer_config(http_url);
 		//if (p->cancel)
 		//	return;

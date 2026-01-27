@@ -2269,7 +2269,7 @@ static void add_common_publish_menu_items(wxMenu* publish_menu, MainFrame* mainF
             //if (GUI::wxGetApp().plater()->model().objects.empty()) return;
             wxGetApp().open_publish_page_dialog();
         });
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
     append_menu_item(publish_menu, wxID_ANY, _L("Download Models"), _L("Download Models"),
         [](wxCommandEvent&) {
             if (!wxGetApp().getAgent()) {
@@ -2280,6 +2280,7 @@ static void add_common_publish_menu_items(wxMenu* publish_menu, MainFrame* mainF
             //if (GUI::wxGetApp().plater()->model().objects.empty()) return;
             wxGetApp().open_mall_page_dialog();
         });
+#endif // ENABLE_OLD_VERSION_UPDATE
 #endif
 }
 

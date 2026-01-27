@@ -128,6 +128,7 @@ static wxImage fail_image;
 
 static void market_model_scoring_page(int design_id)
 {
+    #ifdef ENABLE_OLD_VERSION_UPDATE
     std::string url;
     std::string country_code   = GUI::wxGetApp().app_config->get_country_code();
     std::string model_http_url = GUI::wxGetApp().get_model_http_url(country_code);
@@ -146,6 +147,7 @@ static void market_model_scoring_page(int design_id)
             return;
         }
     }
+    #endif // ENABLE_OLD_VERSION_UPDATE
 }
 
 PrintingTaskPanel::PrintingTaskPanel(wxWindow* parent, PrintingTaskType type)

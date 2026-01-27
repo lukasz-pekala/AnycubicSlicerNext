@@ -960,6 +960,8 @@ void GUI_App::post_init()
         hms_query = new HMSQuery();
 
     m_show_gcode_window = app_config->get_bool("show_gcode_window");
+    
+#ifdef ENABLE_OLD_VERSION_UPDATE
     if (m_networking_need_update) {
         //updating networking
         int ret = updating_bambu_networking();
@@ -971,6 +973,7 @@ void GUI_App::post_init()
             BOOST_LOG_TRIVIAL(error) << __FUNCTION__<<":networking plugin updated failed";
         }
     }
+#endif // ENABLE_OLD_VERSION_UPDATE
 
     // Start preset sync after project opened, otherwise we could have preset change during project opening which could cause crash 
     if (app_config->get("sync_user_preset") == "true") {
@@ -993,13 +996,12 @@ void GUI_App::post_init()
     if (this->preset_updater) { // G-Code Viewer does not initialize preset_updater.
         CallAfter([this] {
             bool cw_showed = this->config_wizard_startup();
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
             std::string http_url = get_http_url(app_config->get_country_code());
             std::string language = GUI::into_u8(current_language_code());
             std::string network_ver = Slic3r::NetworkAgent::get_version();
             bool        sys_preset  = app_config->get("sync_system_preset") == "true";
             this->preset_updater->sync(http_url, language, network_ver, sys_preset ? preset_bundle : nullptr);
-#ifdef ENABLE_OLD_VERSION_UPDATE
             this->check_new_version_sf();
 #endif // ENABLE_OLD_VERSION_UPDATE
             if (is_user_login() && !app_config->get_stealth_mode()) {
@@ -1011,7 +1013,7 @@ void GUI_App::post_init()
 
     if (is_user_login())
         request_user_handle(0);
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
     if(!m_networking_need_update && m_agent) {
         m_agent->set_on_ssdp_msg_fn(
             [this](std::string json_str) {
@@ -1030,7 +1032,7 @@ void GUI_App::post_init()
         });
         m_agent->start_discovery(true, false);
     }
-
+#endif // ENABLE_OLD_VERSION_UPDATE
     //update the plugin tips
     CallAfter([this] {
             mainframe->refresh_plugin_tips();
@@ -1135,7 +1137,7 @@ void GUI_App::shutdown()
     BOOST_LOG_TRIVIAL(info) << "GUI_App::shutdown exit";
 }
 
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
 std::string GUI_App::get_http_url(std::string country_code, std::string path)
 {
     std::string url;
@@ -1516,7 +1518,7 @@ int GUI_App::install_plugin(std::string name, std::string package_name, InstallP
     BOOST_LOG_TRIVIAL(info) << "[install_plugin] success";
     return 0;
 }
-
+#endif // ENABLE_OLD_VERSION_UPDATE
 void GUI_App::restart_networking()
 {
     BOOST_LOG_TRIVIAL(info) << __FUNCTION__<< boost::format(" enter, mainframe %1%")%mainframe;
@@ -2127,7 +2129,7 @@ void GUI_App::copy_older_config()
 {
     preset_bundle->copy_files(m_older_data_dir_path);
 }
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
 std::map<std::string, std::string> GUI_App::get_extra_header()
 {
     std::map<std::string, std::string> extra_headers;
@@ -2154,7 +2156,6 @@ std::map<std::string, std::string> GUI_App::get_extra_header()
     extra_headers.insert(std::make_pair("X-BBL-Language", convert_studio_language_to_api(into_u8(current_language_code_safe()))));
     return extra_headers;
 }
-
 //BBS
 void GUI_App::init_http_extra_header()
 {
@@ -2171,6 +2172,7 @@ void GUI_App::update_http_extra_header()
     if (m_agent)
         m_agent->set_extra_http_header(extra_headers);
 }
+#endif // ENABLE_OLD_VERSION_UPDATE
 
 void GUI_App::on_start_subscribe_again(std::string dev_id)
 {
@@ -2453,7 +2455,7 @@ bool GUI_App::on_init_inner()
         NppDarkMode::SetSystemMenuForApp(new_sys_menu_enabled);
 #endif
 #endif
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
     if (m_last_config_version) {
         int last_major = m_last_config_version->maj();
         int last_minor = m_last_config_version->min();
@@ -2470,7 +2472,7 @@ bool GUI_App::on_init_inner()
             remove_old_networking_plugins();
         }
     }
-
+#endif // ENABLE_OLD_VERSION_UPDATE
     if(app_config->get("version") != SLIC3R_VERSION) {
         app_config->set("version", SLIC3R_VERSION);
     }
@@ -2633,10 +2635,10 @@ bool GUI_App::on_init_inner()
 
     Bind(EVT_SHOW_IP_DIALOG, &GUI_App::show_ip_address_enter_dialog_handler, this);
 
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
     std::map<std::string, std::string> extra_headers = get_extra_header();
     Slic3r::Http::set_extra_headers(extra_headers);
-
+#endif // ENABLE_OLD_VERSION_UPDATE
     // Orca: select network plugin version
     NetworkAgent::use_legacy_network = app_config->get_bool("legacy_networking");
     // Force legacy network plugin if debugger attached
@@ -2981,9 +2983,9 @@ __retry:
         //BBS set cert dir
         if (m_agent)
             m_agent->set_cert_file(resources_dir() + "/cert", "slicer_base64.cer");
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
         init_http_extra_header();
-
+#endif // ENABLE_OLD_VERSION_UPDATE
         if (m_agent) {
             init_networking_callbacks();
             std::string country_code = app_config->get_country_code();
@@ -3476,8 +3478,9 @@ void GUI_App::recreate_GUI(const wxString &msg_name)
 {
     BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << "recreate_GUI enter";
     m_is_recreating_gui = true;
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
     update_http_extra_header();
+#endif // ENABLE_OLD_VERSION_UPDATE
 
     mainframe->shutdown();
     ProgressDialog dlg(msg_name, msg_name, 100, nullptr, wxPD_AUTO_HIDE);
@@ -4916,6 +4919,9 @@ void GUI_App::on_check_privacy_update(wxCommandEvent& evt)
 
 void GUI_App::check_privacy_version(int online_login)
 {
+#ifndef ENABLE_OLD_VERSION_UPDATE
+    return; 
+#else
     update_http_extra_header();
     std::string query_params = "?policy/privacy=00.00.00.00";
     std::string url = get_http_url(app_config->get_country_code()) + query_params;
@@ -4962,6 +4968,7 @@ void GUI_App::check_privacy_version(int online_login)
             request_user_handle(online_login);
             BOOST_LOG_TRIVIAL(error) << "check privacy version error" << body;
     }).perform();
+#endif   // ENABLE_OLD_VERSION_UPDATE
 }
 
 void GUI_App::no_new_version()
@@ -6506,6 +6513,7 @@ void GUI_App::load_url(wxString url)
 
 void GUI_App::open_mall_page_dialog()
 {
+#ifdef ENABLE_OLD_VERSION_UPDATE
     std::string host_url;
     std::string model_url;
     std::string link_url;
@@ -6544,10 +6552,12 @@ void GUI_App::open_mall_page_dialog()
     }
 
     wxLaunchDefaultBrowser(link_url);
+#endif // ENABLE_OLD_VERSION_UPDATE
 }
 
 void GUI_App::open_publish_page_dialog()
 {
+#ifdef ENABLE_OLD_VERSION_UPDATE
     std::string host_url;
     std::string model_url;
     std::string link_url;
@@ -6579,6 +6589,7 @@ void GUI_App::open_publish_page_dialog()
     }
 
     wxLaunchDefaultBrowser(link_url);
+#endif // ENABLE_OLD_VERSION_UPDATE
 }
 
 char GUI_App::from_hex(char ch) {
