@@ -17,7 +17,7 @@ information.
 <h3>
 
 
-## [How to compile](doc/how-to-build.md) 
+## [How to compile](doc/How-to-build.md) 
 
 build instructions for Windows, macOS, and Linux 
 
