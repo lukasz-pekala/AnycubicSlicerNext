@@ -58,6 +58,7 @@ InfoManage::InfoManage(Anycubic::Plugins::PluginHost *host)
   router->REGISTER_FUNCATION(InfoManage, CreateSideToolBtn);
 
   router->REGISTER_FUNCATION(InfoManage, PushLog);
+  router->REGISTER_FUNCATION(InfoManage, GetNowSlectPrinterName);
 }
 
 InfoManage::~InfoManage() {}
@@ -88,6 +89,12 @@ void InfoManage::PushLog(const std::string& content, int logLevel)
         break;
     }
     }
+}
+
+std::string InfoManage::GetNowSlectPrinterName()
+{ 
+    return  wxGetApp().plater()->get_partplate_list().get_curr_plate()->fff_print()->print_statistics().printer_model;
+
 }
 
 wxString InfoManage::GetLastLoadGcode() 
@@ -1546,12 +1553,35 @@ wxString GetFileNameFromUrl(const wxString& url)
 
 void InfoManage::send_upload_file_cloud_event(wxString constr) 
 {
-    wxBookCtrlEvent evt_select(wxEVT_BOOKCTRL_PAGE_CHANGED, Slic3r::GUI::wxGetApp().mainframe->m_tabpanel->GetId());
     Slic3r::GUI::wxGetApp().mainframe->m_tabpanel->SetSelection(3);
-    evt_select.SetSelection(3);
-    evt_select.SetString(constr);
-    evt_select.SetInt(3);
-    wxPostEvent(Slic3r::GUI::wxGetApp().mainframe->m_tabpanel, evt_select);
+
+    wxWindow* panel = Slic3r::GUI::wxGetApp().mainframe->m_tabpanel->GetPage(3);
+
+    if (constr == "Printer Finish") {
+        wxPluginEvent evt_endWeb(EVT_PRINTER_FINISH_EVENT);
+        evt_endWeb.SetInt(0);
+        evt_endWeb.SetString(Anycubic::Plugins::dispatch_call<wxString>(host_, "remoteManger", "GetNowPrinterId"));
+        evt_endWeb.SetId(Anycubic::Plugins::dispatch_call<int>(host_, "remoteManger", "GetPrintType"));
+        wxPostEvent(panel, evt_endWeb);
+
+    } else if (constr == "upload file cloud") {
+        wxPluginEvent evt_endWeb(EVT_PRINTER_FINISH_EVENT);
+        evt_endWeb.SetInt(1);
+        evt_endWeb.SetString(Anycubic::Plugins::dispatch_call<wxString>(host_, "remoteManger", "GetUploadFileName"));
+        wxPostEvent(panel, evt_endWeb);
+
+    } else if (constr == "Send Task List Finish") {
+        wxPluginEvent evt_endWeb(EVT_PRINTER_FINISH_EVENT);
+        evt_endWeb.SetInt(3);
+        wxPostEvent(panel, evt_endWeb);
+    } else {
+        wxPluginEvent evt_endWeb(EVT_PRINTER_FINISH_EVENT);
+        evt_endWeb.SetInt(2);
+        wxPostEvent(panel, evt_endWeb);
+    }
+    
+
+
 }
 
 bool InfoManage::check_is_all_plates_selected() 
@@ -1631,8 +1661,61 @@ wxString InfoManage::get_default_gcode_file_name()
 
 }
 
+void InfoManage::SetBookCtrlEvent() 
+{
+#ifdef __WXMSW__
+    Slic3r::GUI::wxGetApp().mainframe->m_tabpanel->Bind(wxEVT_BOOKCTRL_PAGE_CHANGED, [this](wxBookCtrlEvent& e) {
+#else
+    Slic3r::GUI::wxGetApp().mainframe->m_tabpanel->Bind(wxEVT_NOTEBOOK_PAGE_CHANGED, [this](wxBookCtrlEvent& e) {
+#endif
+        
+        Notebook*      m_tabpanel = Slic3r::GUI::wxGetApp().mainframe->m_tabpanel;
+        wxWindow*      panel   = m_tabpanel->GetCurrentPage();
+        int            sel        = m_tabpanel->GetSelection();
+        //show_Refresh_button(sel == 3);
+        // wxString page_text = m_tabpanel->GetPageText(sel);
+        Slic3r::GUI::wxGetApp().mainframe->m_last_selected_tab = sel;
+        if (panel == Slic3r::GUI::wxGetApp().mainframe->m_plater) {
+            if (sel == int(Slic3r::GUI::MainFrame::tp3DEditor)) {
+                if (!Slic3r::GUI::wxGetApp().mainframe->m_plater->is_view3D_shown()) {
+                    wxPostEvent(Slic3r::GUI::wxGetApp().mainframe->m_plater, SimpleEvent(EVT_GLVIEWTOOLBAR_3D));
+                    Slic3r::GUI::wxGetApp().mainframe->m_param_panel->OnActivate();
+                }
+            } else if (sel == int(Slic3r::GUI::MainFrame::tpPreview)) {
+                if (!Slic3r::GUI::wxGetApp().mainframe->m_plater->is_preview_shown()) {
+                    wxPostEvent(Slic3r::GUI::wxGetApp().mainframe->m_plater, SimpleEvent(EVT_GLVIEWTOOLBAR_PREVIEW));
+                    Slic3r::GUI::wxGetApp().mainframe->m_param_panel->OnActivate();
+                }
+            }
+        }
+#ifndef __APPLE__
+        if (sel == int(Slic3r::GUI::MainFrame::tp3DEditor)) {
+            Slic3r::GUI::wxGetApp().mainframe->m_topbar->EnableUndoRedoItems();
+        } else {
+            Slic3r::GUI::wxGetApp().mainframe->m_topbar->DisableUndoRedoItems();
+        }
+#endif
+        if (sel == 0 && !m_isFirst) {
+            m_isFirst = true;
+            wxCommandEvent evt_load(EVT_HOME_PAGE_RELOAD);
+            wxPostEvent(Slic3r::GUI::wxGetApp().mainframe->m_home, evt_load);
+        }
+        if (panel)
+            panel->SetFocus();
+    
+        
+        
+    });
+
+
+}
+
 void InfoManage::CreateSideToolBtn(int flag) 
 {
+    if (!Slic3r::GUI::wxGetApp().mainframe->m_plugin) {
+        Slic3r::GUI::wxGetApp().mainframe->m_plugin = true;
+        SetBookCtrlEvent();
+    }
     // flag:1.remotePrint 2.farmPrinter 3.sendPrinter 4.coudeUpload
     if (!m_showRemote)
         m_showRemote = flag == 1;
@@ -1651,7 +1734,8 @@ void InfoManage::CreateSideToolBtn(int flag)
     if (!print_option_btn)
         return;
     SideButton* print_btn = Slic3r::GUI::wxGetApp().mainframe->m_print_btn;
-
+    print_btn->SetLabel(_L("Remote Print"));
+    print_btn->Enable(get_enable_print_status());
 
     print_option_btn->Bind(wxEVT_BUTTON, [this, print_btn](wxCommandEvent& event) {
         SidePopup* p = new SidePopup(Slic3r::GUI::wxGetApp().mainframe);
@@ -1700,20 +1784,6 @@ void InfoManage::CreateSideToolBtn(int flag)
                 p->append_button(sendTaskList_btn);
             }
 
-            {
-                SideButton* export_gcode_btn = new SideButton(p, _L("Export G-code file"), "");
-                export_gcode_btn->SetCornerRadius(0);
-                export_gcode_btn->Bind(wxEVT_BUTTON, [this, p, print_btn](wxCommandEvent&) {
-                    print_btn->SetLabel(_L("Export G-code file"));
-                    m_print_select = eExportGcode;
-                    m_print_enable = get_enable_print_status();
-                    print_btn->Enable(m_print_enable);
-                    Slic3r::GUI::wxGetApp().mainframe->Layout();
-                    p->Dismiss();
-                });
-                p->append_button(export_gcode_btn);
-            }
-
             if (m_showCloud)
             {
                 SideButton* upload = new SideButton(p, _L("Send To Cloud File"), "");
@@ -1727,6 +1797,20 @@ void InfoManage::CreateSideToolBtn(int flag)
                     p->Dismiss();
                 });
                 p->append_button(upload);
+            }
+
+            {
+                SideButton* export_gcode_btn = new SideButton(p, _L("Export G-code file"), "");
+                export_gcode_btn->SetCornerRadius(0);
+                export_gcode_btn->Bind(wxEVT_BUTTON, [this, p, print_btn](wxCommandEvent&) {
+                    print_btn->SetLabel(_L("Export G-code file"));
+                    m_print_select = eExportGcode;
+                    m_print_enable = get_enable_print_status();
+                    print_btn->Enable(m_print_enable);
+                    Slic3r::GUI::wxGetApp().mainframe->Layout();
+                    p->Dismiss();
+                });
+                p->append_button(export_gcode_btn);
             }
 
 
@@ -1812,7 +1896,7 @@ bool InfoManage::get_enable_print_status()
             enable = true;
         
 
-        enable = isLogin;
+        //enable = isLogin;
 
         enable = enable && !is_all_plates;
     }

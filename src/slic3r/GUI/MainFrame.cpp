@@ -1025,6 +1025,10 @@ void MainFrame::init_tabpanel() {
 #else
     m_tabpanel->Bind(wxEVT_NOTEBOOK_PAGE_CHANGED, [this](wxBookCtrlEvent& e) {
 #endif
+        if (m_plugin) {
+            e.Skip();
+            return;
+        }
         //BBS
         wxWindow* panel = m_tabpanel->GetCurrentPage();
         int sel = m_tabpanel->GetSelection();

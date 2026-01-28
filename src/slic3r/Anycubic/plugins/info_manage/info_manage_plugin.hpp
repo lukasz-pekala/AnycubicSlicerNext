@@ -44,6 +44,8 @@ public:
     wxString           Auto_GetImportFileName();
 
     void CreateSideToolBtn(int flag);
+    void        SetBookCtrlEvent();
+    std::string GetNowSlectPrinterName();
 
 private:
 
@@ -86,6 +88,7 @@ private:
     bool         m_showFarm{false};
     bool         m_showSend{false};
     bool         m_showCloud{false};
+    bool         m_isFirst{false};
 
     void PushLog(const std::string& content, int logLevel);
 private:

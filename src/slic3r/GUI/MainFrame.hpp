@@ -107,7 +107,6 @@ class MainFrame : public DPIFrame
     wxMenuItem* m_menu_item_reslice_now { nullptr };
     wxSizer*    m_main_sizer{ nullptr };
 
-    size_t      m_last_selected_tab;
 
     std::string     get_base_name(const wxString &full_name, const char *extension = nullptr) const;
     std::string     get_dir_name(const wxString &full_name) const;
@@ -193,7 +192,6 @@ class MainFrame : public DPIFrame
     bool preview_only_to_editor = false;
 
 protected:
-    bool         m_plugin{true};
     virtual void on_dpi_changed(const wxRect &suggested_rect) override;
     virtual void on_sys_color_changed() override;
 
@@ -406,6 +404,8 @@ public:
     //BBS
     void update_side_button_style();
     void update_slice_print_status(SlicePrintEventType event, bool can_slice = true, bool can_print = true);
+    bool   m_plugin{false};
+    size_t m_last_selected_tab;
 
 #ifdef __APPLE__
     std::unique_ptr<wxTaskBarIcon> m_taskbar_icon;
