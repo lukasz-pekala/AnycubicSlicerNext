@@ -675,12 +675,13 @@ public:
 
     // URL download - PrusaSlicer gets system call to open prusaslicer:// URL which should contain address of download
     void            start_download(std::string url);
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
     std::string     get_plugin_url(std::string name, std::string country_code);
     int             download_plugin(std::string name, std::string package_name, InstallProgressFn pro_fn = nullptr, WasCancelledFn cancel_fn = nullptr);
     int             install_plugin(std::string name, std::string package_name, InstallProgressFn pro_fn = nullptr, WasCancelledFn cancel_fn = nullptr);
     std::string     get_http_url(std::string country_code, std::string path = {});
     std::string     get_model_http_url(std::string country_code);
+#endif // ENABLE_OLD_VERSION_UPDATE
     bool            is_compatibility_version();
     bool            check_networking_version();
     void            cancel_networking_install();
@@ -696,10 +697,12 @@ private:
     void            init_networking_callbacks();
     void            init_app_config();
     void            remove_old_networking_plugins();
+#ifdef ENABLE_OLD_VERSION_UPDATE
     //BBS set extra header for http request
     std::map<std::string, std::string> get_extra_header();
     void            init_http_extra_header();
     void            update_http_extra_header();
+#endif // ENABLE_OLD_VERSION_UPDATE
     bool            check_older_app_config(Semver current_version, bool backup);
     void            copy_older_config();
     void            window_pos_save(wxTopLevelWindow* window, const std::string &name);

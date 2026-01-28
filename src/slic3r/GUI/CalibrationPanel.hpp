@@ -1,6 +1,6 @@
 #ifndef slic3r_GUI_CalibrationPanel_hpp_
 #define slic3r_GUI_CalibrationPanel_hpp_
-
+#ifdef ENABLE_BBS_TAB
 #include "CalibrationWizard.hpp"
 #include "Tabbook.hpp"
 //#include "Widgets/SideTools.hpp"
@@ -124,5 +124,5 @@ protected:
     wxTimer*                m_refresh_timer = nullptr;
 };
 }} // namespace Slic3r::GUI
-
+#endif // ENABLE_BBS_TAB
 #endif

@@ -319,7 +319,7 @@ void PrintHostJobQueue::priv::remove_source()
 void PrintHostJobQueue::priv::perform_job(PrintHostJob the_job)
 {
     emit_progress(0);   // Indicate the upload is starting
-
+#ifdef ENABLE_BBS_TAB
     bool success = the_job.printhost->upload(std::move(the_job.upload_data),
         [this](Http::Progress progress, bool &cancel)   { this->progress_fn(std::move(progress), cancel); },
         [this](wxString error)                          { this->error_fn(std::move(error)); },
@@ -333,6 +333,7 @@ void PrintHostJobQueue::priv::perform_job(PrintHostJob the_job)
             mainframe->request_select_tab(MainFrame::TabPosition::tpMonitor);
         }
     }
+#endif // ENABLE_BBS_TAB
 }
 
 void PrintHostJobQueue::enqueue(PrintHostJob job)

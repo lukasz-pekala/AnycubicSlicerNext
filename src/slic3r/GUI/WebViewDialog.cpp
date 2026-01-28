@@ -424,7 +424,7 @@ void WebViewPanel::OnClose(wxCloseEvent& evt)
 void WebViewPanel::OnFreshLoginStatus(wxTimerEvent &event)
 {
     auto mainframe = Slic3r::GUI::wxGetApp().mainframe;
-    if (mainframe && mainframe->m_webview == this)
+    if (mainframe && mainframe->m_home == this)
         Slic3r::GUI::wxGetApp().get_login_info();
 }
 
@@ -530,12 +530,14 @@ void WebViewPanel::get_design_staffpick(int offset, int limit, std::function<voi
 
 int WebViewPanel::get_model_mall_detail_url(std::string *url, std::string id)
 {
+#ifdef ENABLE_OLD_VERSION_UPDATE
     // https://makerhub-qa.bambu-lab.com/en/models/2077
     std::string h = wxGetApp().get_model_http_url(wxGetApp().app_config->get_country_code());
     auto l = wxGetApp().current_language_code_safe();
     if (auto n = l.find('_'); n != std::string::npos)
         l = l.substr(0, n);
     *url = (boost::format("%1%%2%/models/%3%") % h % l % id).str();
+#endif // ENABLE_OLD_VERSION_UPDATE
     return 0;
 }
 

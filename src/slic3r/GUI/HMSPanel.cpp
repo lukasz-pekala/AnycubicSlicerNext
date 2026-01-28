@@ -117,12 +117,14 @@ HMSNotifyItem::HMSNotifyItem(wxWindow *parent, HMSItem& item)
             SetCursor(wxCURSOR_ARROW);
         }
         });
+#ifdef ENABLE_BBS_TAB
     m_hms_content->Bind(wxEVT_LEFT_UP, [this](wxMouseEvent& e) {
         if (!m_url.empty()) wxLaunchDefaultBrowser(m_url);
             wxCommandEvent evt(EVT_ALREADY_READ_HMS);
             evt.SetString(long_error_code);
             wxPostEvent(wxGetApp().mainframe->m_monitor, evt);
         });
+#endif // ENABLE_BBS_TAB
 #endif
 }
 HMSNotifyItem ::~HMSNotifyItem() {

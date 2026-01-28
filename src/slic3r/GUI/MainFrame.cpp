@@ -1042,9 +1042,11 @@ void MainFrame::init_tabpanel() {
         }
         //else if (panel == m_param_panel)
         //    m_param_panel->OnActivate();
+#ifdef ENABLE_BBS_TAB
         else if (panel == m_monitor) {
             //monitor
         }
+#endif // ENABLE_BBS_TAB
 #ifndef __APPLE__
         if (sel == tp3DEditor) {
             m_topbar->EnableUndoRedoItems();
@@ -1077,16 +1079,16 @@ void MainFrame::init_tabpanel() {
     });
 
     if (wxGetApp().is_editor()) {
-        m_webview         = new WebViewPanel(m_tabpanel);
+        m_home         = new WebViewPanel(m_tabpanel);
         Bind(EVT_LOAD_URL, [this](wxCommandEvent &evt) {
             wxString url = evt.GetString();
             select_tab(MainFrame::tpHome);
-            m_webview->load_url(url);
+            m_home->load_url(url);
         });
         Bind(EVT_HOME_RELEASE, [this](wxCommandEvent& evt) { 
-            m_webview = nullptr; 
+            m_home = nullptr; 
         });
-        m_tabpanel->AddPage(m_webview, "", "tab_home_active", "tab_home_active", false);
+        m_tabpanel->AddPage(m_home, "", "tab_home_active", "tab_home_active", false);
         m_param_panel = new ParamsPanel(m_tabpanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBK_LEFT | wxTAB_TRAVERSAL);
     }
 
@@ -1097,7 +1099,7 @@ void MainFrame::init_tabpanel() {
     wxGetApp().plater_ = m_plater;
 
     create_preset_tabs();
-
+#ifdef ENABLE_BBS_TAB
         //BBS add pages
     m_monitor = new MonitorPanel(m_tabpanel, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     m_monitor->SetBackgroundColour(*wxWHITE);
@@ -1111,14 +1113,12 @@ void MainFrame::init_tabpanel() {
         m_printer_view->load_url(url, key);
     });
     m_printer_view->Hide();
-
     if (wxGetApp().is_enable_multi_machine()) {
         m_multi_machine = new MultiMachinePage(m_tabpanel, wxID_ANY, wxDefaultPosition, wxDefaultSize);
         m_multi_machine->SetBackgroundColour(*wxWHITE);
         // TODO: change the bitmap
         m_tabpanel->AddPage(m_multi_machine, _L("Multi-device"), std::string("tab_multi_active"), std::string("tab_multi_active"), false);
     }
-
     m_project = new ProjectPanel(m_tabpanel, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     m_project->SetBackgroundColour(*wxWHITE);
     m_tabpanel->AddPage(m_project, _L("Project"), std::string("tab_auxiliary_active"), std::string("tab_auxiliary_active"), false);
@@ -1126,7 +1126,7 @@ void MainFrame::init_tabpanel() {
     m_calibration = new CalibrationPanel(m_tabpanel, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     m_calibration->SetBackgroundColour(*wxWHITE);
     m_tabpanel->AddPage(m_calibration, _L("Calibration"), std::string("tab_calibration_active"), std::string("tab_calibration_active"), false);
-
+#endif // ENABLE_BBS_TAB
     if (m_plater) {
         // load initial config
         auto full_config = wxGetApp().preset_bundle->full_config();
@@ -1145,6 +1145,7 @@ void MainFrame::init_tabpanel() {
 void MainFrame::show_device(bool bBBLPrinter) {
     auto idx = -1;
     if (bBBLPrinter) {
+#ifdef ENABLE_BBS_TAB
         if (m_tabpanel->FindPage(m_monitor) != wxNOT_FOUND)
             return;
         // Remove printer view
@@ -1184,8 +1185,9 @@ void MainFrame::show_device(bool bBBLPrinter) {
 #ifdef _MSW_DARK_MODE
         wxGetApp().UpdateDarkUIWin(this);
 #endif // _MSW_DARK_MODE
-
+#endif // ENABLE_BBS_TAB
     } else {
+#ifdef ENABLE_BBS_TAB
         if (m_tabpanel->FindPage(m_printer_view) != wxNOT_FOUND)
             return;
 
@@ -1215,6 +1217,7 @@ void MainFrame::show_device(bool bBBLPrinter) {
             m_tabpanel->InsertPage(tpMonitor, m_printer_view, _L("Device"), std::string("tab_monitor_active"),
                                    std::string("tab_monitor_active"));
         }
+#endif // ENABLE_BBS_TAB
     }
 }
 
@@ -2111,6 +2114,7 @@ void MainFrame::on_dpi_changed(const wxRect& suggested_rect)
     //BBS GUI refactor: remove unused layout new/dlg
     //if (m_layout != ESettingsLayout::Dlg) // Do not update tabs if the Settings are in the separated dialog
     m_param_panel->msw_rescale();
+#ifdef ENABLE_BBS_TAB
     m_project->msw_rescale();
     if(m_monitor)
         m_monitor->msw_rescale();
@@ -2118,7 +2122,7 @@ void MainFrame::on_dpi_changed(const wxRect& suggested_rect)
         m_multi_machine->msw_rescale();
     if(m_calibration)
         m_calibration->msw_rescale();
-
+#endif // ENABLE_BBS_TAB
     // BBS
 #if 0
     for (size_t id = 0; id < m_menubar->GetMenuCount(); id++)
@@ -2175,10 +2179,12 @@ void MainFrame::on_sys_color_changed()
 
     // update Plater
     wxGetApp().plater()->sys_color_changed();
+#ifdef ENABLE_BBS_TAB
     if(m_monitor)
         m_monitor->on_sys_color_changed();
     if(m_calibration)
         m_calibration->on_sys_color_changed();
+#endif // ENABLE_BBS_TAB
     // update Tabs
     for (auto tab : wxGetApp().tabs_list)
         tab->sys_color_changed();
@@ -2269,7 +2275,7 @@ static void add_common_publish_menu_items(wxMenu* publish_menu, MainFrame* mainF
             //if (GUI::wxGetApp().plater()->model().objects.empty()) return;
             wxGetApp().open_publish_page_dialog();
         });
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
     append_menu_item(publish_menu, wxID_ANY, _L("Download Models"), _L("Download Models"),
         [](wxCommandEvent&) {
             if (!wxGetApp().getAgent()) {
@@ -2280,6 +2286,7 @@ static void add_common_publish_menu_items(wxMenu* publish_menu, MainFrame* mainF
             //if (GUI::wxGetApp().plater()->model().objects.empty()) return;
             wxGetApp().open_mall_page_dialog();
         });
+#endif // ENABLE_OLD_VERSION_UPDATE
 #endif
 }
 
@@ -3172,7 +3179,7 @@ void MainFrame::set_max_recent_count(int max)
         }
         wxGetApp().app_config->set_recent_projects(recent_projects);
         wxGetApp().app_config->save();
-        m_webview->SendRecentList(-1);
+        m_home->SendRecentList(-1);
     }
 }
 
@@ -3515,18 +3522,22 @@ void MainFrame::select_tab(wxPanel* panel)
 //BBS
 void MainFrame::jump_to_monitor(std::string dev_id)
 {
+#ifdef ENABLE_BBS_TAB 
     if(!m_monitor)
         return;
     m_tabpanel->SetSelection(tpMonitor);
     ((MonitorPanel*)m_monitor)->select_machine(dev_id);
+#endif // ENABLE_BBS_TAB
 }
 
 void MainFrame::jump_to_multipage()
 {
+#ifdef ENABLE_BBS_TAB
     if(!m_multi_machine)
         return;
     m_tabpanel->SetSelection(tpMultiDevice);
     ((MultiMachinePage*)m_multi_machine)->jump_to_send_page();
+#endif // ENABLE_BBS_TAB
 }
 
 
@@ -3573,8 +3584,10 @@ void MainFrame::request_select_tab(TabPosition pos)
 }
 
 int MainFrame::get_calibration_curr_tab() {
+#ifdef ENABLE_BBS_TAB
     if (m_calibration)
         return m_calibration->get_tabpanel()->GetSelection();
+#endif // ENABLE_BBS_TAB
     return -1;
 }
 
@@ -3676,8 +3689,8 @@ void MainFrame::add_to_recent_projects(const wxString& filename)
             recent_projects.push_back(into_u8(m_recent_projects.GetHistoryFile(i)));
         }
         wxGetApp().app_config->set_recent_projects(recent_projects);
-        if(m_webview != nullptr){
-            m_webview->SendRecentList(0);
+        if(m_home != nullptr){
+            m_home->SendRecentList(0);
         }
     }
 }
@@ -3783,7 +3796,7 @@ void MainFrame::open_recent_project(size_t file_id, wxString const & filename)
                 recent_projects.push_back(into_u8(m_recent_projects.GetHistoryFile(i)));
             }
             wxGetApp().app_config->set_recent_projects(recent_projects);
-            m_webview->SendRecentList(-1);
+            m_home->SendRecentList(-1);
         }
     }
 }
@@ -3806,7 +3819,7 @@ void MainFrame::remove_recent_project(size_t file_id, wxString const &filename)
         recent_projects.push_back(into_u8(m_recent_projects.GetHistoryFile(i)));
     }
     wxGetApp().app_config->set_recent_projects(recent_projects);
-    m_webview->SendRecentList(-1);
+    m_home->SendRecentList(-1);
 }
 
 void MainFrame::load_url(wxString url)
@@ -3845,20 +3858,22 @@ void MainFrame::load_printer_url()
         load_printer_url(url, apikey);
     }
 }
-
+#ifdef ENABLE_BBS_TAB
 bool MainFrame::is_printer_view() const { return m_tabpanel->GetSelection() == TabPosition::tpMonitor; }
-
+#else
+bool MainFrame::is_printer_view() const { return false; }
+#endif // ENABLE_BBS_TAB
 
 void MainFrame::refresh_plugin_tips()
 {
-    if (m_webview != nullptr)
-        m_webview->ShowNetpluginTip();
+    if (m_home != nullptr)
+        m_home->ShowNetpluginTip();
 }
 
 void MainFrame::RunScript(wxString js)
 {
-    if (m_webview != nullptr)
-        m_webview->RunScript(js);
+    if (m_home != nullptr)
+        m_home->RunScript(js);
 }
 
 void MainFrame::technology_changed()
@@ -3898,9 +3913,10 @@ void MainFrame::update_side_preset_ui()
     m_plater->sidebar().update_presets(Preset::TYPE_PRINTER);
     m_plater->sidebar().update_presets(Preset::TYPE_FILAMENT);
 
-
+#ifdef ENABLE_BBS_TAB
     //take off multi machine
     if(m_multi_machine){m_multi_machine->clear_page();}
+#endif // ENABLE_BBS_TAB
 }
 
 void MainFrame::on_select_default_preset(SimpleEvent& evt)

@@ -1418,21 +1418,29 @@ bool GuideFrame::LoadFile(std::string jPath, std::string &sContent)
 
 int GuideFrame::DownloadPlugin()
 {
+#ifdef ENABLE_OLD_VERSION_UPDATE
     return wxGetApp().download_plugin(
         "plugins", "network_plugin.zip",
         [this](int status, int percent, bool& cancel) {
             return ShowPluginStatus(status, percent, cancel);
         }
     , nullptr);
+#else
+    return -1;
+#endif // ENABLE_OLD_VERSION_UPDATE
 }
 
 int GuideFrame::InstallPlugin()
 {
+#ifdef ENABLE_OLD_VERSION_UPDATE
     return wxGetApp().install_plugin("plugins", "network_plugin.zip",
         [this](int status, int percent, bool &cancel) {
             return ShowPluginStatus(status, percent, cancel);
         }
     );
+#else
+    return -1;
+#endif // ENABLE_OLD_VERSION_UPDATE
 }
 
 int GuideFrame::ShowPluginStatus(int status, int percent, bool& cancel)

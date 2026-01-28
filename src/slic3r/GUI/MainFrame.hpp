@@ -210,12 +210,14 @@ public:
         tpHome          = 0,
         tp3DEditor      = 1,
         tpPreview       = 2,
+#ifdef ENABLE_BBS_TAB
         tpMonitor       = 3,
         tpMultiDevice   = 4,
         tpProject       = 5,
         tpCalibration   = 6,
         tpAuxiliary     = 7,
         toDebugTool     = 8,
+#endif // ENABLE_BBS_TAB
     };
 
     //BBS: add slice&&print status update logic
@@ -362,16 +364,19 @@ public:
     BBLTopbar*            m_topbar{ nullptr };
     PrintHostQueueDialog* printhost_queue_dlg() { return m_printhost_queue_dlg; }
     Plater*               m_plater { nullptr };
+#ifdef ENABLE_BBS_TAB
     //BBS: GUI refactor
     MonitorPanel*         m_monitor{ nullptr };
-
     //AuxiliaryPanel*       m_auxiliary{ nullptr };
     MultiMachinePage*     m_multi_machine{ nullptr };
     ProjectPanel*         m_project{ nullptr };
 
     CalibrationPanel*     m_calibration{ nullptr };
-    WebViewPanel*         m_webview { nullptr };
+#endif // ENABLE_BBS_TAB
+    WebViewPanel*         m_home { nullptr };
+#ifdef ENABLE_BBS_TAB
     PrinterWebView*       m_printer_view{nullptr};
+#endif // ENABLE_BBS_TAB
     wxLogWindow*          m_log_window { nullptr };
     // BBS
     //wxBookCtrlBase*       m_tabpanel { nullptr };

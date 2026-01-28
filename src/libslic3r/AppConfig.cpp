@@ -1382,7 +1382,7 @@ std::string AppConfig::config_path()
 
     return path;
 }
-
+#ifdef ENABLE_OLD_VERSION_UPDATE
 std::string AppConfig::version_check_url() const
 {
     auto from_settings = get("version_check_url");
@@ -1393,6 +1393,7 @@ std::string AppConfig::profile_update_url() const
 {
     return PROFILE_UPDATE_URL;
 }
+#endif // ENABLE_OLD_VERSION_UPDATE
 
 bool AppConfig::exists()
 {
