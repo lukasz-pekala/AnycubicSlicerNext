@@ -2,11 +2,6 @@
 
 #include "protocol.hpp"
 
-namespace Slic3r::GUI {
-class NotificationManager;
-} // namespace Slic3r::GUI
-using Slic3r::GUI::NotificationManager;
-
 class DownloaderPlugin;
 
 class ACNextProtocol : public Protocol {
@@ -24,5 +19,4 @@ private:
 
 private:
   DownloaderPlugin *owner_;
-  NotificationManager *ntf_mngr_;
 };

@@ -38,7 +38,7 @@ static int setenv(const char *name, const char *value, int overwrite) {
   return SetEnvironmentVariableA(name, value) ? 0 : -1;
 }
 #endif // __WXMSW__
-
+static const char *CONFIG_IGNORE_VERSION = "app/skip_version";
 extern const char *CONFIG_PLUGIN_NAME_LIST;
 namespace Slic3r {
 namespace GUI {
@@ -134,8 +134,8 @@ public:
     }
   }
   static void downloader_callback(void *ctx, int32_t download_id,
-                                  int32_t status, const wxString &filename) {
-    if (status == 3) {
+                                  int32_t status, wxString &filename) {
+    if (status == 0) {
       // 下载成功
       LOG_INFO("download success: {}", filename.utf8_string());
       // NOTE: 加载模型文件
@@ -145,9 +145,15 @@ public:
       Slic3r::GUI::wxGetApp().mainframe->update_title();
     }
   };
-  bool StartDownload(const wxString &url) {
+  bool
+  StartDownload(const wxString &url, void *ctx = nullptr,
+                void (*callback)(void *ctx, int32_t download_id, int32_t status,
+                                 wxString &filename) = downloader_callback) {
+    if (ctx == nullptr) {
+      ctx = this;
+    }
     return Anycubic::Plugins::dispatch_call<size_t>(
-        pm_, "downloader", "start_download", url, &downloader_callback, this);
+        pm_, "downloader", "start_download", url, callback, ctx);
   }
 
 public:
@@ -179,7 +185,7 @@ private:
   bool GetValue(const class wxString &key, class wxString &value) override {
     if (auto itr = config_.find(key); itr != config_.end()) {
       value = itr->second;
-      return true;
+      return value.IsEmpty() == false;
     }
 
     wxStringTokenizer tokenizer(key, ",./ ");
@@ -213,7 +219,7 @@ private:
       break;
     }
 
-    return true;
+    return value.IsEmpty() == false;
   }
   bool SetValue(const class wxString &key, const class wxString &value,
                 bool persistent = true) override {
@@ -376,7 +382,7 @@ void AnycubicContext::UpdateApp(bool is_auto_update /*= false*/) {
   }
   if (is_auto_update) {
     wxString skip_version;
-    auto result = impl_->GetValue("app/skip_version", skip_version);
+    auto result = impl_->GetEncryptValue(CONFIG_IGNORE_VERSION, skip_version);
     if (result && version_comparison(skip_version.utf8_string().c_str(),
                                      response.version_name.c_str()) >= 0) {
       // 自动更新，跳过版本
@@ -393,23 +399,62 @@ void AnycubicContext::UpdateApp(bool is_auto_update /*= false*/) {
       wxString::FromUTF8(language != "zh-CN" ? response.update_content_us
                                              : response.update_content_cn),
       response.version_name);
-  if (buttonID == wxID_YES) {
-   
-  }else if(buttonID == wxID_CANCEL){
-    // 取消更新
+  if (buttonID != wxID_YES) {
+    if (buttonID == wxID_IGNORE) {
+      // 忽略版本更新
+      impl_->SetEncryptValue(CONFIG_IGNORE_VERSION,
+                             wxString::FromUTF8(response.version_name));
+    } else {
+      impl_->SetEncryptValue(CONFIG_IGNORE_VERSION, wxEmptyString)
+    }
     return;
-  }else if(buttonID == wxID_IGNORE){
-
   }
+  impl_->SetEncryptValue(CONFIG_IGNORE_VERSION, wxEmptyString);
 
-  // TODO: 下载更新包
-  StartDownload(response.download_url);
+  // : 下载更新包
+  impl_->StartDownload(
+      response.download_url, this,
+      [](void *ctx, int32_t download_id, int32_t status, wxString &filename) {
+        assert(ctx != nullptr);
+        AnycubicContext *context = static_cast<AnycubicContext *>(ctx);
+        if (status == 0) {
+// 下载更新包完成
+// 1. 运行更新程序
+// 2. 退出程序
+#ifdef _WIN32
+          HINSTANCE hInstance = ShellExecuteW(NULL, L"open", filename.wc_str(),
+                                              NULL, NULL, SW_SHOWNORMAL);
+          if (reinterpret_cast<intptr_t>(hInstance) <= 32) {
+            BOOST_LOG_TRIVIAL(error) << "create process failed! Error code: "
+                                     << reinterpret_cast<intptr_t>(hInstance)
+                                     << ":" << GetLastError();
+          }
+#elif defined(__APPLE__)
+          system(wxString::Format("hdiutil attach \"%s\" -noverify -autoopen",
+                                  filename)
+                     .utf8_string()
+                     .c_str());
+#else
+          // 构造命令，在用户按回车键后重启程序
+          auto command = wxString::Format(
+              "gnome-terminal -- bash -c \"pkexec sh -c 'apt update && apt "
+              "install --only-upgrade anycubicslicernext'; read -p '%s';\"",
+              _L("Update complete. Please restart to apply changes.Press "
+                 "[Enter] to exit."));
+          int result = wxExecute(command, wxEXEC_ASYNC);
+          if (result == -1) {
+            BOOST_LOG_TRIVIAL(error) << "Failed to execute system command";
+          }
+#endif
 
-  // TODO: 提示退出程序确认后执行更新
-
-  // TODO: 执行应用更新
-
-  // TODO: 退出程序
+          Slic3r::GUI::wxGetApp().CallAfter(
+              []() { Slic3r::GUI::wxGetApp().GetTopWindow()->Close(); });
+        } else if (status == 1) {
+          // 用户取消下载
+        } else if (status == 3) {
+          // 更新文件名
+        }
+      });
 }
 
 bool AnycubicContext::StartDownload(const wxString &url) {
@@ -492,8 +537,8 @@ void AnycubicContext::OnExitByApp() {
   }
 }
 int AnycubicContext::ShowUpdateVersionDialog(const wxString &extmsg,
-                                              const wxString &version_str,
-                                              bool is_skip_version) {
+                                             const wxString &version_str,
+                                             bool is_skip_version) {
 
   UpdateVersionDialog dialog(wxGetApp().GetTopWindow());
   dialog.update_version_info(extmsg, version_str);

@@ -2542,6 +2542,7 @@ bool GUI_App::on_init_inner()
 #endif // __WXMSW__
 
         preset_updater = new PresetUpdater();
+#ifdef ENABLE_OLD_VERSION_UPDATE
         Bind(EVT_SLIC3R_VERSION_ONLINE, [this](const wxCommandEvent& evt) {
             if (this->plater_ != nullptr) {
                 // this->plater_->get_notification_manager()->push_notification(NotificationType::NewAppAvailable);
@@ -2620,7 +2621,7 @@ bool GUI_App::on_init_inner()
             InfoDialog dlg(nullptr, _L("Info"), msg);
             dlg.ShowModal();
         });
-
+#endif // ENABLE_OLD_VERSION_UPDATE
         Bind(EVT_SHOW_DIALOG, [this](const wxCommandEvent& evt) {
             wxString msg = evt.GetString();
             InfoDialog dlg(this->mainframe, _L("Info"), msg);

@@ -4,9 +4,9 @@ macro(anycubic_target_link link_to_target OUT_SDK_DLLS)
     string(REPLACE "." "" VERSION_CODE ${SoftFever_VERSION})
     
     target_compile_definitions(${link_to_target} PRIVATE VERSION_CODE=${VERSION_CODE} ENABLE_LOG_CHECK_ARGS=1 ENABLE_STRACE=1 FMT_HEADER_ONLY=1)
-    find_package(OpenPlugins CONFIG REQUIRED COMPONENTS ACWebView plugins_manager plugins_base easy_log utility event_sdk)
+    find_package(OpenPlugins CONFIG REQUIRED COMPONENTS ACWebView plugins_manager plugins_base easy_log utility event_sdk constant)
     find_package(Boost REQUIRED CONFIG COMPONENTS json)
-    list(APPEND SDK_LIBS_G OpenPlugins::ACWebView OpenPlugins::plugins_manager OpenPlugins::plugins_base OpenPlugins::easy_log OpenPlugins::utility OpenPlugins::event_sdk ${ANYCUBIC_LINKS})
+    list(APPEND SDK_LIBS_G OpenPlugins::ACWebView OpenPlugins::plugins_manager OpenPlugins::plugins_base OpenPlugins::easy_log OpenPlugins::utility OpenPlugins::event_sdk OpenPlugins::constant ${ANYCUBIC_LINKS})
     target_link_libraries(${link_to_target} PUBLIC ${SDK_LIBS_G} Boost::json ${wxWidgets_LIBRARIES})
     target_compile_definitions(${link_to_target} PRIVATE MODULE_NAME="MainApp")
     target_include_directories(${link_to_target} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
@@ -199,6 +199,9 @@ endmacro()
 
 function(anycubic_search_src)
     foreach(directory ${ARGN})
+        if(TARGET ${CURRENT_TARGET})
+            target_include_directories(${CURRENT_TARGET} PRIVATE ${directory})
+        endif()
         file(GLOB SRC_G "${directory}/*.h*" "${directory}/*.c" "${directory}/*.cpp")
         source_group(TREE ${directory} FILES ${SRC_G})
         list(APPEND ANYCUBIC_SUB_DIR_SOURCES ${SRC_G})
@@ -210,19 +213,108 @@ function(anycubic_search_src)
     set(ANYCUBIC_SUB_DIR_SOURCES ${ANYCUBIC_SUB_DIR_SOURCES} PARENT_SCOPE)
 endfunction()
 
+
+macro(create_files gen_embed_all_file gen_embed_file_header)
+    # 先清空再说
+    file(WRITE ${gen_embed_file_header} "")
+
+    file(WRITE ${gen_embed_all_file}
+        "#pragma once\n"
+        "#include <stdint.h>\n"
+        "#include \"embed_all.inl\"\n"
+        "#define EMBED_TUPLE (")
+endmacro()
+
+macro(write_src filename src)
+    file(MD5 ${filename} m5)
+    file(SIZE ${filename} embed_file_size)
+     # 判断文件大小是否为 0，若为 0 则终止 CMake 配置
+     if (embed_file_size EQUAL 0)
+        message(FATAL_ERROR "file ${filename} is empty")
+    endif()
+    # read hex data from file
+    file(READ ${filename} filedata HEX)
+    # convert hex data for C compatibility
+    string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1," filedata "${filedata}")
+
+    # append data to output file
+    file(WRITE ${src}
+        "#include <stdint.h>\n"
+        "#include <string.h>\n"
+        "#ifdef USING_EMBED\n"
+        "uint8_t ${token}__DATA_[] = {\n${filedata}0x00\n};\n"
+        "constexpr uint32_t ${token}__SIZE_   = ${embed_file_size};\n"
+        "uint8_t* ${token}__DATA(void){return ${token}__DATA_;}\n"
+        "uint32_t ${token}__SIZE(void){ static_assert(${token}__SIZE_>0&& sizeof(${token}__DATA_) > 0,\"${token}__SIZE_ must be greater than 0\");return ${token}__SIZE_;}\n"
+        "const char* ${token}__MD5(){return \"${m5}\";}\n"
+        "#endif //USING_EMBED\n"
+        )
+endmacro()
+
+
+function(get_token var org filename)
+    get_filename_component(embed_file ${filename} NAME)
+    string(MAKE_C_IDENTIFIER ${embed_file} token)
+    string(TOUPPER ${token} token)
+    set(${var} ${token} PARENT_SCOPE)
+    set(${org} ${embed_file} PARENT_SCOPE)
+endfunction()
+
+function(wirte_all_header token filename comma)
+    file(APPEND ${filename} "${comma}(${embed_file},${token}__SIZE, ${token}__DATA, ${token}__MD5)")
+endfunction()
+
+function(wirte_inl_header token filename)
+    file(APPEND ${filename}
+        "uint8_t* ${token}__DATA(void);\n"
+        "uint32_t ${token}__SIZE();\n"
+        "const char* ${token}__MD5();\n"
+        )
+endfunction()
+
+function(gen_embed var outdir)
+    cmake_parse_arguments(P_ARGS "" "" "FILES" ${ARGN})
+    message("gen_embed  var: ${var}, outdir: ${outdir}, FILES: ${P_ARGS_FILES}")
+    if(NOT EXISTS ${outdir})
+        file(MAKE_DIRECTORY ${outdir})
+    endif()
+    set(gen_embed_all_file    "${outdir}/embed_all.h")
+    set(gen_embed_file_header "${outdir}/embed_all.inl")
+    create_files(${gen_embed_all_file} ${gen_embed_file_header})
+
+    list(APPEND files ${gen_embed_all_file})
+    list(APPEND files ${gen_embed_file_header})
+    set(COMMA " ")
+    # 依次处理文件
+    foreach(input_src ${P_ARGS_FILES})
+        get_token(token embed_file ${input_src})
+        set(src       "${outdir}/${token}_gen.cpp") 
+        write_src(${input_src} ${src})
+        wirte_all_header(${token} ${gen_embed_all_file} ${COMMA})
+        wirte_inl_header(${token} ${gen_embed_file_header})
+    
+        list(APPEND files ${src})
+        set(COMMA ",")
+    endforeach()
+    file(APPEND ${gen_embed_all_file} ")") 
+    set(${var} ${files} PARENT_SCOPE)
+endfunction()
+
 file(GLOB_RECURSE CMAKE_G "${CMAKE_CURRENT_LIST_DIR}/*.cmake")
 list(REMOVE_ITEM CMAKE_G "${CMAKE_CURRENT_LIST_DIR}/Anycubic.cmake")
 
 
 anycubic_search_src(${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/detail)
-set(PLUGINS_LIST "")
-foreach(cmake ${CMAKE_G})
-    include(${cmake})
-endforeach()
 
 
-
-anycubic_plugins_generate_header(${PLUGINS_LIST})
-
-
-
+function(anycubic_configure_target target)
+    if(TARGET ${target})
+        set(PLUGINS_LIST "")
+        set(CURRENT_TARGET ${target})
+        foreach(cmake ${CMAKE_G})
+            include(${cmake})
+        endforeach()
+        anycubic_plugins_generate_header(${PLUGINS_LIST})
+        target_sources(${target} PRIVATE ${ANYCUBIC_SUB_DIR_SOURCES})
+    endif()
+endfunction(anycubic_configure_target)

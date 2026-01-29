@@ -1,13 +1,15 @@
 #include "downloader_plugin.hpp"
 #include "impl/impl.hpp"
 #include "protocol/acnext.hpp"
+#include "protocol/plain.hpp"
 
 #include <plugins_base/funcation.hxx>
 #include <plugins_sdk/constant/config.hxx>
+#include <plugins_sdk/event/detail/plugin_custom_event.hxx>
+
 #include <utility/utils/filesystem.hxx>
 
 #include <slic3r/GUI/GUI_App.hpp>
-#include <slic3r/GUI/NotificationManager.hpp>
 
 namespace Slic3r::GUI {
 void open_folder(const std::string &path);
@@ -25,13 +27,10 @@ static inline void create_protocol(Container &protocols, owner_type *owner) {
 
 DownloaderPlugin::DownloaderPlugin(Anycubic::Plugins::PluginHost *host)
     : host_(host) {
-  create_protocol<ACNextProtocol>(protocols_, this);
+  create_protocol<ACNextProtocol, PlainProtocol>(protocols_, this);
   auto router = host_->Router();
   assert(router != nullptr);
   router->REGISTER_FUNCATION(DownloaderPlugin, start_download);
-  router->REGISTER_FUNCATION(DownloaderPlugin, stop_download);
-  router->REGISTER_FUNCATION(DownloaderPlugin, pause_download);
-  router->REGISTER_FUNCATION(DownloaderPlugin, resume_download);
 
   Bind(Slic3r::GUI::EVT_DWNLDR_FILE_COMPLETE, &DownloaderPlugin::on_complete,
        this);
@@ -43,12 +42,9 @@ DownloaderPlugin::DownloaderPlugin(Anycubic::Plugins::PluginHost *host)
   Bind(Slic3r::GUI::EVT_DWNLDR_FILE_PAUSED, &DownloaderPlugin::on_paused, this);
   Bind(Slic3r::GUI::EVT_DWNLDR_FILE_CANCELED, &DownloaderPlugin::on_canceled,
        this);
-
-  ntf_mngr_ = Slic3r::GUI::wxGetApp().notification_manager();
-  assert(ntf_mngr_ != nullptr);
 }
 
-DownloaderPlugin::~DownloaderPlugin() { protocols_.clear(); }
+DownloaderPlugin::~DownloaderPlugin() { Stop(); }
 
 bool DownloaderPlugin::is_test_env(void) const { return ::is_test_env(host_); }
 
@@ -59,6 +55,8 @@ bool DownloaderPlugin::is_china_env(void) const {
 size_t DownloaderPlugin::start_download(const wxString &url,
                                         download_callback callback, void *ctx) {
   LOG_INFO("start_download: {}", url.utf8_string());
+  // 做个原子锁
+  has_error_ = false;
   for (auto &p : protocols_) {
     if (!p->parse_url(url)) {
       continue;
@@ -67,96 +65,102 @@ size_t DownloaderPlugin::start_download(const wxString &url,
       continue;
     }
     // NOTE: 获取下载保存路径
+    auto id = get_next_id();
+
     wxString download_path;
     host_->GetValue(CONFIG_DOWNLOAD_PATH, download_path);
-    if (download_path.IsEmpty()) {
-      continue;
+
+    wxFileName full_path = wxFileName::DirName(download_path);
+    full_path.SetName(p->get_filename());
+    wxString filename = full_path.GetFullPath();
+    if (callback != nullptr) {
+      callback(ctx, id, DownloadStatus_Suggested, filename);
     }
-    auto id = get_next_id();
-    if (p->start(id, download_path)) {
-      auto &d = m_downloads.back();
-      assert(id == d->id);
-      d->callback = [ctx, callback](size_t download_id, int32_t status,
-                                    const wxString &filename) {
-        callback(ctx, download_id, status, filename);
-      };
-      d->download->start();
+
+    if (p->start(id, filename)) {
+      assert(id == download_->id);
+      download_->callback = std::bind(callback, ctx, id, std::placeholders::_1,
+                                      std::placeholders::_2);
+      download_->filename = full_path;
+      // 先显示界面
+      auto result =
+          ::show_progress_dialog(host_, PLUGIN_NAME_STR, _L("download"));
+      if (!result) {
+        break;
+      }
+      download_->download->start();
       return id;
     }
   }
+  wxString tmp;
+  callback(ctx, 0, DownloadStatus_NotSupported, tmp);
   return 0;
-}
-
-bool DownloaderPlugin::stop_download(int32_t download_id) {
-  return user_action_callback(Slic3r::GUI::DownloadUserCanceled, download_id);
-}
-bool DownloaderPlugin::pause_download(int32_t download_id) {
-  return user_action_callback(Slic3r::GUI::DownloadUserPaused, download_id);
-}
-
-bool DownloaderPlugin::resume_download(int32_t download_id) {
-  return user_action_callback(Slic3r::GUI::DownloadUserContinued, download_id);
 }
 
 bool DownloaderPlugin::start_download_impl(size_t id,
                                            Slic3r::GUI::Download *download) {
-  auto downloader = std::make_unique<Downloader>();
-  downloader->id = id;
-  downloader->download = std::unique_ptr<Slic3r::GUI::Download>(download);
-  m_downloads.emplace_back(std::move(downloader));
-  ntf_mngr_->push_download_URL_progress_notification(
-      id, download->get_filename(),
-      std::bind(&DownloaderPlugin::user_action_callback, this,
-                std::placeholders::_1, std::placeholders::_2));
+  download_ = std::make_unique<Downloader>();
+  download_->id = id;
+  download_->download = std::unique_ptr<Slic3r::GUI::Download>(download);
+  return true;
+}
+
+void DownloaderPlugin::Stop(void) {
+  protocols_.clear();
+  download_.reset();
+}
+
+bool DownloaderPlugin::BindEvt(wxPanel *panel, wxWindow *parent,
+                               wxString *bmp) {
+  parent_ = wxStaticCast(parent, wxDialog);
+  // label
+  label_ = XRCCTRL(*panel, "label", wxStaticText);
+  // progress
+  progress_ = XRCCTRL(*panel, "progress", wxGauge);
+  // cancel
+  cancel_ = XRCCTRL(*panel, "cancel", wxButton);
+  assert(label_ && progress_ && cancel_);
+
+  cancel_->Bind(wxEVT_BUTTON, &DownloaderPlugin::on_cancel, this);
+  parent_->Bind(EVT_DIALOG_CLOSE_EVENT, [this](wxCommandEvent &evt) {
+    if (has_error_) {
+      wxString tmp;
+      download_->callback(DownloadStatus_Error, tmp);
+    } else if (evt.GetInt() == wxID_CANCEL) {
+      on_cancel(evt);
+    }
+    parent_ = nullptr; // 先处理界面指针，关闭后续逻辑
+    label_ = nullptr;
+    progress_ = nullptr;
+    cancel_ = nullptr;
+  });
+
   return true;
 }
 
 void DownloaderPlugin::on_progress(wxCommandEvent &event) {
-  size_t id = event.GetInt();
-  double percent = .0;
-  event.GetString().ToDouble(&percent);
-  ntf_mngr_->set_download_URL_progress(id, percent / 100.0);
+  if (progress_) {
+    long percent = 0;
+    event.GetString().ToLong(&percent);
+    progress_->SetValue(static_cast<int>(percent));
+  }
 }
 void DownloaderPlugin::on_error(wxCommandEvent &event) {
-  BOOST_LOG_TRIVIAL(error) << "Download error: " << event.GetString();
-
-  int id = event.GetInt();
-  ntf_mngr_->set_download_URL_error(id, event.GetString().utf8_string());
-  set_download_state(id, Slic3r::GUI::DownloadState::DownloadError);
+  if (label_ && progress_) {
+    auto msg = event.GetString();
+    msg.Replace("\n", " ");
+    label_->SetLabel(msg);
+    progress_->Hide();
+    cancel_->SetLabel(_L("Close"));
+    parent_->SetTitle(_L("Download Failed"));
+    has_error_ = true;
+  }
 }
 void DownloaderPlugin::on_complete(wxCommandEvent &event) {
-  set_download_state(event.GetInt(), Slic3r::GUI::DownloadState::DownloadDone);
-}
-bool DownloaderPlugin::user_action_callback(
-    Slic3r::GUI::DownloaderUserAction action, int id) {
-  for (auto &d : m_downloads) {
-    if (d->id == id) {
-      switch (action) {
-      case Slic3r::GUI::DownloadUserCanceled:
-        d->download->cancel();
-        return true;
-      case Slic3r::GUI::DownloadUserPaused:
-        d->download->pause();
-        return true;
-      case Slic3r::GUI::DownloadUserContinued:
-        d->download->resume();
-        return true;
-      case Slic3r::GUI::DownloadUserOpenedFolder: {
-        using namespace Slic3r::GUI;
-        // NOTE: 打开下载文件夹
-        wxString download_path;
-        host_->GetValue(CONFIG_DOWNLOAD_PATH, download_path);
-        if (!download_path.IsEmpty()) {
-          open_folder(download_path.utf8_string());
-        }
-        return true;
-      }
-      default:
-        return false;
-      }
-    }
-  }
-  return false;
+  assert(download_ != nullptr);
+  wxString tmp = download_->filename.GetFullPath();
+  parent_->EndModal(wxID_OK);
+  download_->callback(DownloadStatus_Complete, tmp);
 }
 
 void DownloaderPlugin::on_name_change(wxCommandEvent &event) {
@@ -164,36 +168,19 @@ void DownloaderPlugin::on_name_change(wxCommandEvent &event) {
 }
 
 void DownloaderPlugin::on_paused(wxCommandEvent &event) {
-  size_t id = event.GetInt();
-  ntf_mngr_->set_download_URL_paused(id);
+  // empty
 }
 
 void DownloaderPlugin::on_canceled(wxCommandEvent &event) {
-  int id = event.GetInt();
-  ntf_mngr_->set_download_URL_canceled(id);
-  set_download_state(id, Slic3r::GUI::DownloadState::DownloadStopped);
+  assert(download_ != nullptr);
+  wxString tmp;
+  download_->callback(DownloadStatus_Canceled, tmp);
 }
 
-bool DownloaderPlugin::set_download_state(int id,
-                                          Slic3r::GUI::DownloadState state) {
-  auto itr = std::find_if(m_downloads.begin(), m_downloads.end(),
-                          [id](const auto &d) { return d->id == id; });
-  if (itr == m_downloads.end()) {
-    return false;
+void DownloaderPlugin::on_cancel(wxCommandEvent &event) {
+  assert(download_ != nullptr);
+  download_->download->cancel();
+  if (parent_ != nullptr) {
+    parent_->EndModal(wxID_NO);
   }
-  auto &d = *itr;
-  d->download->set_state(state);
-
-  if (state == Slic3r::GUI::DownloadState::DownloadDone ||
-      state == Slic3r::GUI::DownloadState::DownloadError ||
-      state == Slic3r::GUI::DownloadState::DownloadStopped) {
-    auto filename = d->download->get_dest_folder();
-    if (filename.back() != '/') {
-      filename += '/';
-    }
-    filename += d->download->get_filename();
-    d->callback(d->id, state, filename);
-    m_downloads.erase(itr);
-  }
-  return true;
 }

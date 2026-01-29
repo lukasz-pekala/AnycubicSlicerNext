@@ -10,13 +10,11 @@
 
 #include <slic3r/GUI/Downloader.hpp>
 
+#include <atomic>
+
 #define PLGUINS_NAME downloader
 #define PLUGIN_NAME_STR BOOST_PP_STRINGIZE(PLGUINS_NAME)
 
-namespace Slic3r::GUI {
-class NotificationManager;
-} // namespace Slic3r::GUI
-using Slic3r::GUI::NotificationManager;
 class DownloaderPlugin : public Anycubic::Plugins::Plugin, public wxEvtHandler {
 public:
   DownloaderPlugin(Anycubic::Plugins::PluginHost *host);
@@ -39,33 +37,6 @@ private:
                         download_callback callback = nullptr,
                         void *ctx = nullptr);
 
-  /**
-   * @brief 停止下载
-   *
-   * @param download_id 下载id
-   * @return true 成功
-   * @return false 失败
-   */
-  bool stop_download(int32_t download_id);
-
-  /**
-   * @brief 暂停下载
-   *
-   * @param download_id 下载id
-   * @return true 成功
-   * @return false 失败
-   */
-  bool pause_download(int32_t download_id);
-
-  /**
-   * @brief 恢复下载
-   *
-   * @param download_id 下载id
-   * @return true 成功
-   * @return false 失败
-   */
-  bool resume_download(int32_t download_id);
-
 public:
   bool start_download_impl(size_t id, Slic3r::GUI::Download *download);
 
@@ -75,13 +46,11 @@ private:
   // Anycubic::Plugins::Plugin
   const char *Name(void) override { return PLUGIN_NAME_STR; };
   bool Start(void) override { return true; };
-  void Stop(void) override {}
+  void Stop(void) override;
   bool AttachEvt(class wxEvtHandler *) override { return false; };
   bool DetachEvt(class wxEvtHandler *) override { return false; };
   bool BindEvt(class wxPanel *panel, class wxWindow *parent = nullptr,
-               class wxString *bmp = nullptr) override {
-    return false;
-  }
+               class wxString *bmp = nullptr) override;
   bool CreateWebview(class wxWebView *view, class wxWindow *parent = nullptr,
                      class wxString *bmp = nullptr) override {
     return false;
@@ -89,9 +58,6 @@ private:
   void Destroy(void) override { delete this; };
 
 private:
-  // cancel = false -> just pause
-  bool user_action_callback(Slic3r::GUI::DownloaderUserAction action, int id);
-
   // download event handlers
   void on_progress(wxCommandEvent &event);
   void on_error(wxCommandEvent &event);
@@ -99,19 +65,25 @@ private:
   void on_name_change(wxCommandEvent &event);
   void on_paused(wxCommandEvent &event);
   void on_canceled(wxCommandEvent &event);
-  bool set_download_state(int id, Slic3r::GUI::DownloadState state);
+  // user action event handlers
+  void on_cancel(wxCommandEvent &event);
 
 private:
   Anycubic::Plugins::PluginHost *host_;
-  NotificationManager *ntf_mngr_;
   std::vector<std::unique_ptr<Protocol>> protocols_;
   struct Downloader {
     size_t id{0};                                    ///< 下载id
     std::unique_ptr<Slic3r::GUI::Download> download; ///< 下载器对象
-    std::function<void(size_t download_id, int32_t status,
-                       const wxString &filename)>
+    wxFileName filename;                             ///< 下载文件名
+    std::function<void(int32_t status,
+                       wxString &filename)>
         callback; ///< 下载回调函数
   };
-  std::vector<std::unique_ptr<Downloader>> m_downloads;
+  std::unique_ptr<Downloader> download_;
   size_t m_next_id{0};
+  bool has_error_{false};
+  wxDialog *parent_{nullptr};
+  wxStaticText *label_{nullptr};
+  wxGauge *progress_{nullptr};
+  wxButton *cancel_{nullptr};
 };
