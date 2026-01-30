@@ -112,8 +112,6 @@ REFLECTION(CheckResponse, download_url, filename, md5, update_log_en,
 REFLECTION(CheckParams, main_version, os_name, os_version, architecture);
 REFLECTION(PluginInfo, name, version, md5, filename);
 
-template <typename T>
-constexpr bool is_reflection_v = iguana::is_reflection<T>::value;
 
 template <typename T> std::string to_json(const T &t) {
   iguana::string_stream ss;
@@ -154,7 +152,7 @@ bool get_params(CheckParams &tmp) {
 }
 
 template <typename BodyType, typename ResponseType>
-std::enable_if_t<is_reflection_v<BodyType>, bool>
+std::enable_if_t<iguana::is_reflection_v<BodyType>&&iguana::is_reflection_v<ResponseType>, bool>
 send_request(const char *url, const BodyType &params,
              decltype(ResponseType::data) &response) {
   Slic3r::Http client = Slic3r::Http::post(url);

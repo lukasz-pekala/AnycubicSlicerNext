@@ -28,6 +28,7 @@
 
 #ifdef __WXMSW__
 #include <Windows.h>
+#include <shellapi.h>
 static int setenv(const char *name, const char *value, int overwrite) {
   if (!overwrite) {
     DWORD size = GetEnvironmentVariableA(name, NULL, 0);
