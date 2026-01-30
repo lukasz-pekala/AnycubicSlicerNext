@@ -28,23 +28,38 @@ function(encoding_check TARGET)
         # Obtain target source files
         get_target_property(T_SOURCES ${TARGET} SOURCES)
 
-        # Define top-level encoding check target for this ${TARGET}
+        # Create a custom target for parallel execution
         add_custom_target(encoding-check-${TARGET}
-            DEPENDS encoding-check ${T_SOURCES}
-            COMMENT "Checking source files encodings for target ${TARGET}"
+            ALL
+            DEPENDS encoding-check
+            COMMENT "Checking source files encodings for target ${TARGET} (parallel)"
         )
 
-        # Add checking of each source file as a subcommand of encoding-check-${TARGET}
+        # Create individual custom commands for each file
+        # These can be executed in parallel by make -j
+        set(CHECK_COMMANDS "")
         foreach(file ${T_SOURCES})
-            add_custom_command(TARGET encoding-check-${TARGET} PRE_BUILD
+            # Create a unique target name for each file check
+            string(MAKE_C_IDENTIFIER "encoding-check-${TARGET}-${file}" FILE_CHECK_TARGET)
+            
+            add_custom_command(
+                OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${FILE_CHECK_TARGET}.stamp"
                 COMMAND $<TARGET_FILE:encoding-check> ${TARGET} ${file}
+                COMMAND ${CMAKE_COMMAND} -E touch "${CMAKE_CURRENT_BINARY_DIR}/${FILE_CHECK_TARGET}.stamp"
+                DEPENDS encoding-check ${file}
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                COMMENT "Checking encoding: ${file}"
             )
+            
+            list(APPEND CHECK_COMMANDS "${CMAKE_CURRENT_BINARY_DIR}/${FILE_CHECK_TARGET}.stamp")
         endforeach()
 
-        # This adds dependency on encoding-check-${TARGET} to ${TARET}
-        # via the global-encoding-check
-        add_dependencies(global-encoding-check encoding-check-${TARGET})
-        add_dependencies(${TARGET} global-encoding-check)
+        # Make the main target depend on all individual checks
+        add_custom_target(encoding-check-${TARGET}-deps
+            DEPENDS ${CHECK_COMMANDS}
+        )
+        
+        add_dependencies(encoding-check-${TARGET} encoding-check-${TARGET}-deps)
+        add_dependencies(${TARGET} encoding-check-${TARGET})
     endif()
 endfunction()
