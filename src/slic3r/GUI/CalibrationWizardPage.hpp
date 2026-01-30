@@ -133,9 +133,10 @@ protected:
 private:
     void init_bitmaps();
     void create_wiki(wxWindow* parent);
-
+#ifdef ENABLE_BBS_TAB
     Label* m_wiki_text;
     wxString  m_wiki_url;
+#endif // ENABLE_BBS_TAB
     ScalableBitmap m_prev_bmp_normal;
     ScalableBitmap m_prev_bmp_hover;
     ScalableBitmap m_help_bmp_normal;

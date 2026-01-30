@@ -103,12 +103,12 @@ PingCodeBindDialog::PingCodeBindDialog(Plater* plater /*= nullptr*/)
 
     m_link_show_ping_code_wiki->Bind(wxEVT_ENTER_WINDOW, [this](auto& e) {SetCursor(wxCURSOR_HAND); });
     m_link_show_ping_code_wiki->Bind(wxEVT_LEAVE_WINDOW, [this](auto& e) {SetCursor(wxCURSOR_ARROW); });
-
+#ifdef ENABLE_BBS_TAB
     m_link_show_ping_code_wiki->Bind(wxEVT_LEFT_DOWN, [this](auto& e) {
         m_ping_code_wiki = "https://wiki.bambulab.com/en/bambu-studio/manual/pin-code";
         wxLaunchDefaultBrowser(m_ping_code_wiki);
     });
-
+#endif // ENABLE_BBS_TAB
     m_text_input_title = new wxStaticText(request_bind_panel, wxID_ANY, _L("Pin Code"));
     m_text_input_title->SetFont(Label::Body_14);
     m_text_input_title->SetBackgroundColour(*wxWHITE);
@@ -497,6 +497,7 @@ PingCodeBindDialog::~PingCodeBindDialog() {
      m_link_privacy_title->SetMaxSize(wxSize(FromDIP(450), -1));
      m_link_privacy_title->Wrap(FromDIP(450));
      m_link_privacy_title->SetForegroundColour(wxColour(0x3986FF));
+#ifdef ENABLE_BBS_TAB
      m_link_privacy_title->Bind(wxEVT_LEFT_DOWN, [this](auto& e) {
          std::string url;
          std::string country_code = Slic3r::GUI::wxGetApp().app_config->get_country_code();
@@ -509,6 +510,7 @@ PingCodeBindDialog::~PingCodeBindDialog() {
          }
          wxLaunchDefaultBrowser(url);
      });
+#endif // ENABLE_BBS_TAB
      m_link_privacy_title->Bind(wxEVT_ENTER_WINDOW, [this](auto& e) {SetCursor(wxCURSOR_HAND);});
      m_link_privacy_title->Bind(wxEVT_LEAVE_WINDOW, [this](auto& e) {SetCursor(wxCURSOR_ARROW);});
 
@@ -600,7 +602,9 @@ PingCodeBindDialog::~PingCodeBindDialog() {
 
      m_link_network_state = new wxHyperlinkCtrl(m_sw_bind_failed_info, wxID_ANY,_L("Check the status of current system services"),"");
      m_link_network_state->SetFont(::Label::Body_12);
+#ifdef ENABLE_BBS_TAB
      m_link_network_state->Bind(wxEVT_LEFT_DOWN, [this](auto& e) {wxGetApp().link_to_network_check(); });
+#endif // ENABLE_BBS_TAB
      m_link_network_state->Bind(wxEVT_ENTER_WINDOW, [this](auto& e) {m_link_network_state->SetCursor(wxCURSOR_HAND); });
      m_link_network_state->Bind(wxEVT_LEAVE_WINDOW, [this](auto& e) {m_link_network_state->SetCursor(wxCURSOR_ARROW); });
 
@@ -759,6 +763,7 @@ PingCodeBindDialog::~PingCodeBindDialog() {
  wxString BindMachineDialog::get_print_error(wxString str)
  {
      wxString extra;
+#ifdef ENABLE_BBS_TAB
      try {
          json j = json::parse(str.utf8_string());
          if (j.contains("err_code")) {
@@ -769,7 +774,7 @@ PingCodeBindDialog::~PingCodeBindDialog() {
      catch (...) {
          ;
      }
-
+#endif // ENABLE_BBS_TAB
      if (extra.empty())
          extra = str;
 

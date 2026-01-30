@@ -73,8 +73,9 @@ DownloadProgressDialog::DownloadProgressDialog(wxString title)
     sizer_download_failed->Add(m_statictext_download_failed, 0, wxALIGN_CENTER | wxALL, 5);
 
     auto m_download_hyperlink = new wxHyperlinkCtrl(m_panel_download_failed, wxID_ANY, _L("click here to see more info"), download_failed_url, wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE);
+#ifdef ENABLE_BBS_TAB
     sizer_download_failed->Add(m_download_hyperlink, 0, wxALIGN_CENTER | wxALL, 5);
-
+#endif // ENABLE_BBS_TAB
 
     m_panel_download_failed->SetSizer(sizer_download_failed);
     m_panel_download_failed->Layout();
@@ -94,8 +95,9 @@ DownloadProgressDialog::DownloadProgressDialog(wxString title)
     sizer_install_failed->Add(m_statictext_install_failed, 0, wxALIGN_CENTER | wxALL, 5);
 
     auto m_install_hyperlink = new wxHyperlinkCtrl(m_panel_install_failed, wxID_ANY, _L("click here to see more info"), install_failed_url, wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE);
+#ifdef ENABLE_BBS_TAB
     sizer_install_failed->Add(m_install_hyperlink, 0, wxALIGN_CENTER | wxALL, 5);
-
+#endif // ENABLE_BBS_TAB
 
     m_panel_install_failed->SetSizer(sizer_install_failed);
     m_panel_install_failed->Layout();

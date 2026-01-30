@@ -943,7 +943,9 @@ private:
 			_u8L("The number of user presets cached in the cloud has exceeded the upper limit, newly created user presets can only be used locally."), 
 			_u8L("Wiki"),
                          [](wxEvtHandler* evnthndlr) {
+#ifdef ENABLE_BBS_TAB
 				wxLaunchDefaultBrowser("https://wiki.bambulab.com/en/software/bambu-studio/3rd-party-printer-profile#cloud-user-presets-limit");
+#endif // ENABLE_BBS_TAB
 				return false;
              }},
 

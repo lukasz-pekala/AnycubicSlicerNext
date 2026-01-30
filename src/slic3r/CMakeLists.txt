@@ -211,10 +211,10 @@ set(SLIC3R_GUI_SOURCES
     GUI/GUI_Utils.hpp
     GUI/HintNotification.cpp
     GUI/HintNotification.hpp
-    GUI/HMS.cpp
-    GUI/HMS.hpp
-    GUI/HMSPanel.cpp
-    GUI/HMSPanel.hpp
+    # GUI/HMS.cpp
+    # GUI/HMS.hpp
+    # GUI/HMSPanel.cpp
+    # GUI/HMSPanel.hpp
     GUI/HttpServer.cpp
     GUI/HttpServer.hpp
     GUI/I18N.cpp
@@ -591,6 +591,10 @@ if (ENABLE_BBS_TAB)
         GUI/Monitor.hpp
         GUI/PrinterWebView.cpp
         GUI/PrinterWebView.hpp
+        GUI/HMS.cpp
+        GUI/HMS.hpp
+        GUI/HMSPanel.cpp
+        GUI/HMSPanel.hpp
     )
 endif()
 

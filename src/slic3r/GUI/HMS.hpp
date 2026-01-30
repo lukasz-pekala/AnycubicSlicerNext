@@ -11,7 +11,7 @@
 #include "slic3r/Utils/Http.hpp"
 #include "libslic3r/Thread.hpp"
 #include "nlohmann/json.hpp"
-
+#ifdef ENABLE_BBS_TAB
 namespace Slic3r {
 namespace GUI {
 
@@ -51,5 +51,5 @@ std::string get_error_message(int error_code);
 }
 }
 
-
+#endif // ENABLE_BBS_TAB
 #endif

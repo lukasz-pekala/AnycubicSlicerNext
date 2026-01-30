@@ -303,8 +303,9 @@ private:
     VersionInfo version_info;
     VersionInfo privacy_version_info;
     static std::string version_display;
+#ifdef ENABLE_BBS_TAB
     HMSQuery    *hms_query { nullptr };
-
+#endif // ENABLE_BBS_TAB
     boost::thread    m_sync_update_thread;
     std::shared_ptr<int> m_user_sync_token;
     bool             m_is_dark_mode{ false };
@@ -336,7 +337,9 @@ public:
     EAppMode get_app_mode() const { return m_app_mode; }
     Slic3r::DeviceManager* getDeviceManager() { return m_device_manager; }
     Slic3r::TaskManager*   getTaskManager() { return m_task_manager; }
+#ifdef ENABLE_BBS_TAB
     HMSQuery* get_hms_query() { return hms_query; }
+#endif //ENABLE_BBS_TAB
     NetworkAgent* getAgent() { return m_agent; }
     bool is_editor() const { return m_app_mode == EAppMode::Editor; }
     bool is_gcode_viewer() const { return m_app_mode == EAppMode::GCodeViewer; }
@@ -398,9 +401,10 @@ public:
     //update side popup status
     bool            get_side_menu_popup_status();
     void            set_side_menu_popup_status(bool status);
+#ifdef ENABLE_BBS_TAB
     void            link_to_network_check();
     void            link_to_lan_only_wiki();
-
+#endif // ENABLE_BBS_TAB
     const wxColour& get_label_clr_modified() { return m_color_label_modified; }
     const wxColour& get_label_clr_sys()     { return m_color_label_sys; }
     const wxColour& get_label_clr_default() { return m_color_label_default; }

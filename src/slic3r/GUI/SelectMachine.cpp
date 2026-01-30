@@ -471,8 +471,9 @@ SelectMachineDialog::SelectMachineDialog(Plater *plater)
 
     auto hyperlink_sizer = new wxBoxSizer( wxHORIZONTAL );
     m_hyperlink = new wxHyperlinkCtrl(m_panel_prepare, wxID_ANY, _L("Click here if you can't connect to the printer"), wxT("https://wiki.bambulab.com/en/software/bambu-studio/failed-to-connect-printer"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE);
-
+#ifdef ENABLE_BBS_TAB
     hyperlink_sizer->Add(m_hyperlink, 0, wxALIGN_CENTER | wxALL, 5);
+#endif // ENABLE_BBS_TAB
     m_sizer_prepare->Add(hyperlink_sizer, 0, wxALIGN_CENTER | wxALL, 5);
 
     m_button_ensure = new Button(m_panel_prepare, _L("Send"));
@@ -596,7 +597,9 @@ SelectMachineDialog::SelectMachineDialog(Plater *plater)
 
     m_link_network_state = new wxHyperlinkCtrl(m_sw_print_failed_info, wxID_ANY,_L("Check the status of current system services"),"");
     m_link_network_state->SetFont(::Label::Body_12);
+#ifdef ENABLE_BBS_TAB
     m_link_network_state->Bind(wxEVT_LEFT_DOWN, [this](auto& e) {wxGetApp().link_to_network_check();});
+#endif // ENABLE_BBS_TAB
     m_link_network_state->Bind(wxEVT_ENTER_WINDOW, [this](auto& e) {m_link_network_state->SetCursor(wxCURSOR_HAND);});
     m_link_network_state->Bind(wxEVT_LEAVE_WINDOW, [this](auto& e) {m_link_network_state->SetCursor(wxCURSOR_ARROW);});
 

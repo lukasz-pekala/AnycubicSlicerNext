@@ -588,8 +588,9 @@ void SelectMachinePopup::update_other_devices()
 
     m_hyperlink = new wxHyperlinkCtrl(m_placeholder_panel, wxID_ANY, _L("Can't find my devices?"), wxT("https://wiki.bambulab.com/en/software/bambu-studio/failed-to-connect-printer"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE);
     m_hyperlink->SetNormalColour(StateColor::darkModeColorFor("#009789"));
+#ifdef ENABLE_BBS_TAB
     placeholder_sizer->Add(m_hyperlink, 0, wxALIGN_CENTER | wxALL, 5);
-
+#endif // ENABLE_BBS_TAB
 
     m_placeholder_panel->SetSizer(placeholder_sizer);
     m_placeholder_panel->Layout();
@@ -841,12 +842,13 @@ void SelectMachinePopup::OnLeftUp(wxMouseEvent &event)
             InputIpAddressDialog dlgo;
             dlgo.ShowModal();
         }
-
+#ifdef ENABLE_BBS_TAB
         //hyper link
         auto h_rect = m_hyperlink->ClientToScreen(wxPoint(0, 0));
         if (mouse_pos.x > h_rect.x && mouse_pos.y > h_rect.y && mouse_pos.x < (h_rect.x + m_hyperlink->GetSize().x) && mouse_pos.y < (h_rect.y + m_hyperlink->GetSize().y)) {
           wxLaunchDefaultBrowser(wxT("https://wiki.bambulab.com/en/software/bambu-studio/failed-to-connect-printer"));
         }
+#endif // ENABLE_BBS_TAB
     }
 }
 

@@ -2268,7 +2268,7 @@ void StatusPanel::update_error_message()
         return;
     } else if (before_error_code != obj->print_error && obj->print_error != skip_print_error) {
         before_error_code = obj->print_error;
-
+#ifdef ENABLE_BBS_TAB
         if (wxGetApp().get_hms_query()) {
             char buf[32];
             ::sprintf(buf, "%08X", obj->print_error);
@@ -2285,6 +2285,7 @@ void StatusPanel::update_error_message()
             }
             show_error_message(obj, is_errocode_exist, error_msg, print_error_str, error_image_url, used_button);
         }
+#endif // ENABLE_BBS_TAB
     }
 }
 
@@ -3916,8 +3917,10 @@ void StatusPanel::on_ams_selected(wxCommandEvent &event)
 
 void StatusPanel::on_ams_guide(wxCommandEvent& event)
 {
+#ifdef ENABLE_BBS_TAB
     wxString ams_wiki_url = "https://wiki.bambulab.com/en/software/bambu-studio/use-ams-on-bambu-studio";
     wxLaunchDefaultBrowser(ams_wiki_url);
+#endif // ENABLE_BBS_TAB
 }
 
 void StatusPanel::on_ams_retry(wxCommandEvent& event)

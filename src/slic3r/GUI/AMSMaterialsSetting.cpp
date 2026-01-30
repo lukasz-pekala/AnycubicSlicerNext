@@ -315,11 +315,11 @@ void AMSMaterialsSetting::create_panel_kn(wxWindow* parent)
 
     m_ratio_text->Bind(wxEVT_ENTER_WINDOW, [this](auto& e) {SetCursor(wxCURSOR_HAND); });
     m_ratio_text->Bind(wxEVT_LEAVE_WINDOW, [this](auto& e) {SetCursor(wxCURSOR_ARROW); });
-
+#ifdef ENABLE_BBS_TAB
     m_ratio_text->Bind(wxEVT_LEFT_DOWN, [this](auto& e) {
         wxLaunchDefaultBrowser(wxT("https://wiki.bambulab.com/en/software/bambu-studio/calibration_pa"));
     });
-
+#endif // ENABLE_BBS_TAB
 
     wxBoxSizer *m_sizer_cali_resutl = new wxBoxSizer(wxHORIZONTAL);
     // pa profile

@@ -4792,12 +4792,14 @@ wxPanel *PresetTree::get_child_item(wxPanel *parent, std::shared_ptr<Preset> pre
     sizer->Add(preset_name, 0, wxEXPAND | wxALL, 5);
     bool base_id_error = false;
     if (preset->inherits() == "" && preset->base_id != "") base_id_error = true;
+#ifdef ENABLE_BBS_TAB
     if (base_id_error) {
         std::string      wiki_url             = "https://wiki.bambulab.com/en/software/bambu-studio/custom-filament-issue";
         wxHyperlinkCtrl *m_download_hyperlink = new wxHyperlinkCtrl(panel, wxID_ANY, _L("[Delete Required]"), wiki_url, wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE);
         m_download_hyperlink->SetFont(Label::Body_10);
         sizer->Add(m_download_hyperlink, 0, wxEXPAND | wxALL, 5);
     }
+#endif // ENABLE_BBS_TAB
     sizer->Add(0, 0, 1, wxEXPAND, 0);
 
     Button *edit_preset_btn = new Button(panel, _L("Edit Preset")); 

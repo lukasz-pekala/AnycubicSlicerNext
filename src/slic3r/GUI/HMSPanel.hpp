@@ -9,6 +9,7 @@
 #include <slic3r/GUI/StatusPanel.hpp>
 #include <wx/html/htmlwin.h>
 
+#ifdef ENABLE_BBS_TAB
 namespace Slic3r {
 namespace GUI {
 
@@ -75,5 +76,5 @@ wxDECLARE_EVENT(EVT_ALREADY_READ_HMS, wxCommandEvent);
 
 }
 }
-
+#endif
 #endif

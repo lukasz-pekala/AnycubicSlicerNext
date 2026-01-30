@@ -31,7 +31,7 @@ wxString get_cali_mode_caption_string(CalibMode mode)
         return _L("Max Volumetric Speed Calibration");
     return "no cali_mode_caption";
 }
-
+#ifdef ENABLE_BBS_TAB
 wxString get_calibration_wiki_page(CalibMode cali_mode)
 {
     switch (cali_mode) {
@@ -49,6 +49,7 @@ wxString get_calibration_wiki_page(CalibMode cali_mode)
         return "";
     }
 }
+#endif // ENABLE_BBS_TAB
 
 CalibrationFilamentMode get_cali_filament_mode(MachineObject* obj, CalibMode mode)
 {
@@ -388,11 +389,11 @@ CaliPageCaption::CaliPageCaption(wxWindow* parent, CalibMode cali_mode,
     caption_sizer->Add(m_help_btn, 0, wxALIGN_CENTER);
 
     caption_sizer->AddStretchSpacer();
-
+#ifdef ENABLE_BBS_TAB
     m_wiki_url = get_calibration_wiki_page(cali_mode);
     create_wiki(this);
     caption_sizer->Add(m_wiki_text, 0);
-
+#endif // ENABLE_BBS_TAB
     top_sizer->Add(caption_sizer, 1, wxEXPAND);
     top_sizer->AddSpacer(FromDIP(35));
     this->SetSizer(top_sizer);
@@ -442,6 +443,7 @@ void CaliPageCaption::init_bitmaps() {
 
 void CaliPageCaption::create_wiki(wxWindow* parent)
 {
+#ifdef ENABLE_BBS_TAB
     m_wiki_text = new Label(parent, _L("Wiki"));
     m_wiki_text->SetFont(Label::Head_14);
     m_wiki_text->SetForegroundColour({ 0, 88, 220 });
@@ -457,6 +459,7 @@ void CaliPageCaption::create_wiki(wxWindow* parent)
         if (!m_wiki_url.empty())
             wxLaunchDefaultBrowser(m_wiki_url);
         });
+#endif // ENABLE_BBS_TAB
 }
 
 void CaliPageCaption::show_prev_btn(bool show)

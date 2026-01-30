@@ -955,10 +955,10 @@ void GUI_App::post_init()
         plater_->get_notification_manager()->push_hint_notification(false);
     }
 #endif
-
+#ifdef ENABLE_BBS_TAB
     if (!app_config->get_stealth_mode())
         hms_query = new HMSQuery();
-
+#endif // ENABLE_BBS_TAB
     m_show_gcode_window = app_config->get_bool("show_gcode_window");
     
 #ifdef ENABLE_OLD_VERSION_UPDATE
@@ -1037,13 +1037,13 @@ void GUI_App::post_init()
     CallAfter([this] {
             mainframe->refresh_plugin_tips();
         });
-
+#ifdef ENABLE_BBS_TAB
     // update hms info
     CallAfter([this] {
             if (hms_query)
                 hms_query->check_hms_info();
         });
-
+#endif // ENABLE_BBS_TAB
 
     DeviceManager::load_filaments_blacklist_config();
 
@@ -3390,7 +3390,7 @@ void GUI_App::set_side_menu_popup_status(bool status)
 {
     m_side_popup_status = status;
 }
-
+#ifdef ENABLE_BBS_TAB
 void GUI_App::link_to_network_check()
 {
     std::string url;
@@ -3425,7 +3425,7 @@ void GUI_App::link_to_lan_only_wiki()
     }
     wxLaunchDefaultBrowser(url);
 }
-
+#endif // ENABLE_BBS_TAB
 bool GUI_App::tabs_as_menu() const
 {
     return false;
@@ -3529,11 +3529,11 @@ void GUI_App::recreate_GUI(const wxString &msg_name)
 
     obj_list()->set_min_height();
     update_mode();
-
+#ifdef ENABLE_BBS_TAB
     //check hms info for different language
     if (hms_query)
         hms_query->check_hms_info();
-
+#endif // ENABLE_BBS_TAB
     //BBS: trigger restore project logic here, and skip confirm
     plater_->trigger_restore_project(1);
 

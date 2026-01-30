@@ -301,8 +301,9 @@ SideTools::SideTools(wxWindow *parent, wxWindowID id, const wxPoint &pos, const 
         }
 
         });
-
+#ifdef ENABLE_BBS_TAB
     connection_sizer_H->Add(m_hyperlink, 0, wxALIGN_CENTER | wxALL, 5);
+#endif // ENABLE_BBS_TAB
     connection_sizer_H->Add(m_more_button, 0, wxALIGN_CENTER | wxALL, 3);
     connection_sizer_V->Add(connection_sizer_H, 0, wxALIGN_CENTER, 0);
 
@@ -330,7 +331,9 @@ SideTools::SideTools(wxWindow *parent, wxWindowID id, const wxPoint &pos, const 
     m_link_network_state->SetMinSize(wxSize(FromDIP(220), -1));
     m_link_network_state->SetMaxSize(wxSize(FromDIP(220), -1));
     m_link_network_state->SetFont(::Label::Body_12);
+#ifdef ENABLE_BBS_TAB
     m_link_network_state->Bind(wxEVT_LEFT_DOWN, [this](auto& e) {wxGetApp().link_to_network_check(); });
+#endif // ENABLE_BBS_TAB
     m_link_network_state->Bind(wxEVT_ENTER_WINDOW, [this](auto& e) {m_link_network_state->SetCursor(wxCURSOR_HAND); });
     m_link_network_state->Bind(wxEVT_LEAVE_WINDOW, [this](auto& e) {m_link_network_state->SetCursor(wxCURSOR_ARROW); });
 

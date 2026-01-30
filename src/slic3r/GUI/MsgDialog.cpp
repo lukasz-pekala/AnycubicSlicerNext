@@ -625,7 +625,9 @@ NetworkErrorDialog::NetworkErrorDialog(wxWindow* parent)
 
     m_link_server_state = new wxHyperlinkCtrl(this, wxID_ANY, _L("Check the status of current system services"), "");
     m_link_server_state->SetFont(::Label::Body_13);
+#ifdef ENABLE_BBS_TAB
     m_link_server_state->Bind(wxEVT_LEFT_DOWN, [this](auto& e) {wxGetApp().link_to_network_check(); });
+#endif // ENABLE_BBS_TAB
     m_link_server_state->Bind(wxEVT_ENTER_WINDOW, [this](auto& e) {SetCursor(wxCURSOR_HAND); });
     m_link_server_state->Bind(wxEVT_LEAVE_WINDOW, [this](auto& e) {SetCursor(wxCURSOR_ARROW); });
 
@@ -643,7 +645,9 @@ NetworkErrorDialog::NetworkErrorDialog(wxWindow* parent)
 
     m_text_wiki = new wxHyperlinkCtrl(this, wxID_ANY, _L("How to use LAN only mode"), "");
     m_text_wiki->SetFont(::Label::Body_13);
+#ifdef ENABLE_BBS_TAB
     m_text_wiki->Bind(wxEVT_LEFT_DOWN, [this](auto& e) {wxGetApp().link_to_lan_only_wiki(); });
+#endif // ENABLE_BBS_TAB
     m_text_wiki->Bind(wxEVT_ENTER_WINDOW, [this](auto& e) {SetCursor(wxCURSOR_HAND); });
     m_text_wiki->Bind(wxEVT_LEAVE_WINDOW, [this](auto& e) {SetCursor(wxCURSOR_ARROW); });
 
