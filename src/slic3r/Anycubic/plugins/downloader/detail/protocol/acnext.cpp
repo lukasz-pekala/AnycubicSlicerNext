@@ -27,13 +27,6 @@
   return urls[get_url_index()];
 // clang-format on
 
-#define push_error(mngr, text, htext)                                          \
-  mngr->push_notification(                                                     \
-      Slic3r::GUI::NotificationType::URLDownload,                              \
-      Slic3r::GUI::NotificationManager::NotificationLevel::                    \
-          ErrorNotificationLevel,                                              \
-      text, htext, [](wxEvtHandler *evt) { return true; }, 8000)
-
 struct WebWakeUpInfo {
   std::string accessToken;
   std::string modelLink;
@@ -50,8 +43,6 @@ REFLECTION(WebWakeUpInfo, accessToken, modelLink, hash, fileName, userId,
 
 ACNextProtocol::ACNextProtocol(DownloaderPlugin *owner) : owner_(owner) {
   assert(owner_ != nullptr);
-  ntf_mngr_ = Slic3r::GUI::wxGetApp().notification_manager();
-  assert(ntf_mngr_ != nullptr);
 }
 
 bool ACNextProtocol::can_handle() {
@@ -74,8 +65,7 @@ bool ACNextProtocol::start(size_t id, const wxString &output_path) {
   if (!Anycubic::utility::json::load_from_json(info, json.data(),
                                                json.size())) {
     // 推送错误通知
-    push_error(ntf_mngr_,
-               _u8L("reflection error: Invalid jsonvalue parameter."),
+    push_error(owner_, _u8L("reflection error: Invalid jsonvalue parameter."),
                _u8L("Contact Us"));
     return false;
   }
@@ -83,27 +73,28 @@ bool ACNextProtocol::start(size_t id, const wxString &output_path) {
   if (downloadurl.empty()) {
     return false;
   }
-
-  auto d = new Slic3r::GUI::Download(static_cast<int>(id), downloadurl, owner_, info.fileName,
-                                     output_path.ToStdString());
+  wxFileName full_path = wxFileName::FileName(output_path);
+  auto d = new Slic3r::GUI::Download(static_cast<int>(id), downloadurl, owner_,
+                                     info.fileName,
+                                     full_path.GetPath().utf8_string());
   owner_->start_download_impl(id, d);
   return true;
 }
 
 std::string ACNextProtocol::get_jsonvalue() {
-    using namespace Anycubic::utility;
-    auto query = uri_.GetQuery().utf8_string();
-    assert(!query.empty());
-    // acnext://open?jsonvalue=base64encodedjson
-    auto jsonvalue = parse_query(query);
-    if (jsonvalue.empty() || jsonvalue.count("jsonvalue") == 0) {
-        // 推送错误通知
-        push_error(ntf_mngr_,
-                   _u8L("Invalid URL from makeronline.com: Missing or invalid "
-                        "jsonvalue  parameter."),
-                   _u8L("Contact Us"));
-        return std::string(); 
-    }
+  using namespace Anycubic::utility;
+  auto query = uri_.GetQuery().utf8_string();
+  assert(!query.empty());
+  // acnext://open?jsonvalue=base64encodedjson
+  auto jsonvalue = parse_query(query);
+  if (jsonvalue.empty() || jsonvalue.count("jsonvalue") == 0) {
+    // 推送错误通知
+    push_error(owner_,
+               _u8L("Invalid URL from makeronline.com: Missing or invalid "
+                    "jsonvalue  parameter."),
+               _u8L("Contact Us"));
+    return std::string();
+  }
   std::string jsonvalue_;
   if (auto itr = jsonvalue.find("jsonvalue"); itr != jsonvalue.end()) {
     jsonvalue_ = itr->second;
@@ -144,13 +135,13 @@ std::string ACNextProtocol::get_downloadurl(const WebWakeUpInfo &info) {
         BOOST_LOG_TRIVIAL(error)
             << __FUNCTION__ << "Download Failed! STATUS: " << status
             << ", body: " << body;
-        push_error(ntf_mngr_, _u8L("Download Failed"), _u8L("Contact Us"));
+        push_error(owner_, _u8L("Download Failed"), _u8L("Contact Us"));
       })
       .on_error([this](std::string body, std::string error, unsigned status) {
         BOOST_LOG_TRIVIAL(error)
             << __FUNCTION__ << "Download Failed! STATUS: " << status
             << ", error: " << error << ", body: " << body;
-        push_error(ntf_mngr_, _u8L("Download Failed"), _u8L("Contact Us"));
+        push_error(owner_, _u8L("Download Failed"), _u8L("Contact Us"));
       });
   // http请求完整模型下载链接
   http.perform_sync();

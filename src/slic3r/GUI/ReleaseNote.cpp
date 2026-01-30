@@ -326,7 +326,7 @@ UpdateVersionDialog::UpdateVersionDialog(wxWindow *parent)
     StateColor btn_bg_white(std::pair<wxColour, int>(wxColour(206, 206, 206), StateColor::Pressed), std::pair<wxColour, int>(wxColour(238, 238, 238), StateColor::Hovered),
                             std::pair<wxColour, int>(*wxWHITE, StateColor::Normal));
 
-    m_button_download = new Button(this, _L("Download"));
+    m_button_download = new Button(this, _L("Upgrade"));
     m_button_download->SetBackgroundColor(btn_bg_green);
     m_button_download->SetBorderColor(*wxWHITE);
     m_button_download->SetTextColor(wxColour("#FFFFFE"));
@@ -339,7 +339,7 @@ UpdateVersionDialog::UpdateVersionDialog(wxWindow *parent)
         EndModal(wxID_YES);
     });
 
-    m_button_skip_version = new Button(this, _L("Skip this Version"));
+    m_button_skip_version = new Button(this, _L("Skip"));
     m_button_skip_version->SetBackgroundColor(btn_bg_white);
     m_button_skip_version->SetBorderColor(wxColour(38, 46, 48));
     m_button_skip_version->SetFont(Label::Body_12);
@@ -348,23 +348,10 @@ UpdateVersionDialog::UpdateVersionDialog(wxWindow *parent)
     m_button_skip_version->SetCornerRadius(FromDIP(12));
 
     m_button_skip_version->Bind(wxEVT_LEFT_DOWN, [this](wxMouseEvent &e) { 
-        wxGetApp().set_skip_version(true);
-        EndModal(wxID_NO);
+        EndModal(wxID_IGNORE);
     });
 
-    m_cb_stable_only = new CheckBox(this);
-    m_cb_stable_only->SetValue(wxGetApp().app_config->get_bool("check_stable_update_only"));
-    m_cb_stable_only->Bind(wxEVT_TOGGLEBUTTON, [this](wxCommandEvent& e) {
-        wxGetApp().app_config->set_bool("check_stable_update_only", m_cb_stable_only->GetValue());
-        e.Skip();
-    });
-
-    auto stable_only_label = new Label(this, _L("Check for stable updates only"));
-    stable_only_label->SetFont(Label::Body_13);
-    stable_only_label->SetForegroundColour(wxColour(38, 46, 48));
-    stable_only_label->SetFont(Label::Body_12);
-
-    m_button_cancel = new Button(this, _L("Cancel"));
+    m_button_cancel = new Button(this, _L("Later"));
     m_button_cancel->SetBackgroundColor(btn_bg_white);
     m_button_cancel->SetBorderColor(wxColour(38, 46, 48));
     m_button_cancel->SetFont(Label::Body_12);
@@ -373,15 +360,13 @@ UpdateVersionDialog::UpdateVersionDialog(wxWindow *parent)
     m_button_cancel->SetCornerRadius(FromDIP(12));
 
     m_button_cancel->Bind(wxEVT_LEFT_DOWN, [this](wxMouseEvent &e) {
-        EndModal(wxID_NO);
+        EndModal(wxID_CANCEL);
     });
 
     m_sizer_main->Add(m_line_top, 0, wxEXPAND | wxBOTTOM, 0);
     
     //sizer_button->Add(m_remind_choice, 0, wxALL | wxEXPAND, FromDIP(5));
     sizer_button->AddStretchSpacer();
-    sizer_button->Add(stable_only_label, 0, wxALIGN_CENTER | wxLEFT, FromDIP(7));
-    sizer_button->Add(m_cb_stable_only, 0, wxALIGN_CENTER | wxLEFT, FromDIP(5));
     sizer_button->Add(m_button_download, 0, wxALL, FromDIP(5));
     sizer_button->Add(m_button_skip_version, 0, wxALL, FromDIP(5));
     sizer_button->Add(m_button_cancel, 0, wxALL, FromDIP(5));
@@ -519,7 +504,7 @@ void UpdateVersionDialog::update_version_info(wxString release_note, wxString ve
     else {
         m_simplebook_release_note->SetMaxSize(wxSize(FromDIP(560), FromDIP(430)));
         m_simplebook_release_note->SetSelection(0);
-        m_text_up_info->SetLabel(wxString::Format(_L("Click to download new version in default browser: %s"), version));
+        m_text_up_info->SetLabel(wxString::Format(_L("Click Upgrade to install version: %s"), version));
         wxBoxSizer* sizer_text_release_note = new wxBoxSizer(wxVERTICAL);
         auto        m_staticText_release_note = new ::Label(m_scrollwindows_release_note, release_note, LB_AUTO_WRAP);
         m_staticText_release_note->SetMinSize(wxSize(FromDIP(560), -1));

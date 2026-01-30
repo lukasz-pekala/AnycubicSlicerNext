@@ -478,6 +478,8 @@ public:
     void            check_update(bool show_tips, int by_user);
     void            check_new_version(bool show_tips = false, int by_user = 0);
     void            check_new_version_sf(bool show_tips = false, int by_user = 0);
+#else
+    void            CheckForUpdate(bool is_auto_update = false);
 #endif // ENABLE_OLD_VERSION_UPDATE
     void            process_network_msg(std::string dev_id, std::string msg);
     void            request_new_version(int by_user);
@@ -558,7 +560,7 @@ public:
     // Calls wxLaunchDefaultBrowser if user confirms in dialog.
     bool            open_browser_with_warning_dialog(const wxString& url, int flags = 0);
 #ifdef __APPLE__
-    void            OSXStoreOpenFiles(const wxArrayString &files);
+    void            OSXStoreOpenFiles(const wxArrayString &files)override;
     // wxWidgets override to get an event on open files.
     void            MacOpenFiles(const wxArrayString &fileNames) override;
     void            MacOpenURL(const wxString& url) override;

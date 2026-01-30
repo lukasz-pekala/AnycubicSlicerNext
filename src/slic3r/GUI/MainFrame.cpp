@@ -2238,6 +2238,8 @@ static wxMenu* generate_help_menu()
         [](wxCommandEvent&) {
 #ifdef ENABLE_OLD_VERSION_UPDATE
             wxGetApp().check_new_version_sf(true, 1);
+#else
+            wxGetApp().CheckForUpdate();
 #endif // ENABLE_OLD_VERSION_UPDATE
         }, "", nullptr, []() {
             return true;

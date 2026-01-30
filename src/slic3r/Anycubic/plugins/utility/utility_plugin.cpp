@@ -42,7 +42,7 @@ std::string UtilityPlugin::pcid(void) const {
 bool UtilityPlugin::is_test_env(void) const {
   wxString developer_mode;
   host_->GetValue("developer_mode", developer_mode);
-  return developer_mode == "1";
+  return developer_mode == "1" || developer_mode == "true";
 }
 bool UtilityPlugin::is_china_env(void) const {
   // 获取真实现的区域信息
@@ -59,9 +59,9 @@ std::string UtilityPlugin::region(void) const {
 }
 
 std::string UtilityPlugin::language(void) const {
-  wxString developer_mode;
-  host_->GetValue("language", developer_mode);
-  return developer_mode.utf8_string();
+  wxString language;
+  host_->GetValue("language", language);
+  return language.utf8_string();
 }
 std::string UtilityPlugin::get_temp_path(void) const {
   wxStandardPaths &standardPaths = wxStandardPaths::Get();

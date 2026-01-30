@@ -655,6 +655,7 @@ if(ENABLE_BBS_TAB)
 endif()
 target_include_directories(libslic3r_gui PRIVATE Utils ${CMAKE_CURRENT_BINARY_DIR})
 anycubic_target_link(libslic3r_gui OUT_SDK_DLLS)
+anycubic_configure_target(libslic3r_gui)
 
 if (WIN32)
     target_include_directories(libslic3r_gui SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../deps/WebView2/include)

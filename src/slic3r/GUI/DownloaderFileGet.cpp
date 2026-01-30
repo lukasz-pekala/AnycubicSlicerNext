@@ -286,7 +286,9 @@ void FileGet::priv::get_perform()
 					m_written = written_previously + written_this_session;
 				}
 				wxCommandEvent* evt = new wxCommandEvent(EVT_DWNLDR_FILE_PROGRESS);
-				int             percent_total = m_absolute_size == 0 ? 0 : (written_previously + progress.dlnow) * 100 / m_absolute_size;
+				// 使用progress.dltotal作为分母，而不是m_absolute_size，以确保计算准确性
+				// 并确保百分比不超过100%
+				int percent_total = progress.dltotal == 0 ? 0 : std::min((int)(progress.dlnow * 100 / progress.dltotal), 100);
 				evt->SetString(std::to_string(percent_total));
 				evt->SetInt(m_id);
 				m_evt_handler->QueueEvent(evt);
