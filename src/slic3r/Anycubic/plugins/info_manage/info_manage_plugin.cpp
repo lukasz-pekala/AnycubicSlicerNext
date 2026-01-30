@@ -505,7 +505,7 @@ std::string InfoManage::GetModelSlicerInfoMap(bool isPrint, const wxString& last
         wxString filamentWeight = wxString::Format("%.1fg", total_wipe_tower_used_filament_g);
         wxString filamentLength = wxString::Format("%.2f%s", total_wipe_tower_used_filament_m, "m");
 
-        std::vector<std::string> base64Img;//= partObj->fff_print()->print_statistics().thumbnails;
+        std::vector<std::string> base64Img = partObj->fff_print()->print_statistics().thumbnails;
         info.imgBase64 = !base64Img.empty() ? base64Img[0] : GetGcodeFileImg(last_load_gcode);
 
         info.print_time       = timeStr;
@@ -516,7 +516,7 @@ std::string InfoManage::GetModelSlicerInfoMap(bool isPrint, const wxString& last
 
         info.modleLayers = wxString::Format("%d", gcodeResult->print_statistics.modes[0].layers_times.size()) + _(" Layers");
 
-        std::vector<unsigned int> printing_extruders;// = partObj->fff_print()->print_statistics().printing_extruders;
+        std::vector<unsigned int> printing_extruders = partObj->fff_print()->print_statistics().printing_extruders;
         for (int i = 0; i < printing_extruders.size(); i++) {
             info.extruder_idsList.push_back(printing_extruders[i]);
         }
@@ -534,14 +534,14 @@ std::string InfoManage::GetModelSlicerInfoMap(bool isPrint, const wxString& last
 
         info.filamentTypess_slicer = filament_typeList;
 
-        std::string printerName;// = partObj->fff_print()->print_statistics().printer_model;
+        std::string printerName = partObj->fff_print()->print_statistics().printer_model;
         bool                     isGcodeIndex = false;
         std::vector<std::string> filament_types;
         std::vector<std::string> extruder_colors;
         if (printerName.empty()) {
-            std::vector<unsigned int> extruders;//= gcodeResult->print_statistics.getPrinting_extruders();
+            std::vector<unsigned int> extruders ;//= gcodeResult->print_statistics.getPrinting_extruders();
             std::vector<std::string>  extruder_colors = gcodeResult->extruder_colors;
-            std::vector<std::string>  filament_types;// = gcodeResult->filament_types;
+            std::vector<std::string>  filament_types;//  = gcodeResult->filament_types;
             info.extruder_idsList.clear();
             for (int i = 0; i < extruders.size(); i++) {
                 info.extruder_idsList.push_back(extruders[i]);
@@ -557,7 +557,7 @@ std::string InfoManage::GetModelSlicerInfoMap(bool isPrint, const wxString& last
                 info.filament_types_gcode.push_back(filament_types[i]);
             }
 
-            printerName;// = gcodeResult->printer_model;
+            printerName ;//= gcodeResult->printer_model;
             info.isGcode = true;
         }
 
@@ -617,7 +617,7 @@ std::string InfoManage::GetModelSlicerInfoMap(bool isPrint, const wxString& last
         info.gcodeFilamentColorList = gcodeFilamentColorList;
 
         info.printerName                           = printerName;
-        info.machine_type;// = FromStrGetPrinterType(printerName);
+        info.machine_type = Anycubic::Plugins::dispatch_call<int>(host_, "remoteManger", "FromStrGetPrinterType", printerName);
         modelSelcicerInfoMap[partObj->get_index()] = info;
     }
     
