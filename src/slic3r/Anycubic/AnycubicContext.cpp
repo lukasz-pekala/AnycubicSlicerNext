@@ -277,32 +277,16 @@ private:
       return SetValue(key, tmp, persistent);
     }
   }
-  wxString encode_impl(const wxString &value) {
-    std::string tmp = value.utf8_string();
-    for (auto &c : tmp) {
-      c += 5;
-    }
-    tmp = ::base64Encode(tmp);
-    std::wstring wstr = boost::locale::conv::utf_to_utf<wchar_t>(
-        tmp.c_str(), tmp.c_str() + tmp.size());
-    return wstr;
+  wxString Decrypt(const wxString &value) {
+    auto decoded_data = ::base64Decode(value.utf8_string());
+    auto ret = ::aesDecrypt(std::string_view((char *)decoded_data.data(),
+                                             decoded_data.size()),GetPCID(app_config_).utf8_string());
+    return wxString::FromUTF8(ret);
   }
-  wxString decode_impl(const wxString &value) {
-    auto tmp = ::base64Decode(value.utf8_string());
-    for (auto &c : tmp) {
-      c -= 5;
-    }
-    // NOTE: 转std::string为std::wstring
-    std::wstring wstr = boost::locale::conv::utf_to_utf<wchar_t>(
-        tmp.c_str(), tmp.c_str() + tmp.size());
-    return wstr;
-  }
-  inline wxString Decrypt(const wxString &value) {
-    return decode_impl(decode_impl(value));
-  }
-
-  inline wxString Encrypt(const wxString &value) {
-    return encode_impl(encode_impl(value));
+  wxString Encrypt(const wxString &value) {
+    auto ret =
+        ::aesEncrypt( value.utf8_string(),GetPCID(app_config_).utf8_string());
+    return wxString::FromUTF8(::base64Encode(ret));
   }
 
 private:
@@ -368,7 +352,7 @@ void AnycubicContext::UpdateApp(bool is_auto_update /*= false*/) {
   UpdateAppResponse response;
   if (!checker.check_app_update_available(response)) {
     // 更新检查失败
-    if (is_auto_update) {
+    if (!is_auto_update) {
       ShowUpdateVersionDialog(_L("Check update failed"), _L(""), false);
     }
     return;
@@ -405,7 +389,7 @@ void AnycubicContext::UpdateApp(bool is_auto_update /*= false*/) {
       impl_->SetEncryptValue(CONFIG_IGNORE_VERSION,
                              wxString::FromUTF8(response.version_name));
     } else {
-      impl_->SetEncryptValue(CONFIG_IGNORE_VERSION, wxEmptyString)
+      impl_->SetEncryptValue(CONFIG_IGNORE_VERSION, wxEmptyString);
     }
     return;
   }
