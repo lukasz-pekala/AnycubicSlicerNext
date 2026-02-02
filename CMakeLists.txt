@@ -842,7 +842,7 @@ function(AnycubicSlicer_copy_dlls target config postfix output_dlls)
 endfunction()
 
 
-# libslic3r, OrcaSlicer GUI and the OrcaSlicer executable.
+# libslic3r, AnycubicSlicerNext GUI and the AnycubicSlicerNext executable.
 add_subdirectory(deps_src)
 add_subdirectory(src)
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT AnycubicSlicer_app_gui)

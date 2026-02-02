@@ -58,7 +58,7 @@ else ()
         # TOOLCHAIN_PREFIX should be defined in the toolchain file
         set(_cross_compile_arg --host=${TOOLCHAIN_PREFIX})
     endif ()
-    set(DOWNLOAD_URL https://github.com/SoftFever/OrcaSlicer_deps/releases/download/gmp-6.2.1/gmp-6.2.1.tar.bz2)
+    set(DOWNLOAD_URL https://github.com/ANYCUBIC-3D/AnycubicSlicerNext_deps/releases/download/gmp-6.2.1/gmp-6.2.1.tar.bz2)
     PROXY(DOWNLOAD_URL DOWNLOAD_URL)
     ExternalProject_Add(dep_GMP
         URL ${DOWNLOAD_URL}
