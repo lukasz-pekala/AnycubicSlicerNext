@@ -264,7 +264,7 @@ private:
                        class wxString &value) override {
     if (auto ret = GetValue(key, value); ret) {
       value = Decrypt(value);
-      return true;
+      return value.IsEmpty() == false;
     }
     return false;
   }
@@ -280,13 +280,14 @@ private:
   }
   wxString Decrypt(const wxString &value) {
     auto decoded_data = ::base64Decode(value.utf8_string());
-    auto ret = ::aesDecrypt(std::string_view((char *)decoded_data.data(),
-                                             decoded_data.size()),GetPCID(app_config_).utf8_string());
+    auto ret = ::aesDecrypt(
+        std::string_view((char *)decoded_data.data(), decoded_data.size()),
+        GetPCID(app_config_).utf8_string());
     return wxString::FromUTF8(ret);
   }
   wxString Encrypt(const wxString &value) {
     auto ret =
-        ::aesEncrypt( value.utf8_string(),GetPCID(app_config_).utf8_string());
+        ::aesEncrypt(value.utf8_string(), GetPCID(app_config_).utf8_string());
     return wxString::FromUTF8(::base64Encode(ret));
   }
 
