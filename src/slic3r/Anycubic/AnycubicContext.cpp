@@ -355,14 +355,17 @@ void AnycubicContext::UpdateApp(bool is_auto_update /*= false*/) {
   if (!checker.check_app_update_available(response)) {
     // 更新检查失败
     if (!is_auto_update) {
-      ShowUpdateVersionDialog(_L("Check update failed"), _L(""), false);
+      ShowUpdateVersionDialog(
+          "Update check failed\n\nCannot connect to update server. Please try "
+          "again later.\n\nClick any button to close this dialog.",
+          "", false);
     }
     return;
   }
   if (response.version_code == 0) {
     if (!is_auto_update) {
       // 没有更新弹框
-      ShowUpdateVersionDialog(_L("It's already the latest"), _L(""), false);
+      ShowUpdateVersionDialog(_L("It's already the latest"), "", false);
     }
     return;
   }
