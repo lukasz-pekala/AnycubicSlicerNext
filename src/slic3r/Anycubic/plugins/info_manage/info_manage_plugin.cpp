@@ -1838,14 +1838,14 @@ void InfoManage::CreateSideToolBtn(int flag)
         Anycubic::Plugins::dispatch_call<void>(host_, "remoteManger", "doRemotePrintEvent", type);
     });
 }
-bool InfoManage::get_enable_print_status() 
+bool InfoManage::get_enable_print_status()
 {
     bool enable = true;
 
     PartPlateList& part_plate_list = Slic3r::GUI::wxGetApp().mainframe->m_plater->get_partplate_list();
     PartPlate*     current_plate   = part_plate_list.get_curr_plate();
     bool           is_all_plates   = wxGetApp().plater()->get_preview_canvas3D()->is_all_plates_selected();
-    bool isLogin                   = Anycubic::Plugins::dispatch_call<bool>(host_, "cloud_client", "is_login");
+    bool           isLogin         = Anycubic::Plugins::dispatch_call<bool>(host_, "cloud_client", "is_login");
     if (m_print_select == int(eExportGcode)) {
         if (!current_plate->is_slice_result_valid()) {
             enable = false;
@@ -1894,7 +1894,6 @@ bool InfoManage::get_enable_print_status()
         }
         if (!lastGcodeFile.empty())
             enable = true;
-        
 
         //enable = isLogin;
 
