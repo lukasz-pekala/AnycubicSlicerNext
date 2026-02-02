@@ -37,9 +37,9 @@ using namespace nlohmann;
 
 namespace Slic3r {
 
-static const std::string VERSION_CHECK_URL_STABLE = "https://api.github.com/repos/softfever/AnycubicSlicer/releases/latest";
-static const std::string VERSION_CHECK_URL = "https://api.github.com/repos/softfever/AnycubicSlicer/releases";
-static const std::string PROFILE_UPDATE_URL = "https://api.github.com/repos/AnycubicSlicer/orcaslicer-profiles/releases/tags";
+static const std::string VERSION_CHECK_URL_STABLE = "https://api.github.com/repos/ANYCUBIC-3D/AnycubicSlicerNext/releases/latest";
+static const std::string VERSION_CHECK_URL = "https://api.github.com/repos/ANYCUBIC-3D/AnycubicSlicerNext/releases";
+static const std::string PROFILE_UPDATE_URL = "https://api.github.com/repos/ANYCUBIC-3D/AnycubicSlicerNext/anycubicslicer-profiles/releases/tags";
 static const std::string MODELS_STR = "models";
 
 const std::string AppConfig::SECTION_FILAMENTS = "filaments";

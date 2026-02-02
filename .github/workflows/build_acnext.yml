@@ -16,7 +16,7 @@ on:
 
 jobs:
   build_Anycubic:
-    name: Build AnycubicSlicer
+    name: Build AnycubicSlicerNext
     runs-on: ${{ inputs.os }}
     env:
       date:
@@ -44,7 +44,7 @@ jobs:
       - name: Get the version and date on Ubuntu and macOS
         if: inputs.os != 'windows-latest'
         run: |
-          ver_pure=$(grep 'set(SoftFever_VERSION' version.inc | cut -d '"' -f2)
+          ver_pure=$(grep 'set(AnycubicSlicerNext_VERSION' version.inc | cut -d '"' -f2)
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             ver="PR-${{ github.event.number }}"
           else
@@ -67,7 +67,7 @@ jobs:
               $ver = "PR" + $prNumber
           } else {
               $versionContent = Get-Content version.inc -Raw
-              if ($versionContent -match 'set\(SoftFever_VERSION "(.*?)"\)') {
+              if ($versionContent -match 'set\(AnycubicSlicerNext_VERSION "(.*?)"\)') {
                   $ver = $matches[1]
               }
               $ver = "V$ver"
@@ -119,94 +119,94 @@ jobs:
           security import $CERTIFICATE_PATH -P $P12_PASSWORD -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $P12_PASSWORD $KEYCHAIN_PATH
-          codesign --deep --force --verbose --options runtime --timestamp --entitlements ${{ github.workspace }}/scripts/disable_validation.entitlements --sign "$CERTIFICATE_ID" ${{ github.workspace }}/build/universal/AnycubicSlicer/AnycubicSlicer.app
-          # Sign AnycubicSlicer_profile_validator.app if it exists
-          if [ -f "${{ github.workspace }}/build/universal/AnycubicSlicer/AnycubicSlicer_profile_validator.app/Contents/MacOS/AnycubicSlicer_profile_validator" ]; then
-            codesign --deep --force --verbose --options runtime --timestamp --entitlements ${{ github.workspace }}/scripts/disable_validation.entitlements --sign "$CERTIFICATE_ID" ${{ github.workspace }}/build/universal/AnycubicSlicer/AnycubicSlicer_profile_validator.app
+          codesign --deep --force --verbose --options runtime --timestamp --entitlements ${{ github.workspace }}/scripts/disable_validation.entitlements --sign "$CERTIFICATE_ID" ${{ github.workspace }}/build/universal/AnycubicSlicerNext/AnycubicSlicerNext.app
+          # Sign AnycubicSlicerNext_profile_validator.app if it exists
+          if [ -f "${{ github.workspace }}/build/universal/AnycubicSlicerNext/AnycubicSlicerNext_profile_validator.app/Contents/MacOS/AnycubicSlicerNext_profile_validator" ]; then
+            codesign --deep --force --verbose --options runtime --timestamp --entitlements ${{ github.workspace }}/scripts/disable_validation.entitlements --sign "$CERTIFICATE_ID" ${{ github.workspace }}/build/universal/AnycubicSlicerNext/AnycubicSlicerNext_profile_validator.app
           fi
           
-          # Create main AnycubicSlicer DMG without the profile validator helper
-          mkdir -p ${{ github.workspace }}/build/universal/AnycubicSlicer_dmg
-          rm -rf ${{ github.workspace }}/build/universal/AnycubicSlicer_dmg/*
-          cp -R ${{ github.workspace }}/build/universal/AnycubicSlicer/AnycubicSlicer.app ${{ github.workspace }}/build/universal/AnycubicSlicer_dmg/
-          ln -sfn /Applications ${{ github.workspace }}/build/universal/AnycubicSlicer_dmg/Applications
-          hdiutil create -volname "AnycubicSlicer" -srcfolder ${{ github.workspace }}/build/universal/AnycubicSlicer_dmg -ov -format UDZO AnycubicSlicer_Mac_universal_${{ env.ver }}.dmg
-          codesign --deep --force --verbose --options runtime --timestamp --entitlements ${{ github.workspace }}/scripts/disable_validation.entitlements --sign "$CERTIFICATE_ID" AnycubicSlicer_Mac_universal_${{ env.ver }}.dmg
+          # Create main AnycubicSlicerNext DMG without the profile validator helper
+          mkdir -p ${{ github.workspace }}/build/universal/AnycubicSlicerNext_dmg
+          rm -rf ${{ github.workspace }}/build/universal/AnycubicSlicerNext_dmg/*
+          cp -R ${{ github.workspace }}/build/universal/AnycubicSlicerNext/AnycubicSlicerNext.app ${{ github.workspace }}/build/universal/AnycubicSlicerNext_dmg/
+          ln -sfn /Applications ${{ github.workspace }}/build/universal/AnycubicSlicerNext_dmg/Applications
+          hdiutil create -volname "AnycubicSlicerNext" -srcfolder ${{ github.workspace }}/build/universal/AnycubicSlicerNext_dmg -ov -format UDZO AnycubicSlicerNext_Mac_universal_${{ env.ver }}.dmg
+          codesign --deep --force --verbose --options runtime --timestamp --entitlements ${{ github.workspace }}/scripts/disable_validation.entitlements --sign "$CERTIFICATE_ID" AnycubicSlicerNext_Mac_universal_${{ env.ver }}.dmg
           
-          # Create separate AnycubicSlicer_profile_validator DMG if the app exists
-          if [ -f "${{ github.workspace }}/build/universal/AnycubicSlicer/AnycubicSlicer_profile_validator.app/Contents/MacOS/AnycubicSlicer_profile_validator" ]; then
-            mkdir -p ${{ github.workspace }}/build/universal/AnycubicSlicer_profile_validator_dmg
-            rm -rf ${{ github.workspace }}/build/universal/AnycubicSlicer_profile_validator_dmg/*
-            cp -R ${{ github.workspace }}/build/universal/AnycubicSlicer/AnycubicSlicer_profile_validator.app ${{ github.workspace }}/build/universal/AnycubicSlicer_profile_validator_dmg/
-            ln -sfn /Applications ${{ github.workspace }}/build/universal/AnycubicSlicer_profile_validator_dmg/Applications
-            hdiutil create -volname "AnycubicSlicer Profile Validator" -srcfolder ${{ github.workspace }}/build/universal/AnycubicSlicer_profile_validator_dmg -ov -format UDZO AnycubicSlicer_profile_validator_Mac_universal_${{ env.ver }}.dmg
-            codesign --deep --force --verbose --options runtime --timestamp --entitlements ${{ github.workspace }}/scripts/disable_validation.entitlements --sign "$CERTIFICATE_ID" AnycubicSlicer_profile_validator_Mac_universal_${{ env.ver }}.dmg
+          # Create separate AnycubicSlicerNext_profile_validator DMG if the app exists
+          if [ -f "${{ github.workspace }}/build/universal/AnycubicSlicerNext/AnycubicSlicerNext_profile_validator.app/Contents/MacOS/AnycubicSlicerNext_profile_validator" ]; then
+            mkdir -p ${{ github.workspace }}/build/universal/AnycubicSlicerNext_profile_validator_dmg
+            rm -rf ${{ github.workspace }}/build/universal/AnycubicSlicerNext_profile_validator_dmg/*
+            cp -R ${{ github.workspace }}/build/universal/AnycubicSlicerNext/AnycubicSlicerNext_profile_validator.app ${{ github.workspace }}/build/universal/AnycubicSlicerNext_profile_validator_dmg/
+            ln -sfn /Applications ${{ github.workspace }}/build/universal/AnycubicSlicerNext_profile_validator_dmg/Applications
+            hdiutil create -volname "AnycubicSlicerNext Profile Validator" -srcfolder ${{ github.workspace }}/build/universal/AnycubicSlicerNext_profile_validator_dmg -ov -format UDZO AnycubicSlicerNext_profile_validator_Mac_universal_${{ env.ver }}.dmg
+            codesign --deep --force --verbose --options runtime --timestamp --entitlements ${{ github.workspace }}/scripts/disable_validation.entitlements --sign "$CERTIFICATE_ID" AnycubicSlicerNext_profile_validator_Mac_universal_${{ env.ver }}.dmg
           fi
           
           # Notarize main DMG
           xcrun notarytool store-credentials "notarytool-profile" --apple-id "${{ secrets.APPLE_DEV_ACCOUNT }}" --team-id "${{ secrets.TEAM_ID }}" --password "${{ secrets.APP_PWD }}"
-          xcrun notarytool submit "AnycubicSlicer_Mac_universal_${{ env.ver }}.dmg" --keychain-profile "notarytool-profile" --wait
-          xcrun stapler staple AnycubicSlicer_Mac_universal_${{ env.ver }}.dmg
+          xcrun notarytool submit "AnycubicSlicerNext_Mac_universal_${{ env.ver }}.dmg" --keychain-profile "notarytool-profile" --wait
+          xcrun stapler staple AnycubicSlicerNext_Mac_universal_${{ env.ver }}.dmg
           
           # Notarize profile validator DMG if it exists
-          if [ -f "AnycubicSlicer_profile_validator_Mac_universal_${{ env.ver }}.dmg" ]; then
-            xcrun notarytool submit "AnycubicSlicer_profile_validator_Mac_universal_${{ env.ver }}.dmg" --keychain-profile "notarytool-profile" --wait
-            xcrun stapler staple AnycubicSlicer_profile_validator_Mac_universal_${{ env.ver }}.dmg
+          if [ -f "AnycubicSlicerNext_profile_validator_Mac_universal_${{ env.ver }}.dmg" ]; then
+            xcrun notarytool submit "AnycubicSlicerNext_profile_validator_Mac_universal_${{ env.ver }}.dmg" --keychain-profile "notarytool-profile" --wait
+            xcrun stapler staple AnycubicSlicerNext_profile_validator_Mac_universal_${{ env.ver }}.dmg
           fi
 
       - name: Create DMG without notary
         if: github.ref != 'refs/heads/main' && inputs.os == 'macos-14'
         working-directory: ${{ github.workspace }}
         run: |
-          mkdir -p ${{ github.workspace }}/build/universal/AnycubicSlicer_dmg
-          rm -rf ${{ github.workspace }}/build/universal/AnycubicSlicer_dmg/*
-          cp -R ${{ github.workspace }}/build/universal/AnycubicSlicer/AnycubicSlicer.app ${{ github.workspace }}/build/universal/AnycubicSlicer_dmg/
-          ln -sfn /Applications ${{ github.workspace }}/build/universal/AnycubicSlicer_dmg/Applications
-          hdiutil create -volname "AnycubicSlicer" -srcfolder ${{ github.workspace }}/build/universal/AnycubicSlicer_dmg -ov -format UDZO AnycubicSlicer_Mac_universal_${{ env.ver }}.dmg
+          mkdir -p ${{ github.workspace }}/build/universal/AnycubicSlicerNext_dmg
+          rm -rf ${{ github.workspace }}/build/universal/AnycubicSlicerNext_dmg/*
+          cp -R ${{ github.workspace }}/build/universal/AnycubicSlicerNext/AnycubicSlicerNext.app ${{ github.workspace }}/build/universal/AnycubicSlicerNext_dmg/
+          ln -sfn /Applications ${{ github.workspace }}/build/universal/AnycubicSlicerNext_dmg/Applications
+          hdiutil create -volname "AnycubicSlicerNext" -srcfolder ${{ github.workspace }}/build/universal/AnycubicSlicerNext_dmg -ov -format UDZO AnycubicSlicerNext_Mac_universal_${{ env.ver }}.dmg
           
-          # Create separate AnycubicSlicer_profile_validator DMG if the app exists
-          if [ -f "${{ github.workspace }}/build/universal/AnycubicSlicer/AnycubicSlicer_profile_validator.app/Contents/MacOS/AnycubicSlicer_profile_validator" ]; then
-            mkdir -p ${{ github.workspace }}/build/universal/AnycubicSlicer_profile_validator_dmg
-            rm -rf ${{ github.workspace }}/build/universal/AnycubicSlicer_profile_validator_dmg/*
-            cp -R ${{ github.workspace }}/build/universal/AnycubicSlicer/AnycubicSlicer_profile_validator.app ${{ github.workspace }}/build/universal/AnycubicSlicer_profile_validator_dmg/
-            ln -sfn /Applications ${{ github.workspace }}/build/universal/AnycubicSlicer_profile_validator_dmg/Applications
-            hdiutil create -volname "AnycubicSlicer Profile Validator" -srcfolder ${{ github.workspace }}/build/universal/AnycubicSlicer_profile_validator_dmg -ov -format UDZO AnycubicSlicer_profile_validator_Mac_universal_${{ env.ver }}.dmg
+          # Create separate AnycubicSlicerNext_profile_validator DMG if the app exists
+          if [ -f "${{ github.workspace }}/build/universal/AnycubicSlicerNext/AnycubicSlicerNext_profile_validator.app/Contents/MacOS/AnycubicSlicerNext_profile_validator" ]; then
+            mkdir -p ${{ github.workspace }}/build/universal/AnycubicSlicerNext_profile_validator_dmg
+            rm -rf ${{ github.workspace }}/build/universal/AnycubicSlicerNext_profile_validator_dmg/*
+            cp -R ${{ github.workspace }}/build/universal/AnycubicSlicerNext/AnycubicSlicerNext_profile_validator.app ${{ github.workspace }}/build/universal/AnycubicSlicerNext_profile_validator_dmg/
+            ln -sfn /Applications ${{ github.workspace }}/build/universal/AnycubicSlicerNext_profile_validator_dmg/Applications
+            hdiutil create -volname "AnycubicSlicerNext Profile Validator" -srcfolder ${{ github.workspace }}/build/universal/AnycubicSlicerNext_profile_validator_dmg -ov -format UDZO AnycubicSlicerNext_profile_validator_Mac_universal_${{ env.ver }}.dmg
           fi
 
       - name: Upload artifacts mac
         if: inputs.os == 'macos-14'
         uses: actions/upload-artifact@v4
         with:
-          name: AnycubicSlicer_Mac_universal_${{ env.ver }}
-          path: ${{ github.workspace }}/AnycubicSlicer_Mac_universal_${{ env.ver }}.dmg
+          name: AnycubicSlicerNext_Mac_universal_${{ env.ver }}
+          path: ${{ github.workspace }}/AnycubicSlicerNext_Mac_universal_${{ env.ver }}.dmg
 
-      - name: Upload AnycubicSlicer_profile_validator DMG mac
+      - name: Upload AnycubicSlicerNext_profile_validator DMG mac
         if: inputs.os == 'macos-14'
         uses: actions/upload-artifact@v4
         with:
-          name: AnycubicSlicer_profile_validator_Mac_universal_DMG_${{ env.ver }}
-          path: ${{ github.workspace }}/AnycubicSlicer_profile_validator_Mac_universal_${{ env.ver }}.dmg
+          name: AnycubicSlicerNext_profile_validator_Mac_universal_DMG_${{ env.ver }}
+          path: ${{ github.workspace }}/AnycubicSlicerNext_profile_validator_Mac_universal_${{ env.ver }}.dmg
           if-no-files-found: ignore
 
       - name: Deploy Mac release
         if: github.ref == 'refs/heads/main' && inputs.os == 'macos-14'
         uses: WebFreak001/deploy-nightly@v3.2.0
         with:
-          upload_url: https://uploads.github.com/repos/SoftFever/AnycubicSlicer/releases/137995723/assets{?name,label}
+          upload_url: https://uploads.github.com/repos/ANYCUBIC-3D/AnycubicSlicerNext/releases/137995723/assets{?name,label}
           release_id: 137995723
-          asset_path: ${{ github.workspace }}/AnycubicSlicer_Mac_universal_${{ env.ver }}.dmg
-          asset_name: AnycubicSlicer_Mac_universal_nightly.dmg
+          asset_path: ${{ github.workspace }}/AnycubicSlicerNext_Mac_universal_${{ env.ver }}.dmg
+          asset_name: AnycubicSlicerNext_Mac_universal_nightly.dmg
           asset_content_type: application/octet-stream
           max_releases: 1 # optional, if there are more releases than this matching the asset_name, the oldest ones are going to be deleted
 
-      - name: Deploy Mac OrcaSlicer_profile_validator DMG release
+      - name: Deploy Mac AnycubicSlicerNext_profile_validator DMG release
         if: github.ref == 'refs/heads/main' && inputs.os == 'macos-14'
         uses: WebFreak001/deploy-nightly@v3.2.0
         with:
-          upload_url: https://uploads.github.com/repos/SoftFever/OrcaSlicer/releases/137995723/assets{?name,label}
+          upload_url: https://uploads.github.com/repos/ANYCUBIC-3D/AnycubicSlicerNext/releases/137995723/assets{?name,label}
           release_id: 137995723
-          asset_path: ${{ github.workspace }}/OrcaSlicer_profile_validator_Mac_universal_${{ env.ver }}.dmg
-          asset_name: OrcaSlicer_profile_validator_Mac_universal_nightly.dmg
+          asset_path: ${{ github.workspace }}/AnycubicSlicerNext_profile_validator_Mac_universal_${{ env.ver }}.dmg
+          asset_name: AnycubicSlicerNext_profile_validator_Mac_universal_nightly.dmg
           asset_content_type: application/octet-stream
           max_releases: 1
 
@@ -239,7 +239,7 @@ jobs:
         if: inputs.os == 'windows-latest'
         working-directory: ${{ github.workspace }}/build
         shell: cmd
-        run: '"C:/Program Files/7-Zip/7z.exe" a -tzip AnycubicSlicer_Windows_${{ env.ver }}_portable.zip ${{ github.workspace }}/build/AnycubicSlicer'
+        run: '"C:/Program Files/7-Zip/7z.exe" a -tzip AnycubicSlicerNext_Windows_${{ env.ver }}_portable.zip ${{ github.workspace }}/build/AnycubicSlicerNext'
 
       - name: Pack PDB
         if: inputs.os == 'windows-latest'
@@ -251,15 +251,15 @@ jobs:
         if: inputs.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: AnycubicSlicer_Windows_${{ env.ver }}_portable
-          path: ${{ github.workspace }}/build/AnycubicSlicer
+          name: AnycubicSlicerNext_Windows_${{ env.ver }}_portable
+          path: ${{ github.workspace }}/build/AnycubicSlicerNext
 
       - name: Upload artifacts Win installer
         if: inputs.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: AnycubicSlicer_Windows_${{ env.ver }}
-          path: ${{ github.workspace }}/build/AnycubicSlicer*.exe
+          name: AnycubicSlicerNext_Windows_${{ env.ver }}
+          path: ${{ github.workspace }}/build/AnycubicSlicerNext*.exe
 
       - name: Upload artifacts Win PDB
         if: inputs.os == 'windows-latest'
@@ -268,21 +268,21 @@ jobs:
           name: PDB
           path: ${{ github.workspace }}/build/src/Release/Debug_PDB_${{ env.ver }}_for_developers_only.7z
 
-      - name: Upload OrcaSlicer_profile_validator Win
+      - name: Upload AnycubicSlicerNext_profile_validator Win
         if: inputs.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: OrcaSlicer_profile_validator_Windows_${{ env.ver }}
-          path: ${{ github.workspace }}/build/src/Release/OrcaSlicer_profile_validator.exe
+          name: AnycubicSlicerNext_profile_validator_Windows_${{ env.ver }}
+          path: ${{ github.workspace }}/build/src/Release/AnycubicSlicerNext_profile_validator.exe
 
       - name: Deploy Windows release portable
         if: github.ref == 'refs/heads/main' && inputs.os == 'windows-latest'
         uses: WebFreak001/deploy-nightly@v3.2.0
         with:
-          upload_url: https://uploads.github.com/repos/SoftFever/AnycubicSlicer/releases/137995723/assets{?name,label}
+          upload_url: https://uploads.github.com/repos/ANYCUBIC-3D/AnycubicSlicerNext/releases/137995723/assets{?name,label}
           release_id: 137995723
-          asset_path: ${{ github.workspace }}/build/AnycubicSlicer_Windows_${{ env.ver }}_portable.zip
-          asset_name: AnycubicSlicer_Windows_nightly_portable.zip
+          asset_path: ${{ github.workspace }}/build/AnycubicSlicerNext_Windows_${{ env.ver }}_portable.zip
+          asset_name: AnycubicSlicerNext_Windows_nightly_portable.zip
           asset_content_type: application/x-zip-compressed
           max_releases: 1
 
@@ -290,21 +290,21 @@ jobs:
         if: github.ref == 'refs/heads/main' && inputs.os == 'windows-latest'
         uses: WebFreak001/deploy-nightly@v3.2.0
         with:
-          upload_url: https://uploads.github.com/repos/SoftFever/AnycubicSlicer/releases/137995723/assets{?name,label}
+          upload_url: https://uploads.github.com/repos/ANYCUBIC-3D/AnycubicSlicerNext/releases/137995723/assets{?name,label}
           release_id: 137995723
-          asset_path: ${{ github.workspace }}/build/AnycubicSlicer_Windows_Installer_${{ env.ver }}.exe
-          asset_name: AnycubicSlicer_Windows_Installer_nightly.exe
+          asset_path: ${{ github.workspace }}/build/AnycubicSlicerNext_Windows_Installer_${{ env.ver }}.exe
+          asset_name: AnycubicSlicerNext_Windows_Installer_nightly.exe
           asset_content_type: application/x-msdownload
           max_releases: 1
 
-      - name: Deploy Windows AnycubicSlicer_profile_validator release
+      - name: Deploy Windows AnycubicSlicerNext_profile_validator release
         if: github.ref == 'refs/heads/main' && inputs.os == 'windows-latest'
         uses: WebFreak001/deploy-nightly@v3.2.0
         with:
-          upload_url: https://uploads.github.com/repos/SoftFever/OrcaSlicer/releases/137995723/assets{?name,label}
+          upload_url: https://uploads.github.com/repos/ANYCUBIC-3D/AnycubicSlicerNext/releases/137995723/assets{?name,label}
           release_id: 137995723
-          asset_path: ${{ github.workspace }}/build/src/Release/OrcaSlicer_profile_validator.exe
-          asset_name: OrcaSlicer_profile_validator_Windows_nightly.exe
+          asset_path: ${{ github.workspace }}/build/src/Release/AnycubicSlicerNext_profile_validator.exe
+          asset_name: AnycubicSlicerNext_profile_validator_Windows_nightly.exe
           asset_content_type: application/x-msdownload
           max_releases: 1
 
@@ -340,15 +340,15 @@ jobs:
           ubuntu-ver-str: ${{ (inputs.os == 'ubuntu-24.04' && '_Ubuntu2404') || '' }}
         run: |
           ./build_linux.sh -isr
-          mv -n ./build/AnycubicSlicer_Linux_V${{ env.ver_pure }}.AppImage ./build/AnycubicSlicer_Linux_AppImage${{ env.ubuntu-ver-str }}_${{ env.ver }}.AppImage
-          chmod +x ./build/AnycubicSlicer_Linux_AppImage${{ env.ubuntu-ver-str }}_${{ env.ver }}.AppImage
+          mv -n ./build/AnycubicSlicerNext_Linux_V${{ env.ver_pure }}.AppImage ./build/AnycubicSlicerNext_Linux_AppImage${{ env.ubuntu-ver-str }}_${{ env.ver }}.AppImage
+          chmod +x ./build/AnycubicSlicerNext_Linux_AppImage${{ env.ubuntu-ver-str }}_${{ env.ver }}.AppImage
 
       - name: Build orca_custom_preset_tests
         if: github.ref == 'refs/heads/main' && inputs.os == 'ubuntu-24.04'
         working-directory: ${{ github.workspace }}/build/src/Release
         shell: bash
         run: |
-          ./AnycubicSlicer_profile_validator -p ${{ github.workspace }}/resources/profiles -g 1
+          ./AnycubicSlicerNext_profile_validator -p ${{ github.workspace }}/resources/profiles -g 1
           cd ${{ github.workspace }}/resources/profiles
           zip -r Anycubic_custom_preset_tests.zip user/
 
@@ -359,26 +359,26 @@ jobs:
           ubuntu-ver-str: ${{ (inputs.os == 'ubuntu-24.04' && '_Ubuntu2404') || '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: AnycubicSlicer_Linux_ubuntu_${{ env.ubuntu-ver }}_${{ env.ver }}
-          path: './build/AnycubicSlicer_Linux_AppImage${{ env.ubuntu-ver-str }}_${{ env.ver }}.AppImage'
+          name: AnycubicSlicerNext_Linux_ubuntu_${{ env.ubuntu-ver }}_${{ env.ver }}
+          path: './build/AnycubicSlicerNext_Linux_AppImage${{ env.ubuntu-ver-str }}_${{ env.ver }}.AppImage'
 
-      - name: Upload AnycubicSlicer_profile_validator Ubuntu
+      - name: Upload AnycubicSlicerNext_profile_validator Ubuntu
         if: ${{ ! env.ACT && inputs.os == 'ubuntu-20.04' || inputs.os == 'ubuntu-24.04' }}
         env:
           ubuntu-ver: ${{ (inputs.os == 'ubuntu-20.04' && '2004') || (inputs.os == 'ubuntu-24.04' && '2404') || '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: AnycubicSlicer_profile_validator_Linux_ubuntu_${{ env.ubuntu-ver }}_${{ env.ver }}
-          path: './build/src/Release/OrcaSlicer_profile_validator'
+          name: AnycubicSlicerNext_profile_validator_Linux_ubuntu_${{ env.ubuntu-ver }}_${{ env.ver }}
+          path: './build/src/Release/AnycubicSlicerNext_profile_validator'
 
-      - name: Upload OrcaSlicer_profile_validator Ubuntu
+      - name: Upload AnycubicSlicerNext_profile_validator Ubuntu
         if: ${{ ! env.ACT && inputs.os == 'ubuntu-20.04' || inputs.os == 'ubuntu-24.04' }}
         env:
           ubuntu-ver: ${{ (inputs.os == 'ubuntu-20.04' && '2004') || (inputs.os == 'ubuntu-24.04' && '2404') || '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: OrcaSlicer_profile_validator_Linux_ubuntu_${{ env.ubuntu-ver }}_${{ env.ver }}
-          path: './build/src/Release/OrcaSlicer_profile_validator'
+          name: AnycubicSlicerNext_profile_validator_Linux_ubuntu_${{ env.ubuntu-ver }}_${{ env.ver }}
+          path: './build/src/Release/AnycubicSlicerNext_profile_validator'
 
       - name: Deploy Ubuntu release
         if: ${{ ! env.ACT && github.ref == 'refs/heads/main' && (inputs.os == 'ubuntu-20.04' || inputs.os == 'ubuntu-24.04') }}
@@ -386,10 +386,10 @@ jobs:
           ubuntu-ver-str: ${{ (inputs.os == 'ubuntu-24.04' && '_Ubuntu2404') || '' }}
         uses: WebFreak001/deploy-nightly@v3.2.0
         with:
-          upload_url: https://uploads.github.com/repos/SoftFever/AnycubicSlicer/releases/137995723/assets{?name,label}
+          upload_url: https://uploads.github.com/repos/ANYCUBIC-3D/AnycubicSlicerNext/releases/137995723/assets{?name,label}
           release_id: 137995723
-          asset_path: ./build/AnycubicSlicer_Linux_AppImage${{ env.ubuntu-ver-str }}_${{ env.ver }}.AppImage
-          asset_name: AnycubicSlicer_Linux_AppImage${{ env.ubuntu-ver-str }}_nightly.AppImage
+          asset_path: ./build/AnycubicSlicerNext_Linux_AppImage${{ env.ubuntu-ver-str }}_${{ env.ver }}.AppImage
+          asset_name: AnycubicSlicerNext_Linux_AppImage${{ env.ubuntu-ver-str }}_nightly.AppImage
           asset_content_type: application/octet-stream
           max_releases: 1 # optional, if there are more releases than this matching the asset_name, the oldest ones are going to be deleted
       - name: Deploy Ubuntu release
@@ -401,16 +401,16 @@ jobs:
           force_push_tag: true
           message: "nightly-builds"
 
-      - name: Deploy Ubuntu AnycubicSlicer_profile_validator release
+      - name: Deploy Ubuntu AnycubicSlicerNext_profile_validator release
         if: ${{ ! env.ACT && github.ref == 'refs/heads/main' && (inputs.os == 'ubuntu-20.04' || inputs.os == 'ubuntu-24.04') }}
         env:
           ubuntu-ver-str: ${{ (inputs.os == 'ubuntu-24.04' && '_Ubuntu2404') || '' }}
         uses: WebFreak001/deploy-nightly@v3.2.0
         with:
-          upload_url: https://uploads.github.com/repos/SoftFever/OrcaSlicer/releases/137995723/assets{?name,label}
+          upload_url: https://uploads.github.com/repos/ANYCUBIC-3D/AnycubicSlicerNext/releases/137995723/assets{?name,label}
           release_id: 137995723
-          asset_path: ./build/src/Release/AnycubicSlicer_profile_validator
-          asset_name: OrcaSlicer_profile_validator_Linux${{ env.ubuntu-ver-str }}_nightly
+          asset_path: ./build/src/Release/AnycubicSlicerNext_profile_validator
+          asset_name: AnycubicSlicerNext_profile_validator_Linux${{ env.ubuntu-ver-str }}_nightly
           asset_content_type: application/octet-stream
           max_releases: 1
 
@@ -418,7 +418,7 @@ jobs:
         if: ${{ ! env.ACT && github.ref == 'refs/heads/main' && inputs.os == 'ubuntu-24.04' }}
         uses: WebFreak001/deploy-nightly@v3.2.0
         with:
-          upload_url: https://uploads.github.com/repos/SoftFever/AnycubicSlicer/releases/137995723/assets{?name,label}
+          upload_url: https://uploads.github.com/repos/ANYCUBIC-3D/AnycubicSlicerNext/releases/137995723/assets{?name,label}
           release_id: 137995723
           asset_path: ${{ github.workspace }}/resources/profiles/Anycubic_custom_preset_tests.zip
           asset_name: Anycubic_custom_preset_tests.zip
