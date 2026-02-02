@@ -142,7 +142,7 @@
 		<key>NSAppTransportSecurity</key>
 		<dict>
 			<!-- Disable App Transport Security. Resolves
-			https://github.com/SoftFever/OrcaSlicer/issues/791 -->
+			https://github.com/ANYCUBIC-3D/AnycubicSlicerNext/issues/791 -->
 			<key>NSAllowsArbitraryLoads</key>
 			<true />
 			<key>NSAllowsArbitraryLoadsInWebContent</key>

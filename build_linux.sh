@@ -15,10 +15,10 @@ function usage() {
     echo "   -C: enable ANSI-colored compile output (GNU/Clang only)"
     echo "   -d: download and build dependencies in ./deps/ (build prerequisite)"
     echo "   -h: prints this help text"
-    echo "   -i: build the Orca Slicer AppImage (optional)"
+    echo "   -i: build the AnycubicSlicerNext AppImage (optional)"
     echo "   -p: boost ccache hit rate by disabling precompiled headers (default: ON)"
     echo "   -r: skip RAM and disk checks (low RAM compiling)"
-    echo "   -s: build the Orca Slicer (optional)"
+    echo "   -s: build the AnycubicSlicerNext (optional)"
     echo "   -t: build tests (optional)"
     echo "   -u: install system dependencies (asks for sudo password; build prerequisite)"
     echo "   -l: use Clang instead of GCC (default: GCC)"
@@ -64,7 +64,7 @@ while getopts ":1j:bcCdhiprstulL" opt ; do
         SKIP_RAM_CHECK="1"
         ;;
     s )
-        BUILD_ORCA="1"
+        BUILD_ACNEXT="1"
         ;;
     t )
         BUILD_TESTS="1"
@@ -98,14 +98,14 @@ function check_available_memory_and_disk() {
     MIN_DISK_KB=$((10 * 1024 * 1024))
 
     if [[ ${FREE_MEM_GB} -le ${MIN_MEM_GB} ]] ; then
-        echo -e "\nERROR: Orca Slicer Builder requires at least ${MIN_MEM_GB}G of 'available' mem (system has only ${FREE_MEM_GB}G available)"
+        echo -e "\nERROR: AnycubicSlicerNext Builder requires at least ${MIN_MEM_GB}G of 'available' mem (system has only ${FREE_MEM_GB}G available)"
         echo && free --human && echo
         echo "Invoke with -r to skip RAM and disk checks."
         exit 2
     fi
 
     if [[ ${FREE_DISK_KB} -le ${MIN_DISK_KB} ]] ; then
-        echo -e "\nERROR: Orca Slicer Builder requires at least $(echo "${MIN_DISK_KB}" |awk '{ printf "%.1fG\n", $1/1024/1024; }') (system has only $(echo "${FREE_DISK_KB}" | awk '{ printf "%.1fG\n", $1/1024/1024; }') disk free)"
+        echo -e "\nERROR: AnycubicSlicerNext Builder requires at least $(echo "${MIN_DISK_KB}" |awk '{ printf "%.1fG\n", $1/1024/1024; }') (system has only $(echo "${FREE_DISK_KB}" | awk '{ printf "%.1fG\n", $1/1024/1024; }') disk free)"
         echo && df --human-readable . && echo
         echo "Invoke with -r to skip ram and disk checks."
         exit 1
@@ -208,8 +208,8 @@ if [[ -n "${BUILD_DEPS}" ]] ; then
     cmake --build deps/build
 fi
 
-if [[ -n "${BUILD_ORCA}" ]] ; then
-    echo "Configuring OrcaSlicer..."
+if [[ -n "${BUILD_ACNEXT}" ]] ; then
+    echo "Configuring AnycubicSlicerNext..."
     if [[ -n "${CLEAN_BUILD}" ]] ; then
         rm -fr build
     fi
@@ -229,7 +229,7 @@ if [[ -n "${BUILD_ORCA}" ]] ; then
         BUILD_ARGS+=(-DORCA_UPDATER_SIG_KEY="${ORCA_UPDATER_SIG_KEY}")
     fi
 
-    echo "Configuring OrcaSlicer..."
+    echo "Configuring AnycubicSlicerNext..."
     set -x
     cmake -S . -B build "${CMAKE_C_CXX_COMPILER_CLANG[@]}" "${CMAKE_LLD_LINKER_ARGS[@]}" -G "Ninja Multi-Config" \
 	  -DSLIC3R_PCH="${SLIC3R_PRECOMPILED_HEADERS}" \
@@ -240,23 +240,23 @@ if [[ -n "${BUILD_ORCA}" ]] ; then
 	  "${BUILD_ARGS[@]}"
     set +x
     echo "done"
-    echo "Building OrcaSlicer ..."
+    echo "Building AnycubicSlicerNext ..."
     if [[ -n "${BUILD_DEBUG}" ]] ; then
-        cmake --build build --config Debug --target OrcaSlicer
+        cmake --build build --config Debug --target AnycubicSlicerNext
     else
-        cmake --build build --config Release --target OrcaSlicer
+        cmake --build build --config Release --target AnycubicSlicerNext
     fi
-    echo "Building OrcaSlicer_profile_validator .."
+    echo "Building AnycubicSlicerNext_profile_validator .."
     if [[ -n "${BUILD_DEBUG}" ]] ; then
-        cmake --build build --config Debug --target OrcaSlicer_profile_validator
+        cmake --build build --config Debug --target AnycubicSlicerNext_profile_validator
     else
-        cmake --build build --config Release --target OrcaSlicer_profile_validator
+        cmake --build build --config Release --target AnycubicSlicerNext_profile_validator
     fi
     ./scripts/run_gettext.sh
     echo "done"
 fi
 
-if [[ -n "${BUILD_IMAGE}" || -n "${BUILD_ORCA}" ]] ; then
+if [[ -n "${BUILD_IMAGE}" || -n "${BUILD_ACNEXT}" ]] ; then
     pushd build > /dev/null
     echo "[9/9] Generating Linux app..."
     build_linux_image="./src/build_linux_image.sh"
