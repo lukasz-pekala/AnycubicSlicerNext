@@ -68,6 +68,10 @@ inline void to_json(json& j, const LANInfoObjList& c);
 inline void from_json(const json& j, LANInfoObjList& c);
 inline void to_json(json& j, const OpAmsChange& c);
 inline void from_json(const json& j, OpAmsChange& c);
+inline void to_json(json& j, const SendAmsInfoObj& c);
+inline void from_json(const json& j, SendAmsInfoObj& c);
+inline void to_json(json& j, const FileUploadObj& c);
+inline void from_json(const json& j, FileUploadObj& c);
 
 
 
@@ -291,7 +295,11 @@ inline wxVector<wxString>from_json_string_wxstring_vector(const nlohmann::json& 
 
 
 
+
+/* ---------------- FileUploadObj ---------------- */
 inline void to_json(json& j, const FileUploadObj& f) {
+    j = {{"isCloud", f.isCloud}, {"processList", vector_to_json(f.processList)}, {"errList", vector_to_json(f.errList)}};
+}
 inline void from_json(const json& j, FileUploadObj& f) {
     f.isCloud = j.value("isCloud", true);
     if (j.contains("processList")) f.processList = j.at("processList").get<wxVector<int>>();
