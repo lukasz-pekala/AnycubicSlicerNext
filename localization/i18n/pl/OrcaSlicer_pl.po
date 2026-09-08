@@ -21949,7 +21949,7 @@ msgstr ""
 #~ msgid "Density of internal sparse infill, 100% means solid throughout"
 #~ msgstr ""
 #~ "Gęstość wewnętrznego rzadkiego wypełnienia, 100% oznacza pełne w całym "
-#~ "zakresiezakresie"
+#~ "zakresie"
 
 #~ msgid "Tree support wall loops"
 #~ msgstr "Pętle ścienne podpory drzewnej"
