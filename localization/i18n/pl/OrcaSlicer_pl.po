@@ -4988,7 +4988,7 @@ msgstr "Wyświetlanie nawigatora 3D"
 
 msgid "Show 3D navigator in Prepare and Preview scene."
 msgstr ""
-"Przełącza wyświetlanie nawidgatora 3D w scenie przygotowania i podglądu"
+"Przełącza wyświetlanie nawigatora 3D w scenie przygotowania i podglądu"
 
 msgid "Reset Window Layout"
 msgstr "Przywróć układ okna"
