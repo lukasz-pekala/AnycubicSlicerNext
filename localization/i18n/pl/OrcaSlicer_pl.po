@@ -19047,7 +19047,8 @@ msgstr ""
 #~ msgstr "Kliknij prawym przyciskiem myszy ikonę, aby naprawić obiekt modelu"
 
 #~ msgid "The target object contains only one part and cannot be split."
-#~ msgstr "Obiekt docelowy zawiera tylko jedną część i nie może zostać podzielony."#~ "Obiekt docelowy zawiera tylko jedną część i nie może zostać podzielony."
+#~ msgstr ""
+#~ "Obiekt docelowy zawiera tylko jedną część i nie może zostać podzielony."
 
 #~ msgid "?"
 #~ msgstr "?"
@@ -19289,7 +19290,8 @@ msgstr ""
 #~ "również spowodować odkształcenie lub jej pęknięcie."
 
 #~ msgid "Spacing of interface lines. Zero means solid interface."
-#~ msgstr "Odstęp między liniami powierzchni warstwy łączącej. Wartość zero oznacza, że warstwa łącząca jest jednolita i bez przerw"#~ "Odstęp między liniami powierzchni warstwy łączącej. Wartość zero oznacza, "
+#~ msgstr ""
+#~ "Odstęp między liniami powierzchni warstwy łączącej. Wartość zero oznacza, "
 #~ "że warstwa łącząca jest jednolita i bez przerw"
 
 #~ msgid ""
@@ -19304,11 +19306,13 @@ msgstr ""
 #~ "to wyrażone jako procent średnicy dyszy."
 
 #~ msgid "Load uptodate process/machine settings when using uptodate."
-#~ msgstr "załaduj aktualne ustawienia procesu/maszyny podczas korzystania z aktualizacji"#~ "załaduj aktualne ustawienia procesu/maszyny podczas korzystania z "
+#~ msgstr ""
+#~ "załaduj aktualne ustawienia procesu/maszyny podczas korzystania z "
 #~ "aktualizacji"
 
 #~ msgid "Load uptodate filament settings when using uptodate."
-#~ msgstr "Wczytaj najnowsze ustawienia filamentu podczas korzystania z aktualnej wersji."#~ "Wczytaj najnowsze ustawienia filamentu podczas korzystania z aktualnej "
+#~ msgstr ""
+#~ "Wczytaj najnowsze ustawienia filamentu podczas korzystania z aktualnej "
 #~ "wersji."
 
 #~ msgid "Downward machines settings"
@@ -19502,7 +19506,8 @@ msgstr ""
 #~ msgstr "Inicjalizacja nie powiodła się (Brak połączenia z urządzeniem)!"
 
 #~ msgid "Initialize failed (Storage unavailable, insert SD card.)!"
-#~ msgstr "Inicjalizacja nie powiodła się (brak dostępu do pamięci, włóż kartę SD)!"#~ "Inicjalizacja nie powiodła się (brak dostępu do pamięci, włóż kartę SD)!"
+#~ msgstr ""
+#~ "Inicjalizacja nie powiodła się (brak dostępu do pamięci, włóż kartę SD)!"
 
 #, c-format, boost-format
 #~ msgid "Initialize failed (%s)!"
@@ -19525,7 +19530,8 @@ msgstr ""
 #~ "wartości na drukarce, proszę je poprawić."
 
 #~ msgid "Step 3: Ping the IP address to check for packet loss and latency."
-#~ msgstr "Krok 3: Sprawdź adres IP za pomocą polecenia ping, aby sprawdzić utratę pakietów i opóźnienia."#~ "Krok 3: Sprawdź adres IP za pomocą polecenia ping, aby sprawdzić utratę "
+#~ msgstr ""
+#~ "Krok 3: Sprawdź adres IP za pomocą polecenia ping, aby sprawdzić utratę "
 #~ "pakietów i opóźnienia."
 
 #~ msgid "IP and Access Code Verified! You may close the window"
@@ -19973,7 +19979,8 @@ msgstr ""
 #~ "go nieco zmniejszyć, aby uzyskać gładkie wykończenie powierzchni"
 
 #~ msgid "This factor affects the amount of material for bottom solid infill"
-#~ msgstr "Ten współczynnik wpływa na ilość materiału w dolnej warstwie pełnego wypełnienia"#~ "Ten współczynnik wpływa na ilość materiału w dolnej warstwie pełnego "
+#~ msgstr ""
+#~ "Ten współczynnik wpływa na ilość materiału w dolnej warstwie pełnego "
 #~ "wypełnienia"
 
 #~ msgid ""
@@ -19994,7 +20001,8 @@ msgstr ""
 #~ "będzie obliczana na podstawie prędkości mostu. Domyślna wartość to 150%."
 
 #~ msgid "Time to load new filament when switch filament. For statistics only."
-#~ msgstr "Czas ładowania nowego filamentu podczas zmiany filamentu. Tylko do celów statystycznych"#~ "Czas ładowania nowego filamentu podczas zmiany filamentu. Tylko do celów "
+#~ msgstr ""
+#~ "Czas ładowania nowego filamentu podczas zmiany filamentu. Tylko do celów "
 #~ "statystycznych"
 
 #~ msgid ""
@@ -20105,7 +20113,8 @@ msgstr ""
 #~ msgstr "param_information"
 
 #~ msgid "Printer local connection failed, please try again."
-#~ msgstr "Nie udało się nawiązać lokalnego połączenia z drukarką, spróbuj ponownie."#~ "Nie udało się nawiązać lokalnego połączenia z drukarką, spróbuj ponownie."
+#~ msgstr ""
+#~ "Nie udało się nawiązać lokalnego połączenia z drukarką, spróbuj ponownie."
 
 #, c-format, boost-format
 #~ msgid ""
@@ -20263,7 +20272,8 @@ msgstr ""
 #~ msgstr "Wyładuj"
 
 #~ msgid "A problem occured during calibration. Click to view the solution."
-#~ msgstr "Wystąpił problem podczas kalibracji. Kliknij, aby zobaczyć rozwiązanie."#~ "Wystąpił problem podczas kalibracji. Kliknij, aby zobaczyć rozwiązanie."
+#~ msgstr ""
+#~ "Wystąpił problem podczas kalibracji. Kliknij, aby zobaczyć rozwiązanie."
 
 #~ msgid "MC"
 #~ msgstr "MC (Płytka główna)"
@@ -20331,17 +20341,20 @@ msgstr ""
 #~ msgstr "Inicjalizacja nie powiodła się (Brak urządzenia kamery)!"
 
 #~ msgid "Printer is busy downloading, please wait for the download to finish."
-#~ msgstr "Drukarka jest zajęta pobieraniem. Proszę czekać, aż pobieranie zostanie zakończone."#~ "Drukarka jest zajęta pobieraniem. Proszę czekać, aż pobieranie zostanie "
+#~ msgstr ""
+#~ "Drukarka jest zajęta pobieraniem. Proszę czekać, aż pobieranie zostanie "
 #~ "zakończone."
 
 #~ msgid "Initialize failed (Not supported on the current printer version)!"
-#~ msgstr "Inicjalizacja nie powiodła się (Nieobsługiwane w obecnej wersji drukarki)!"#~ "Inicjalizacja nie powiodła się (Nieobsługiwane w obecnej wersji drukarki)!"
+#~ msgstr ""
+#~ "Inicjalizacja nie powiodła się (Nieobsługiwane w obecnej wersji drukarki)!"
 
 #~ msgid "Initialize failed (Not accessible in LAN-only mode)!"
 #~ msgstr "Inicjalizacja nie powiodła się (Niedostępne w trybie tylko LAN)!"
 
 #~ msgid "Initialize failed (Missing LAN ip of printer)!"
-#~ msgstr "Inicjalizacja nie powiodła się (Brak adresu IP drukarki w sieci LAN)!"#~ "Inicjalizacja nie powiodła się (Brak adresu IP drukarki w sieci LAN)!"
+#~ msgstr ""
+#~ "Inicjalizacja nie powiodła się (Brak adresu IP drukarki w sieci LAN)!"
 
 #, c-format, boost-format
 #~ msgid "Stopped [%d]!"
@@ -20802,7 +20815,8 @@ msgstr ""
 #~ msgstr "Niektóre filamenty zostały odinstalowane."
 
 #~ msgid "Custom printer was installed and it will be activated."
-#~ msgstr "Niestandardowa drukarka została zainstalowana i zostanie aktywowana."#~ "Niestandardowa drukarka została zainstalowana i zostanie aktywowana."
+#~ msgstr ""
+#~ "Niestandardowa drukarka została zainstalowana i zostanie aktywowana."
 
 #~ msgid "<Back"
 #~ msgstr "<Wstecz"
@@ -20833,7 +20847,8 @@ msgstr ""
 #~ "zwrócił ścieżki do appimage."
 
 #~ msgid "Performing desktop integration failed - Could not find executable."
-#~ msgstr "Integracji z pulpitem nie powiodła się - nie znaleziono pliku wykonywalnego."#~ "Integracji z pulpitem nie powiodła się - nie znaleziono pliku "
+#~ msgstr ""
+#~ "Integracji z pulpitem nie powiodła się - nie znaleziono pliku "
 #~ "wykonywalnego."
 
 #~ msgid ""
@@ -20990,7 +21005,8 @@ msgstr ""
 #~ msgstr "Najniższa wysokość Z"
 
 #~ msgid "Rotate the model to have the lowest z height for faster print time."
-#~ msgstr "Optymalizuje orientację modelu, aby miał jak najmniejszy rozmiar w osi Z dla skrócenia czasu drukowania."#~ "Optymalizuje orientację modelu, aby miał jak najmniejszy rozmiar w osi Z "
+#~ msgstr ""
+#~ "Optymalizuje orientację modelu, aby miał jak najmniejszy rozmiar w osi Z "
 #~ "dla skrócenia czasu drukowania."
 
 #~ msgid "Choose SLA archive:"
@@ -21453,7 +21469,8 @@ msgstr ""
 #~ "lub zapisać jako nowe ustawienia."
 
 #~ msgid "New or open project file is not allowed during the slicing process!"
-#~ msgstr "Nowy lub otwarty plik projektu nie jest dozwolony podczas procesu cięcia!"#~ "Nowy lub otwarty plik projektu nie jest dozwolony podczas procesu cięcia!"
+#~ msgstr ""
+#~ "Nowy lub otwarty plik projektu nie jest dozwolony podczas procesu cięcia!"
 
 #~ msgid ""
 #~ "This action will break a cut correspondence.\n"
@@ -21615,7 +21632,8 @@ msgstr ""
 #~ "oprogramowania CAD."
 
 #~ msgid "Switching application language while some presets are modified"
-#~ msgstr "Zmiana języka aplikacji przy jednoczesnym istniejących zmodyfikowanych ustawieniach"#~ "Zmiana języka aplikacji przy jednoczesnym istniejących zmodyfikowanych "
+#~ msgstr ""
+#~ "Zmiana języka aplikacji przy jednoczesnym istniejących zmodyfikowanych "
 #~ "ustawieniach"
 
 #~ msgid ""
@@ -21740,7 +21758,9 @@ msgstr ""
 
 #, fuzzy, c-format
 #~ msgid "Density of internal sparse infill, 100% means solid throughout"
-#~ msgstr "Gęstość wewnętrznego rzadkiego wypełnienia, 100% oznacza pełne w całym zakresie"#~ "Gęstość wewnętrznego rzadkiego wypełnienia, 100% oznacza pełne w całym "
+#~ msgstr ""
+#~ "Gęstość wewnętrznego rzadkiego wypełnienia, 100% oznacza pełne w całym "
+#~ "zakresie"
 #~ "zakresie"
 
 #~ msgid "Tree support wall loops"
@@ -21766,7 +21786,8 @@ msgstr ""
 #~ msgstr "Proszę wprowadzić prawidłową wartość (K w zakresie 0~0,5)"
 
 #~ msgid "Please input a valid value (K in 0~0.5, N in 0.6~2.0)"
-#~ msgstr "Proszę wprowadzić prawidłową wartość (K w zakresie 0~0,5, N w zakresie 0,6~2,0)"#~ "Proszę wprowadzić prawidłową wartość (K w zakresie 0~0,5, N w zakresie "
+#~ msgstr ""
+#~ "Proszę wprowadzić prawidłową wartość (K w zakresie 0~0,5, N w zakresie "
 #~ "0,6~2,0)"
 
 #~ msgid "Export all objects as STL"
@@ -21811,7 +21832,8 @@ msgstr ""
 #~ msgstr "Kolejność wewnętrznej ściany/zewnętrznej ściany/wypełnienia"
 
 #~ msgid "Print sequence of inner wall, outer wall and infill. "
-#~ msgstr "Sekwencja druku wewnętrznej ściany, zewnętrznej ściany i wypełnienia. "#~ "Sekwencja druku wewnętrznej ściany, zewnętrznej ściany i wypełnienia. "
+#~ msgstr ""
+#~ "Sekwencja druku wewnętrznej ściany, zewnętrznej ściany i wypełnienia. "
 
 #~ msgid "inner/outer/infill"
 #~ msgstr "wewnętrzna/zewnętrzna/wypełnienie"
@@ -21899,7 +21921,8 @@ msgstr ""
 #~ "nie może być gorętsze niż ta temperatura"
 
 #~ msgid "Enable this option if machine has auxiliary part cooling fan"
-#~ msgstr "Włącz tę opcję, jeśli maszyna ma dodatkowy wentylator chłodzenia części"#~ "Włącz tę opcję, jeśli maszyna ma dodatkowy wentylator chłodzenia części"
+#~ msgstr ""
+#~ "Włącz tę opcję, jeśli maszyna ma dodatkowy wentylator chłodzenia części"
 
 #~ msgid ""
 #~ "This option is enabled if machine support controlling chamber temperature"
@@ -21927,7 +21950,8 @@ msgstr ""
 #~ "warstwy górne/dolne"
 
 #~ msgid "Empty layers around bottom are replaced by nearest normal layers."
-#~ msgstr "Puste warstwy wokół dolnej części są zastępowane najbliższymi normalnymi warstwami."#~ "Puste warstwy wokół dolnej części są zastępowane najbliższymi normalnymi "
+#~ msgstr ""
+#~ "Puste warstwy wokół dolnej części są zastępowane najbliższymi normalnymi "
 #~ "warstwami."
 
 #~ msgid "The model has too many empty layers."
