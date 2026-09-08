@@ -20,19 +20,19 @@ msgid "Current AMS humidity"
 msgstr "Aktualna wilgotność AMS"
 
 msgid "Drying"
-msgstr ""
+msgstr "Suszenie"
 
 msgid "Idle"
 msgstr "Bezczynny"
 
 msgid "Humidity"
-msgstr ""
+msgstr "Wilgotność"
 
 msgid "Temperature"
 msgstr "Temperatura"
 
 msgid "Left Time"
-msgstr ""
+msgstr "Pozostały czas"
 
 msgid "Serial:"
 msgstr "Seria:"
@@ -191,10 +191,10 @@ msgid "Toggle Wireframe"
 msgstr "Przełącz rysunek techniczny"
 
 msgid "Remap filaments"
-msgstr ""
+msgstr "Przemapuj filamenty"
 
 msgid "Remap"
-msgstr ""
+msgstr "Przemapuj"
 
 msgid "Cancel"
 msgstr "Anuluj"
@@ -223,7 +223,7 @@ msgid "Painted using: Filament %1%"
 msgstr "Pomalowane za pomocą: Filament %1%"
 
 msgid "Filament remapping finished."
-msgstr ""
+msgstr "Przemapowanie filamentów zakończone."
 
 msgid "Move"
 msgstr "Przesuń"
@@ -262,19 +262,19 @@ msgid "mm"
 msgstr "mm"
 
 msgid "Part selection"
-msgstr ""
+msgstr "Wybór części"
 
 msgid "Fixed step drag"
-msgstr ""
+msgstr "Przeciąganie ze stałym krokiem"
 
 msgid "Single sided scaling"
-msgstr ""
+msgstr "Skalowanie jednostronne"
 
 msgid "Position"
 msgstr "Pozycja"
 
 msgid "Rotate (relative)"
-msgstr ""
+msgstr "Obrót (względny)"
 
 msgid "Scale ratios"
 msgstr "Współczynniki skali"
@@ -310,16 +310,16 @@ msgid "World coordinates"
 msgstr "Współrzędne"
 
 msgid "Reset current rotation to the value when open the rotation tool."
-msgstr ""
+msgstr "Resetuje bieżący obrót do wartości sprzed otwarcia narzędzia obrotu."
 
 msgid "Rotate (absolute)"
-msgstr ""
+msgstr "Obrót (bezwzględny)"
 
 msgid "Reset current rotation to real zeros."
-msgstr ""
+msgstr "Zeruje wszystkie wartości bieżącego obrotu."
 
 msgid "Part coordinates"
-msgstr ""
+msgstr "Współrzędne części"
 
 #. TRN - Input label. Be short as possible
 msgid "Size"
@@ -724,7 +724,7 @@ msgid "Horizontal text"
 msgstr "Tekst poziomy"
 
 msgid "Mouse move up or down"
-msgstr ""
+msgstr "Ruch myszą w górę lub w dół"
 
 msgid "Rotate text"
 msgstr "Obróć tekst"
@@ -1515,7 +1515,7 @@ msgstr ""
 "rozpoznane."
 
 msgid "Based on PrusaSlicer and BambuStudio"
-msgstr ""
+msgstr "Na podstawie PrusaSlicer i BambuStudio"
 
 msgid ""
 "OrcaSlicer will terminate because of running out of memory. It may be a bug. "
@@ -1571,7 +1571,7 @@ msgstr "WebView2 Runtime"
 
 #, c-format, boost-format
 msgid "Resources path does not exist or is not a directory: %s"
-msgstr ""
+msgstr "Ścieżka zasobów nie istnieje lub nie jest katalogiem: %s"
 
 #, c-format, boost-format
 msgid ""
@@ -1761,7 +1761,7 @@ msgid "Top Minimum Shell Thickness"
 msgstr "Minimalna grubość górnej powłoki"
 
 msgid "Top Surface Density"
-msgstr ""
+msgstr "Gęstość górnej powierzchni"
 
 msgid "Bottom Solid Layers"
 msgstr "Pełne warstwy dolne"
@@ -1770,7 +1770,7 @@ msgid "Bottom Minimum Shell Thickness"
 msgstr "Minimalna grubość dolnej powłoki"
 
 msgid "Bottom Surface Density"
-msgstr ""
+msgstr "Gęstość dolnej powierzchni"
 
 msgid "Ironing"
 msgstr "Prasowanie"
@@ -2178,7 +2178,7 @@ msgstr[1] "%1$d niezamknięte krawędzie"
 msgstr[2] "%1$d niezamkniętych krawędzi"
 
 msgid "Click the icon to repair model object"
-msgstr ""
+msgstr "Kliknij ikonę, aby naprawić obiekt modelu"
 
 msgid "Right button click the icon to drop the object settings"
 msgstr "Kliknij prawym przyciskiem myszy ikonę, aby zmienić ustawienia obiektu"
@@ -2231,7 +2231,7 @@ msgstr ""
 "ustawienia procesu dla wybranych obiektów."
 
 msgid "Remove paint-on fuzzy skin"
-msgstr ""
+msgstr "Usuń malowaną chropowatą powłokę (fuzzy skin)"
 
 msgid "Delete connector from object which is a part of cut"
 msgstr "Usuń łącznik z obiektu będącego częścią przecięcia"
@@ -2269,7 +2269,7 @@ msgid "Deleting the last solid part is not allowed."
 msgstr "Usunięcie ostatniej części bryły jest niedozwolone."
 
 msgid "The target object contains only one part and can not be split."
-msgstr ""
+msgstr "Obiekt docelowy zawiera tylko jedną część i nie może zostać podzielony."
 
 msgid "Assembly"
 msgstr "Złożenie"
@@ -2824,7 +2824,7 @@ msgstr "Pomyślnie wysłano. Automatyczne przejście do następnej strony za %ss
 
 #, c-format, boost-format
 msgid "Access code:%s IP address:%s"
-msgstr ""
+msgstr "Kod dostępu: %s Adres IP: %s"
 
 msgid "An SD card needs to be inserted before printing via LAN."
 msgstr "Przed drukowaniem przez LAN należy włożyć kartę SD."
@@ -3090,10 +3090,10 @@ msgid "AMS Slots"
 msgstr "Gniazda AMS"
 
 msgid "Left AMS"
-msgstr ""
+msgstr "Lewy AMS"
 
 msgid "Right AMS"
-msgstr ""
+msgstr "Prawy AMS"
 
 msgid ""
 "Note: Only the AMS slots loaded with the same material type can be selected."
@@ -4236,7 +4236,7 @@ msgid "Invalid format. Expected vector format: \"%1%\""
 msgstr "Nieprawidłowy format. Oczekiwano formatu wektorowego: „%1%”"
 
 msgid "Pick"
-msgstr ""
+msgstr "Wybierz"
 
 msgid "Layer Height"
 msgstr "Wysokość warstwy"
@@ -4326,7 +4326,7 @@ msgid "Time"
 msgstr "Czas"
 
 msgid "Usage"
-msgstr ""
+msgstr "Użycie"
 
 msgid "Layer Height (mm)"
 msgstr "Wysokość warstwy (mm)"
@@ -4545,7 +4545,7 @@ msgid "Failed"
 msgstr "Nieudane"
 
 msgid "All Plates"
-msgstr ""
+msgstr "Wszystkie płyty"
 
 msgid "Stats"
 msgstr ""
