@@ -2386,7 +2386,7 @@ msgstr ""
 "kolumnie"
 
 msgid "Copying multiple cells is not supported."
-msgstr "kopiowanie wielu komórek nie jest obsługiwane"
+msgstr "Kopiowanie wielu komórek nie jest obsługiwane."
 
 msgid "Outside"
 msgstr "Poza obszarem roboczym"
@@ -2576,7 +2576,7 @@ msgid "Unload"
 msgstr "Rozładuj"
 
 msgid "Ext Spool"
-msgstr "zew.szpula"
+msgstr "Zewn. szpula"
 
 msgid "Tips"
 msgstr "Wskazówki"
@@ -2975,7 +2975,7 @@ msgid "SN"
 msgstr "Numer seryjny"
 
 msgid "Factors of Flow Dynamics Calibration"
-msgstr "współczynnik kalibracji dynamiki przepływu"
+msgstr "Współczynniki kalibracji dynamiki przepływu"
 
 msgid "PA Profile"
 msgstr "Profil PA"
@@ -9557,7 +9557,7 @@ msgid "unexpected decompressed size"
 msgstr "niespodziewany rozmiar po rozpakowaniu"
 
 msgid "CRC check failed"
-msgstr "błąd sprawdzania CRC"
+msgstr "Błąd sprawdzania CRC"
 
 msgid "unsupported central directory size"
 msgstr "nieobsługiwany rozmiar katalogu centralnego"
@@ -14382,7 +14382,7 @@ msgid "Skirt loops"
 msgstr "Liczba pętli skirt"
 
 msgid "Number of loops for the skirt. Zero means disabling skirt."
-msgstr "To jest liczba pętli skirt. Zero oznacza, wyłączone tej funkcji"
+msgstr "Liczba pętli obrysu (skirt). Zero oznacza wyłączenie tej funkcji."
 
 msgid "Skirt speed"
 msgstr "Prędkość skirtu"
