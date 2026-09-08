@@ -3886,6 +3886,8 @@ msgid ""
 "Lock depth should smaller than skin depth.\n"
 "Reset to 50% of skin depth."
 msgstr ""
+"Głębokość blokady powinna być mniejsza niż głębokość skóry.\n"
+"Zresetowano do 50% głębokości skóry."
 
 msgid ""
 "Both [Extrusion] and [Combined] modes of Fuzzy Skin require the Arachne Wall "
@@ -4463,7 +4465,7 @@ msgid "Sequence"
 msgstr "Kolejność"
 
 msgid "object selection"
-msgstr ""
+msgstr "wybór obiektu"
 
 msgid "part selection"
 msgstr "wybór części"
@@ -4472,7 +4474,7 @@ msgid "number keys"
 msgstr "klawisze numeryczne"
 
 msgid "number keys can quickly change the color of objects"
-msgstr ""
+msgstr "klawisze numeryczne pozwalają szybko zmieniać kolor obiektów"
 
 msgid "Mirror Object"
 msgstr "Lustro obiektu"
@@ -5070,7 +5072,7 @@ msgid "Junction Deviation"
 msgstr "Junction Deviation"
 
 msgid "Junction Deviation calibration"
-msgstr ""
+msgstr "Kalibracja Junction Deviation"
 
 msgid "Cornering"
 msgstr "Pokonywanie narożników"
@@ -6892,10 +6894,14 @@ msgstr "Włączenie wtyczki sieciowej"
 
 msgid "Use legacy network plugin (Takes effect after restarting Orca)"
 msgstr ""
+"Użyj starszej wtyczki sieciowej (efekt widoczny po ponownym uruchomieniu "
+"Orca)"
 
 msgid ""
 "Disable to use latest network plugin that supports new BambuLab firmwares."
 msgstr ""
+"Wyłącz, aby używać najnowszej wtyczki sieciowej obsługującej nowe "
+"oprogramowanie BambuLab."
 
 msgid "Check for stable updates only"
 msgstr "Sprawdzanie aktualizacji do stabilnych wersji"
@@ -7036,7 +7042,7 @@ msgstr ""
 
 msgid ""
 "If enabled,a parameter settings dialog will appear during STEP file import."
-msgstr ""
+msgstr "Jeśli opcja jest włączona, podczas importu pliku STEP pojawi się okno ustawień parametrów."
 
 msgid "Multi-device Management (Take effect after restarting Orca Slicer)."
 msgstr "Obsługiwanie wielu urządzeń (wymaga ponownego uruchomienia programu)"
@@ -7127,7 +7133,7 @@ msgid "Maximum count of recent files"
 msgstr "Maksymalna liczba ostatnio używanych plików"
 
 msgid "Add model files (stl/step) to recent file list."
-msgstr ""
+msgstr "Dodawaj pliki STL/STEP do listy ostatnich plików."
 
 msgid "Clear my choice on the unsaved projects."
 msgstr "Wyczyść wybory na niezapisanych projektach."
@@ -7370,7 +7376,7 @@ msgid "Publish"
 msgstr "Opublikuj"
 
 msgid "Publish was cancelled"
-msgstr ""
+msgstr "Publikacja została anulowana"
 
 msgid "Slicing Plate 1"
 msgstr "Krojenie płyty 1"
@@ -7616,7 +7622,7 @@ msgstr ""
 
 #, c-format, boost-format
 msgid "nozzle in preset: %.1f %s"
-msgstr ""
+msgstr "dysza w profilu: %.1f %s"
 
 #, c-format, boost-format
 msgid "nozzle memorized: %.1f %s"
@@ -7880,6 +7886,10 @@ msgid ""
 "0 top Z distance, 0 interface spacing, interlaced rectilinear pattern and "
 "disable independent support layer height"
 msgstr ""
+"Przy użyciu materiału podporowego do warstw łączących podpory zalecamy "
+"następujące ustawienia:\n"
+"0 odległość w osi Z od góry, 0 odstęp warstwy łączącej, przeplatany wzór "
+"prostoliniowy i wyłączenie niezależnej wysokości warstwy podpory"
 
 msgid ""
 "Change these settings automatically?\n"
@@ -7910,6 +7920,11 @@ msgid ""
 "support. Please proceed with caution and thoroughly check for any potential "
 "printing issues.Are you sure you want to enable this option?"
 msgstr ""
+"Wzory wypełnienia są zwykle projektowane tak, aby samodzielnie obsługiwać "
+"obrót, co zapewnia prawidłowy druk i zamierzony efekt (np. Gyroidalny, "
+"Sześcienny). Obracanie bieżącego wzoru wypełnienia może prowadzić do "
+"niewystarczającego podparcia. Zachowaj ostrożność i dokładnie sprawdź, czy "
+"nie występują problemy z drukiem. Czy na pewno chcesz włączyć tę opcję?"
 
 msgid ""
 "Layer height is too small.\n"
@@ -8407,7 +8422,7 @@ msgid "Normal"
 msgstr "Normalny"
 
 msgid "Resonance Avoidance"
-msgstr ""
+msgstr "Unikanie rezonansu"
 
 msgid "Resonance Avoidance Speed"
 msgstr "Prędkość unikania rezonansu"
@@ -8449,7 +8464,7 @@ msgstr "Parametry pojedynczego extrudera wielomateriałowego"
 
 #, c-format, boost-format
 msgid "Extruder %d"
-msgstr ""
+msgstr "Ekstruder %d"
 
 msgid ""
 "This is a single extruder multi-material printer, diameters of all extruders "
@@ -8516,6 +8531,9 @@ msgid ""
 "If the preset corresponds to a filament currently in use on your printer, "
 "please reset the filament information for that slot."
 msgstr ""
+"Czy na pewno usunąć wybrany profil?\n"
+"Jeśli profil odpowiada filamentowi aktualnie używanemu w drukarce, proszę "
+"zresetować informacje o filamentach dla tego slotu."
 
 #, boost-format
 msgid "Are you sure to %1% the selected preset?"
@@ -9320,10 +9338,10 @@ msgid "Air Pump"
 msgstr "Pompa powietrza"
 
 msgid "Laser 10 W"
-msgstr ""
+msgstr "Laser 10 W"
 
 msgid "Laser 40 W"
-msgstr ""
+msgstr "Laser 40 W"
 
 msgid "Cutting Module"
 msgstr "Moduł tnący"
@@ -10179,6 +10197,8 @@ msgid ""
 "Bed temperature for layers except the initial one. A value of 0 means the "
 "filament does not support printing on the Cool Plate SuperTack."
 msgstr ""
+"Temperatura stołu dla warstw poza pierwszą. Wartość 0 oznacza, że filament "
+"nie obsługuje druku na Cool Plate SuperTack."
 
 msgid ""
 "Bed temperature for layers except the initial one. A value of 0 means the "
@@ -12147,13 +12167,16 @@ msgstr ""
 "wypełnienia"
 
 msgid "Align infill direction to model"
-msgstr ""
+msgstr "Dopasuj kierunek wypełnienia do modelu"
 
 msgid ""
 "Aligns infill and surface fill directions to follow the model's orientation "
 "on the build plate. When enabled, fill directions rotate with the model to "
 "maintain optimal strength characteristics."
 msgstr ""
+"Dopasowuje kierunki wypełnienia oraz górnych/dolnych powierzchni do "
+"orientacji modelu na stole. Po włączeniu kierunki te obracają się razem z "
+"modelem, aby zachować optymalną wytrzymałość."
 
 msgid "Insert solid layers"
 msgstr "Wstaw warstwy pełne"
@@ -13499,6 +13522,8 @@ msgstr "Maksymalna odchyłka złącza"
 msgid ""
 "Maximum junction deviation (M205 J, only apply if JD > 0 for Marlin Firmware)"
 msgstr ""
+"Maksymalna odchyłka złącza (M205 J, stosowana tylko gdy JD > 0 w "
+"oprogramowaniu Marlin)"
 
 msgid "Minimum speed for extruding"
 msgstr "Minimalna prędkość ekstruzji"
@@ -15463,7 +15488,7 @@ msgid "Wipe tower rotation angle with respect to X axis."
 msgstr "Kąt obrotu wieży czyszczącej względem osi x."
 
 msgid "Width of the brim."
-msgstr ""
+msgstr "Szerokość obrysu (brim)."
 
 msgid "Stabilization cone apex angle"
 msgstr "Kąt wierzchołka stożka stabilizacji"
@@ -15551,7 +15576,7 @@ msgid "Rib width"
 msgstr "Szerokość użebrowania"
 
 msgid "Rib width."
-msgstr ""
+msgstr "Szerokość użebrowania."
 
 msgid "Fillet wall"
 msgstr "Zaokrąglij ścianę"
@@ -16137,7 +16162,7 @@ msgstr ""
 "maszynami z listy."
 
 msgid "downward machines settings"
-msgstr ""
+msgstr "ustawienia wstecznej kompatybilności maszyn"
 
 msgid "The machine settings list needs to do downward checking."
 msgstr "Lista ustawień maszyny wymaga sprawdzenia wstecz."
@@ -16238,19 +16263,19 @@ msgid "MakerLab version to generate this 3mf."
 msgstr "Wersja MakerLab do generowania tego 3mf"
 
 msgid "metadata name list"
-msgstr ""
+msgstr "lista nazw metadanych"
 
 msgid "metadata name list added into 3mf."
-msgstr ""
+msgstr "Lista nazw metadanych dodawanych do 3MF."
 
 msgid "metadata value list"
-msgstr ""
+msgstr "lista wartości metadanych"
 
 msgid "metadata value list added into 3mf."
-msgstr ""
+msgstr "Lista wartości metadanych dodawanych do 3MF."
 
 msgid "Allow 3mf with newer version to be sliced"
-msgstr ""
+msgstr "Zezwól na cięcie plików 3MF z nowszą wersją"
 
 msgid "Allow 3mf with newer version to be sliced."
 msgstr "Zezwól na cięcie plików 3MF w nowszej wersji"
@@ -17156,6 +17181,9 @@ msgid ""
 "together. Otherwise, the extruder and nozzle may be blocked or damaged "
 "during printing"
 msgstr ""
+"Nie można drukować jednocześnie wieloma filamentami o znacznych różnicach "
+"temperatur. Może to spowodować zablokowanie lub uszkodzenie ekstrudera i "
+"dyszy podczas drukowania"
 
 msgid "Connecting to printer"
 msgstr "Łączenie z drukarką"
@@ -17419,6 +17447,8 @@ msgid ""
 "Recommended: Set Damp to 0.\n"
 "This will use the printer's default or the last saved value."
 msgstr ""
+"Zalecane: ustaw tłumienie na 0.\n"
+"Zostanie użyta wartość domyślna drukarki lub ostatnio zapisana wartość."
 
 msgid ""
 "Please input valid values:\n"
@@ -17458,27 +17488,29 @@ msgstr ""
 "<= 1)"
 
 msgid "Junction Deviation test"
-msgstr ""
+msgstr "Test Junction Deviation"
 
 msgid "Start junction deviation: "
-msgstr ""
+msgstr "Początkowa odchyłka złącza: "
 
 msgid "End junction deviation: "
-msgstr ""
+msgstr "Końcowa odchyłka złącza: "
 
 msgid "Junction Deviation settings"
-msgstr ""
+msgstr "Ustawienia Junction Deviation"
 
 msgid "Note: Lower values = sharper corners but slower speeds"
-msgstr ""
+msgstr "Uwaga: niższe wartości = ostrzejsze narożniki, ale niższe prędkości"
 
 msgid ""
 "Please input valid values:\n"
 "(0 <= Junction Deviation < 1)"
 msgstr ""
+"Wprowadź prawidłowe wartości:\n"
+"(0 <= Junction Deviation < 1)"
 
 msgid "NOTE: High values may cause Layer shift"
-msgstr ""
+msgstr "UWAGA: wysokie wartości mogą powodować przesunięcie warstw"
 
 msgid "Send G-code to printer host"
 msgstr "Wyślij G-Code do hosta drukarki"
@@ -18687,7 +18719,7 @@ msgid "Something unexpected happened when trying to log in, please try again."
 msgstr "Wystąpił problem podczas próby logowania, proszę spróbować ponownie."
 
 msgid "User cancelled."
-msgstr ""
+msgstr "Anulowane przez użytkownika."
 
 msgid "Head diameter"
 msgstr "Średnica łącznika"
@@ -18714,7 +18746,7 @@ msgid "Delete a brim ear"
 msgstr "Usuń ucho brim"
 
 msgid "Adjust head diameter"
-msgstr ""
+msgstr "Dostosuj średnicę głowicy"
 
 msgid "Adjust section view"
 msgstr "Widok przekroju"
